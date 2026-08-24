@@ -8,7 +8,7 @@
 
 | Gate | Question | Pass condition | Status |
 |---|---|---|---|
-| T0 | Is the formulation technically coherent and distinguishable from prior work? | Adversarial review reaches `almost` or `ready`, with unresolved assumptions named | In progress |
+| T0 | Is the formulation technically coherent and distinguishable from prior work? | Adversarial review reaches `almost` or `ready`, with unresolved assumptions named | Passed with open items: 6/10 almost |
 | T1a | Are the deterministic algebraic contracts executable? | Exact elimination, selector, attainable-gain, rescaling, certificate, and rejection smoke tests pass | Passed 2026-08-24 |
 | T1b | Do solver/approximations match independent synthetic references? | Random overlap families, direct KKT, trust acceptance, CG/unroll/diagonal/low-rank error tests pass | In progress |
 | D0 | Do compensation-aware diagnostics predict realized changes? | Better held-out calibration than the strongest raw first-/second-order Taylor baseline; target Spearman at least `0.5` | Not started |
