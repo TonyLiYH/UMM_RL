@@ -1,0 +1,23 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Training artifacts and large assets
+checkpoints/
+datasets/
+outputs/
+wandb/
+runs/*/artifacts/
+runs/*/checkpoints/
+runs/*/*.log
+

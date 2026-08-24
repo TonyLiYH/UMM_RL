@@ -1,0 +1,4 @@
+{
+  "absolute_tolerance": 1e-10,
+  "rescaling_factors": [0.001, 1000.0]
+}

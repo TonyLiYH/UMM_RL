@@ -1,0 +1,24 @@
+{
+  "run_id": "run_20260824_171953",
+  "status": "in_progress",
+  "difficulty": "medium",
+  "max_rounds": 4,
+  "current_round": 2,
+  "score": 5,
+  "verdict": "not ready",
+  "started_at": "2026-08-24T17:19:53.746519+08:00",
+  "last_updated": "2026-08-24T17:38:15.915890+08:00",
+  "rounds_history": [
+    {
+      "round": 1,
+      "score": 4,
+      "verdict": "not ready"
+    },
+    {
+      "round": 2,
+      "score": 5,
+      "verdict": "not ready"
+    }
+  ],
+  "pending_experiments": []
+}
