@@ -1,0 +1,47 @@
+{
+  "checks": {
+    "attainable_gain": {
+      "expected": 0.875,
+      "passed": true,
+      "tolerance": 1e-10,
+      "value": 0.875
+    },
+    "common_descent": {
+      "margin": 0.5,
+      "maximum_directional_derivative": -0.5,
+      "passed": true
+    },
+    "conditional_rescaling": {
+      "error": 5.684341886080802e-14,
+      "passed": true,
+      "tolerance": 1e-10
+    },
+    "exact_elimination": {
+      "error": 2.7755575615628914e-17,
+      "passed": true,
+      "tolerance": 1e-10
+    },
+    "indefinite_rejection": {
+      "passed": true
+    },
+    "negotiation_rescaling": {
+      "passed": true,
+      "solution_error": 1.8762769116165146e-14,
+      "tolerance": 1e-07
+    },
+    "selector_validation": {
+      "passed": true
+    }
+  },
+  "config_sha256": "bbc3e637d170beea330774c7a4a9ec795dcd6fd3d4e1056ab21c21f6d86adc8d",
+  "environment": {
+    "numpy": "2.5.2",
+    "python": "3.13.0",
+    "scipy": "1.18.0"
+  },
+  "git": {
+    "dirty": false,
+    "revision": "a6416361c3837128a9218ddb66cfc09b5256433b"
+  },
+  "status": "pass"
+}
