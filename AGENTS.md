@@ -7,7 +7,7 @@ This repository is the source of truth for the CompPareto / UMM_RL research proj
 1. Read `PROJECT.md`, `PROGRESS.md`, `tasks/README.md`, and the active task file.
 2. Run `git status` and preserve unrelated user changes.
 3. Distinguish established results, theorem targets, hypotheses, and implementation proposals.
-4. Confirm the current branch and the task's `source_revision`, dependencies, and `allowed_paths`.
+4. Confirm the current branch contains the task's `source_revision` as an ancestor, and read the latest task contract from authorized `main`.
 
 ## Authority model
 
@@ -22,6 +22,7 @@ This repository is the source of truth for the CompPareto / UMM_RL research proj
 
 - Starts only from a task marked `ready`.
 - Uses the exact `agent/<task-id>-<slug>` branch declared by the task.
+- Creates the branch from the latest authorized `main`; `source_revision` is the minimum required project/code baseline and must be an ancestor, not necessarily equal to branch HEAD.
 - May modify only declared `allowed_paths`.
 - May set its branch task state to `running`, `awaiting_review`, or `blocked`.
 - Must report failures, retries, artifact locations, hashes, costs, and exact blockers.
