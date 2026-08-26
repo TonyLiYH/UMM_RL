@@ -1,12 +1,32 @@
 # AGENTS — CompPareto repository rules
 
-This repository is the source of truth for the CompPareto research project: theory, experiment plans, implementation, configurations, and factual run evidence belong here.
+This repository is the source of truth for the CompPareto / UMM_RL research project: theory, task control, experiment plans, implementation, configurations, and factual run evidence belong here.
 
 ## Before editing
 
-1. Read `PROJECT.md`, `PROGRESS.md`, and the relevant document under `docs/`.
+1. Read `PROJECT.md`, `PROGRESS.md`, `tasks/README.md`, and the active task file.
 2. Run `git status` and preserve unrelated user changes.
 3. Distinguish established results, theorem targets, hypotheses, and implementation proposals.
+4. Confirm the current branch contains the task's `source_revision` as an ancestor, and read the latest task contract from authorized `main`.
+
+## Authority model
+
+### Local planning and review
+
+- Creates tasks, dependencies, budgets, Gates, and successor authorization.
+- Owns research claims, `PROJECT.md`, `PROGRESS.md`, and decision records.
+- Reviews remote branches and is the only side allowed to set `accepted`, `revision_needed`, or `stopped`.
+- Pushes the authoritative `main`.
+
+### Remote execution
+
+- Starts only from a task marked `ready`.
+- Uses the exact `agent/<task-id>-<slug>` branch declared by the task.
+- Creates the branch from the latest authorized `main`; `source_revision` is the minimum required project/code baseline and must be an ancestor, not necessarily equal to branch HEAD.
+- May modify only declared `allowed_paths`.
+- May set its branch task state to `running`, `awaiting_review`, or `blocked`.
+- Must report failures, retries, artifact locations, hashes, costs, and exact blockers.
+- Must not push directly to `main`, alter frozen protocols, open successor tasks, or mark work `accepted`.
 
 ## Research integrity
 
@@ -24,8 +44,10 @@ This repository is the source of truth for the CompPareto research project: theo
 - GPU-required commands must fail if CUDA is unavailable; never silently fall back to CPU.
 - Use environment variables for dataset, model, output, and cache roots.
 - Formal run metadata belongs in `runs/<run_id>/`; large artifacts stay outside Git.
+- Formal task status belongs in `tasks/<task-id>-<slug>.md`; `PROGRESS.md` is only a milestone summary.
+- Remote GPU tasks require the task's first report before expensive execution.
+- Large artifacts require canonical references, hashes, measured sizes, producer run IDs, and source revisions.
 
 ## Completion checks
 
-For documentation changes, run link/path checks and `git diff --check`. For code changes, additionally run unit tests, numerical gradient checks, and Python compilation.
-
+Run the repository validator, unit tests, Python compilation, shell syntax checks, local-link checks, and `git diff --check`. A remote result remains `awaiting_review` until the local review side independently verifies it.

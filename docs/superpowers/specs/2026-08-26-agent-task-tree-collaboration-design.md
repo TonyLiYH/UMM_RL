@@ -215,7 +215,7 @@ allowed_paths:
   - configs/
   - runs/t1b-*/
   - reports/T110/
-source_revision: "<main revision published with the task>"
+source_revision: "<minimum project/code revision required by the task>"
 created_at: 2026-08-26
 updated_at: 2026-08-26
 ---
@@ -275,14 +275,14 @@ No task is `accepted` without:
 ### Publishing work
 
 1. Local side creates or updates the task on `main`.
-2. Local side records the task's `source_revision`.
+2. Local side records the minimum project/code `source_revision` required by the task and commits the task contract on `main`.
 3. Local side pushes `main`.
 4. Remote side fetches `main` and creates the exact declared task branch.
 
 ### Remote execution
 
 1. Confirm task status is `ready` and dependencies are accepted.
-2. Confirm local checkout matches `source_revision`.
+2. Fetch the latest authorized `main`, create the declared branch from it, and confirm `source_revision` is an ancestor of branch HEAD.
 3. Change the branch copy of the task to `running`.
 4. Produce the required first report before expensive execution.
 5. Implement and run only the authorized scope.
@@ -402,7 +402,7 @@ Every push and pull request runs:
 - Numerical divergence counts as a failed run unless the task predefines a universal retry rule.
 - Infrastructure failure may be retried only under the task's retry budget.
 - Concurrent tasks must have disjoint allowed paths or explicitly named shared files and a merge order.
-- If `main` advances in a way that changes the task contract, the local side publishes a new `source_revision`; the executor does not silently rebase into a changed experiment.
+- If `main` advances without changing the task contract, the executor may incorporate it after checking path conflicts. If the task contract changes, the local side updates the task on `main`; the executor pauses and acknowledges the new contract before rebasing.
 - Conflicting results are both retained and escalated to a review or decision task.
 
 ## 13. Implementation boundary

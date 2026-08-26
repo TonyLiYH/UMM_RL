@@ -7,10 +7,18 @@ name = "comppareto"
 version = "0.0.1"
 description = "Synthetic validation tools for compensation-aware Pareto post-training"
 requires-python = ">=3.11"
-dependencies = ["numpy>=1.26", "scipy>=1.13"]
+dependencies = [
+  "jsonschema>=4.23",
+  "numpy>=1.26",
+  "PyYAML>=6.0",
+  "scipy>=1.13"
+]
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
+
+[project.scripts]
+comppareto-validate = "comppareto.repo_state.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
