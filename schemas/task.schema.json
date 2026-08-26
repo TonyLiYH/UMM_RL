@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UMM_RL task front matter",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "parent",
+    "status",
+    "priority",
+    "owner",
+    "reviewer",
+    "branch",
+    "depends_on",
+    "blocks",
+    "allowed_paths",
+    "source_revision",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^T[0-9]{3}$"},
+    "title": {"type": "string", "minLength": 1},
+    "parent": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^T[0-9]{3}$"}
+      ]
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "ready",
+        "running",
+        "awaiting_review",
+        "revision_needed",
+        "blocked",
+        "accepted",
+        "stopped"
+      ]
+    },
+    "priority": {"enum": ["P0", "P1", "P2", "P3"]},
+    "owner": {"type": "string", "minLength": 1},
+    "reviewer": {"type": "string", "minLength": 1},
+    "branch": {"type": "string", "minLength": 1},
+    "depends_on": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^T[0-9]{3}$"},
+      "uniqueItems": true
+    },
+    "blocks": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^T[0-9]{3}$"},
+      "uniqueItems": true
+    },
+    "allowed_paths": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"}
+  },
+  "additionalProperties": false
+}
+
