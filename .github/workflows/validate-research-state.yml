@@ -60,10 +60,9 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             base="$(git merge-base "origin/${{ github.base_ref }}" HEAD)"
-            git diff --check "$base" HEAD
+            bash scripts/check_commit_whitespace.sh "$base" HEAD
           elif git rev-parse HEAD^ >/dev/null 2>&1; then
-            git diff --check HEAD^ HEAD
+            bash scripts/check_commit_whitespace.sh HEAD^ HEAD
           else
-            git diff --check
+            git -c core.whitespace=blank-at-eol,space-before-tab,-blank-at-eof diff --check
           fi
-
