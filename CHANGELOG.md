@@ -9,4 +9,5 @@ This file records factual repository and experiment history. Research interpreta
 - Added JSON Schemas and Python validation for task graphs and formal run provenance.
 - Added a combined repository-state CLI, pull-request contract, and GitHub Actions validation workflow.
 - Verified 24 task nodes, one committed legacy T1a manifest, and 27 local tests.
+- Narrowed CI whitespace enforcement to real line-end/tab issues; harmless extra blank lines at end of file no longer fail a push.
 - Preserved the existing CompPareto theory, T1a implementation, tests, and review evidence.
