@@ -81,6 +81,12 @@ The layout follows the public-facing organization of research repositories such 
 
 Remote executors start only from tasks marked `ready`, use the exact branch named by the task, and return the required first report before expensive GPU work.
 
+Validate repository control state with:
+
+```bash
+.venv/bin/python -m comppareto.repo_state.cli --root .
+```
+
 ## T1a synthetic smoke gate
 
 After installing the package with test dependencies, run:
