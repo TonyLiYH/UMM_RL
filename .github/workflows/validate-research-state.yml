@@ -1,0 +1,69 @@
+name: Validate research state
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install -e '.[test]'
+
+      - name: Validate task and run state
+        run: python -m comppareto.repo_state.cli --root .
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Compile Python
+        run: python -m compileall -q src tests scripts
+
+      - name: Check shell syntax
+        run: |
+          while IFS= read -r -d '' script; do
+            bash -n "$script"
+          done < <(find scripts -type f -name '*.sh' -print0)
+
+      - name: Check Markdown local links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          missing = []
+          for path in Path(".").rglob("*.md"):
+              if any(part in {".git", ".venv"} for part in path.parts):
+                  continue
+              for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", path.read_text()):
+                  if target.startswith(("http://", "https://", "#", "mailto:")):
+                      continue
+                  clean = target.split("#", 1)[0]
+                  if clean and not (path.parent / clean).resolve().exists():
+                      missing.append((str(path), target))
+          if missing:
+              raise SystemExit(f"missing local Markdown links: {missing}")
+          print("markdown_local_links=pass")
+          PY
+
+      - name: Check whitespace
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="$(git merge-base "origin/${{ github.base_ref }}" HEAD)"
+            git diff --check "$base" HEAD
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            git diff --check HEAD^ HEAD
+          else
+            git diff --check
+          fi
+

@@ -17,6 +17,9 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest>=8"]
 
+[project.scripts]
+comppareto-validate = "comppareto.repo_state.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
