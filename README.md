@@ -25,10 +25,28 @@ Raw shared gradients can overstate or mischaracterize task conflict because they
 
 The project is falsified in its current form if compensation-aware quantities do not predict realized joint loss changes better than raw-gradient diagnostics, or if a carefully tuned scalarization matches the proposed method across the preregistered model suite.
 
-## Planned repository layout
+## Collaboration model
+
+This repository keeps the complete project under version control:
+
+- research notes, theory, surveys, plans, and decisions;
+- the authoritative local/remote Agent task tree;
+- executable code, tests, scripts, and configurations;
+- lightweight run provenance, result reports, and review evidence.
+
+Large datasets, model weights, checkpoints, generated media, and raw logs remain in remote storage and are referenced by canonical path/URI, hash, size, producing run, and source revision.
+
+The local side publishes authorized tasks on `main`. A remote GPU executor works on the declared `agent/<task-id>-<slug>` branch, submits its task as `awaiting_review`, and pushes the branch. The local review side verifies the code and evidence, then returns `revision_needed`, records a blocker, or merges and marks the task `accepted`.
+
+Remote executors never push directly to `main` and never mark their own result `accepted`.
+
+## Repository layout
 
 ```text
 CompPareto/
+├── tasks/               # Authoritative task tree and task contracts
+├── worklog/             # Process, observations, unresolved questions
+├── reports/             # Result summaries, claim checks, failure ledgers
 ├── configs/             # Reproducible experiment configurations
 ├── docs/
 │   ├── decisions/       # Durable scope and design decisions
@@ -38,8 +56,8 @@ CompPareto/
 ├── experiments/         # Experiment manifests and launch documentation
 ├── review-stage/        # Raw adversarial reviews and repair log
 ├── runs/                # Sanitized metadata for formal runs
-├── src/comppareto/      # Future implementation
-└── tests/               # Future unit and numerical tests
+├── src/comppareto/      # Implementation and repository validators
+└── tests/               # Numerical, repository, and adapter tests
 ```
 
 The layout follows the public-facing organization of research repositories such as [Show-o](https://github.com/showlab/Show-o), [UniAR](https://github.com/ShareLab-SII/UniAR), [SenseNova-U1](https://github.com/OpenSenseNova/SenseNova-U1), and [Janus](https://github.com/deepseek-ai/Janus), while keeping theory, plans, decisions, and review evidence explicit during the pre-experiment stage.
@@ -51,6 +69,17 @@ The layout follows the public-facing organization of research repositories such 
 - Baseline tuning budgets and stopping rules are fixed before inspecting final test metrics.
 - Negative results and failed gates remain in `PROGRESS.md` and the run ledger.
 - A license is intentionally not selected before publication and organizational IP requirements are decided.
+
+## Agent entry points
+
+- [Authoritative task tree](tasks/README.md)
+- [Project progress](PROGRESS.md)
+- [Factual changelog](CHANGELOG.md)
+- [Worklog](worklog/README.md)
+- [Result-report contract](reports/README.md)
+- [Agent collaboration design](docs/superpowers/specs/2026-08-26-agent-task-tree-collaboration-design.md)
+
+Remote executors start only from tasks marked `ready`, use the exact branch named by the task, and return the required first report before expensive GPU work.
 
 ## T1a synthetic smoke gate
 

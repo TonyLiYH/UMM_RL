@@ -2,7 +2,18 @@
 
 ## Current phase
 
-**Phase T0 — theory and experimental design.** No model training has started.
+**Phase T1b + model admission preparation.** No real-model training has started.
+
+Authoritative task status: [tasks/README.md](tasks/README.md).
+
+Current authorized remote entries:
+
+- T110 random overlap families;
+- T120 independent KKT/direct reference;
+- T130 indefinite-curvature trust-region tests;
+- T210 Show-o2 admission audit and smoke.
+
+These tasks do not authorize joint post-training. T300 remains closed until T100 and T210 are accepted.
 
 ## Decision gates
 
@@ -39,7 +50,7 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 
 ## Immediate next actions
 
-1. Complete the adversarial review loop over the formulation and plan.
-2. Complete T1b random overlap, independent direct-solve, trust-acceptance, and approximation-error tests.
-3. Audit Show-o2 trainable block boundaries and reproduce one understanding and one generation evaluation path.
-4. Build the diagnostic logger before implementing the optimizer.
+1. Execute T110, T120, and T130 under the task contracts.
+2. Execute T210 as an admission audit/smoke without joint training.
+3. Open T140/T150 only after their declared prerequisites are accepted.
+4. Accept T100 and T210 before changing T300 to `ready`.
