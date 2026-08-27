@@ -7,7 +7,7 @@ priority: P0
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T310-parameter-block-registry
-depends_on: [T100, T210]
+depends_on: [T100, T210, T215]
 blocks: [T320, T330]
 allowed_paths: ["src/comppareto/adapters/showo2/", "tests/adapters/", "configs/d0/", "reports/T310/", "tasks/T310-parameter-block-registry.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
@@ -27,7 +27,7 @@ Expose Show-o2 block IDs, task activity, shapes, trainability, optimizer ownersh
 
 ## Dependencies and inputs
 
-Accepted T100 and T210.
+Accepted T100, T210, and T215.
 
 ## Allowed changes
 
@@ -68,4 +68,3 @@ Acceptance contributes to T320 and T330.
 ## Review history
 
 - 2026-08-26 — Planned; dependencies not accepted.
-

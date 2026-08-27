@@ -8,7 +8,7 @@ owner: unassigned
 reviewer: local-research-agent
 branch: agent/T150-negotiation-audit
 depends_on: [T120]
-blocks: []
+blocks: [T170]
 allowed_paths: ["src/comppareto/", "tests/", "configs/t1b/", "runs/t1b-negotiation-*/", "reports/T150/", "tasks/T150-negotiation-audit.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
@@ -68,4 +68,3 @@ Acceptance contributes to T100.
 ## Review history
 
 - 2026-08-26 — Planned; T120 is not accepted.
-

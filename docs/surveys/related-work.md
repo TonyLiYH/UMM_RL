@@ -108,3 +108,23 @@ The next theory should combine existing tools rather than claim that any one is 
 - [Chebyshev Policies and the Mountain Car Problem](https://arxiv.org/abs/2605.22305) motivates an exact-oracle benchmark and regret analysis before large-model claims.
 
 The preferred new target is a computable robust common-descent certificate for finite task-native responses under explicit approximation, sampling, and distribution-shift error. Generic deterministic or stochastic MOBL Pareto-stationarity is already covered by WC-MHGD and related work.
+
+## 9. 2026 update: stronger novelty threats and the remaining opening
+
+The following primary papers were checked on 2026-08-27:
+
+- [Efficient Hessian-Free Methods for Multi-Objective Bilevel Optimization with Nonconvex Lower Level](https://arxiv.org/abs/2608.12704) introduces deterministic and stochastic Moreau-envelope-based, single-loop, Hessian-free methods for MOBL with a nonconvex lower level and smooth weighted Tchebycheff scalarization. Therefore “nonconvex stochastic MOBL” is not a viable headline claim.
+- [Improved Convergence Rate for Stochastic Multi-Gradient Descent](https://arxiv.org/abs/2607.18174) obtains a \(\widetilde O(T^{-1})\) rate for the squared Pareto-stationarity measure with constant stepsize and linearly growing minibatches. A generic stochastic MGDA rate is therefore a weak target.
+- [Regularity-Aware Stochastic MGDA with Adaptive Conflict-Avoidant Update Direction Control](https://arxiv.org/abs/2607.15412) distinguishes the general \(1/2\)-Hölder stability of the common-descent direction from Lipschitz stability under additional regularity. CompPareto should certify achieved margins or stationarity measures rather than assume stable negotiation weights near degenerate active sets.
+- [Distributionally Robust Multi-Objective Optimization](https://arxiv.org/abs/2605.05660) already combines objective-wise distributional ambiguity, biased gradients, clipping, nonconvex MGDA, and sample-complexity guarantees. A Wasserstein or generic robust-MGDA wrapper is not sufficient novelty.
+- [Stochastic block coordinate and function alternation for multi-objective optimization and learning](https://arxiv.org/abs/2605.12432) provides convergence theory for alternating objectives and variable blocks. The overlap graph must therefore improve uncertainty, certification, sampling, communication, or effective complexity—not merely motivate blockwise execution.
+
+The remaining opening is the combination of:
+
+1. an exact finite task-native response objective including optimizer state;
+2. a computable posterior error bound from observed trajectory and differentiation residuals;
+3. task-block-local uncertainty propagation;
+4. a simultaneous finite-step descent acceptance rule valid for a data-dependent negotiated direction;
+5. sample and differentiation-compute allocation that minimizes the widest robust retained-gain certificate.
+
+The detailed theorem candidates, assumptions, failure modes, and exact-oracle validation programme are in [the theory breakthrough audit](../theory/2026-08-27-theory-breakthrough-audit.md).

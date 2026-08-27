@@ -8,7 +8,7 @@ owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T210-showo2-admission
 depends_on: []
-blocks: [T300]
+blocks: [T215, T300]
 allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
@@ -63,9 +63,9 @@ Do not use unofficial fixes or a different checkpoint without local authorizatio
 
 ## Successor opening
 
-Accepted T210 plus T100 opens T300.
+Accepted T210 opens T215 and contributes to T300. T300 retains its other
+declared dependencies.
 
 ## Review history
 
 - 2026-08-26 — Authorized for audit and smoke only; no training authorized.
-

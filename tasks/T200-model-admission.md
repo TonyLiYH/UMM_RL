@@ -63,9 +63,10 @@ Do not substitute unofficial forks without local authorization.
 
 ## Successor opening
 
-Accepted T210 plus T100 unblocks T300; other accepted admissions feed T500.
+Accepted T210 opens the planned T215 feasibility task. Accepted T210 and T215
+contribute to T300; T300 retains its theory dependencies. Other accepted
+admissions feed T500.
 
 ## Review history
 
 - 2026-08-26 — Local planner opened the model-admission programme.
-

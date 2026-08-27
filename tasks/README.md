@@ -24,9 +24,12 @@ T000  CompPareto / UMM_RL research [root]  running
 │   ├── T120  Independent KKT/direct reference  ready
 │   ├── T130  Indefinite curvature and trust-region rejection  ready
 │   ├── T140  CG/unroll/diagonal/low-rank error curves  planned
-│   └── T150  Negotiation feasibility and KKT audit  planned
+│   ├── T150  Negotiation feasibility and KKT audit  planned
+│   ├── T160  Finite-horizon optimizer-response posterior certificate  planned
+│   └── T170  Graph-localized robust descent and resource allocation  planned
 ├── T200  Public-model admission programme  running
 │   ├── T210  Show-o2 admission  ready
+│   ├── T215  Show-o2 finite-response diagnostic feasibility  planned
 │   ├── T220  UniDDT admission  planned
 │   ├── T230  SenseNova-U1 admission  planned
 │   └── T240  UniAR boundary-control admission  planned
@@ -53,7 +56,9 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
 | [T210](T210-showo2-admission.md) | P0 | `agent/T210-showo2-admission` | Read-only/code audit before GPU |
 
-No real-model training task is authorized. T300 requires accepted T100 and T210; T400 requires accepted T300.
+No persistent real-model training task is authorized. T215 requires accepted
+T210 and is limited to reversible diagnostic feasibility. T300 requires
+accepted T100, T170, T210, and T215; T400 requires accepted T300.
 
 ## Active task table
 
@@ -66,4 +71,6 @@ No real-model training task is authorized. T300 requires accepted T100 and T210;
 | T130 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T200 | T000 | running | P0 | local-research-agent | user |
 | T210 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
-
+| T215 | T200 | planned | P0 | unassigned | local-research-agent |
+| T160 | T100 | planned | P0 | unassigned | local-research-agent |
+| T170 | T100 | planned | P0 | unassigned | local-research-agent |

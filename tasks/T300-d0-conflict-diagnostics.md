@@ -7,7 +7,7 @@ priority: P0
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T300-d0-conflict-diagnostics
-depends_on: [T100, T210]
+depends_on: [T100, T170, T210, T215]
 blocks: [T400]
 allowed_paths: ["src/comppareto/", "tests/", "configs/d0/", "runs/d0-*/", "reports/T300/", "tasks/T3*.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
@@ -27,7 +27,8 @@ Build the block registry, shared hypergradient cache, predictor comparison, and 
 
 ## Dependencies and inputs
 
-Accepted T100 and T210, paired semantic batches, and frozen diagnostic splits.
+Accepted T100, T170, T210, and T215; paired semantic batches; and frozen
+diagnostic splits.
 
 ## Allowed changes
 
@@ -68,4 +69,3 @@ Accepted T300 opens T400.
 ## Review history
 
 - 2026-08-26 — Planned; dependencies not yet accepted.
-
