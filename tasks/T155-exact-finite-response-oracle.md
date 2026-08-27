@@ -2,7 +2,7 @@
 id: T155
 title: Exact finite-response oracle benchmark
 parent: T100
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -113,3 +113,4 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
 
 - 2026-08-27 — Authorized for CPU execution as the exact-oracle entry point.
 - 2026-08-27 — Remote executor set status to `running` on `agent/T155-exact-oracle`; first report drafted before implementation.
+- 2026-08-27 — Remote executor implemented the oracle core and sweep infrastructure (`src/comppareto/oracle/`, `configs/oracle/baseline.yaml`), ran 52 unit tests (all passing) and the resolved 288-case baseline sweep (`runs/oracle-20260827-baseline/`, 286/288 passed). Submitted evidence under `reports/T155/` (`result-summary.md`, `claim-check.md`, `failure-ledger.md`) and set status to `awaiting_review`. Two unresolved `loss_change`-tolerance failures (case_index 41, 287) are flagged in `reports/T155/failure-ledger.md` for local-reviewer decision; no tolerance was changed and no seed was dropped.

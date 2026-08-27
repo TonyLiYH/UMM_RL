@@ -1,0 +1,17 @@
+{
+  "config_seed": 20260827155,
+  "source_revision": "39a253bdf551943ad8d21b4c83484d94b6f2fe6e",
+  "total_cases": 288,
+  "passed_cases": 286,
+  "failed_cases": 2,
+  "detailed_subset": [
+    33,
+    60,
+    96,
+    144,
+    210,
+    240
+  ],
+  "detailed_subset_coverage_gaps": {},
+  "elapsed_seconds": 9.25753549579531
+}
