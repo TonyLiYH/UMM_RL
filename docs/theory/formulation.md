@@ -171,13 +171,19 @@ R_i(d)\ge\tau\ \forall i,
 
 ### Assumptions
 
-1. Rescaling task \(i\) by \(c_i>0\) rescales \(a_i,S_i,r_i,\epsilon_i\) by the same \(c_i\).
+1. Rescaling task \(i\) by \(c_i>0\) rescales the complete local model \(\widetilde q_i\) and \(\epsilon_i\) by \(c_i\).
 2. \(M,\rho,\lambda\) and all other tasks remain fixed.
 3. The optimizer solves the same constrained problem to the same tolerance.
 
 ### Statement and proof
 
-Each ratio \(R_i(d)\) is unchanged because numerator and denominator both scale by \(c_i\). The feasible set and objective are therefore unchanged, so the solution set is unchanged.
+Because the trust set is fixed,
+
+\[
+r_i'=\max_{\lVert d\rVert_M\le\rho}-c_i\widetilde q_i(d)=c_i r_i.
+\]
+
+Each ratio \(R_i(d)\) is therefore unchanged because numerator, attainable gain, and \(\epsilon_i\) all scale by \(c_i\). The feasible set and objective are unchanged, so the solution set is unchanged. The scaling of \(r_i\) is a consequence of its definition rather than an independent assumption.
 
 ### Failure cases
 
@@ -262,3 +268,21 @@ Use a diagonal or low-rank PSD curvature approximation and refresh negotiation w
 | Better real-model prediction | Empirical hypothesis | D0 held-out study |
 | Better joint capability | Empirical hypothesis | E1–E3 comparisons |
 
+## 9. Next theory target: data-aware robust descent
+
+The fixed-state propositions above do not include finite-response, curvature, sampling, or distribution-shift error. The next proposed value object is
+
+\[
+F_{i,t}^{K}(\theta;q_{i,t})=
+\mathbb E_{z\sim q_{i,t}}
+\ell_i\!\left(P_i\theta,A_i^K(P_i\theta;\phi_{i,t},\omega_{i,t}),z\right).
+\]
+
+For an estimated global task signal, the target analysis separates
+
+\[
+\widehat h_i-h_i=e_i^{\mathrm{inner}}+e_i^{\mathrm{curv}}
++e_i^{\mathrm{sample}}+e_i^{\mathrm{shift}}.
+\]
+
+The intended new result is a computable high-probability common-descent condition whose margin dominates these errors and the second-order remainder. It is an open theorem target, not an established result. The full research-state rationale and candidate experiments are recorded in `docs/handoffs/2026-08-27-research-state.md`.

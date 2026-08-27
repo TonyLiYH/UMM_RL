@@ -4,6 +4,8 @@
 
 **Phase T1b + model admission preparation.** No real-model training has started.
 
+The 2026-08-27 theory/data/model audit is captured in [the research-state handoff](docs/handoffs/2026-08-27-research-state.md). It keeps the current execution Gates unchanged while recording the next recommended theory target: a data-aware, finite-response robust Pareto certificate with explicit inner, curvature, sampling, and distribution-shift errors.
+
 Authoritative task status: [tasks/README.md](tasks/README.md).
 
 Current authorized remote entries:
@@ -54,3 +56,5 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 2. Execute T210 as an admission audit/smoke without joint training.
 3. Open T140/T150 only after their declared prerequisites are accepted.
 4. Accept T100 and T210 before changing T300 to `ready`.
+5. The local planning side should formalize two additional contracts before assigning them: a robust finite-response theorem audit and a linear-Gaussian exact-oracle benchmark.
+6. Freeze data-source, capability, split, and decontamination manifests before D0; do not attribute a data-scheduling gain to update geometry.

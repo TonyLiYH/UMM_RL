@@ -78,6 +78,7 @@ The layout follows the public-facing organization of research repositories such 
 - [Worklog](worklog/README.md)
 - [Result-report contract](reports/README.md)
 - [Agent collaboration design](docs/superpowers/specs/2026-08-26-agent-task-tree-collaboration-design.md)
+- [2026-08-27 research-state handoff](docs/handoffs/2026-08-27-research-state.md)
 
 Remote executors start only from tasks marked `ready`, use the exact branch named by the task, and return the required first report before expensive GPU work.
 

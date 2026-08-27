@@ -1,6 +1,6 @@
 # Related work and novelty audit
 
-Checked on 2026-08-24. Links point to primary papers or official repositories.
+Checked on 2026-08-24; the mathematical additions in Section 8 were rechecked on 2026-08-27. Links point to primary papers, proceedings, or official repositories.
 
 ## 1. Unified multimodal architectures
 
@@ -96,3 +96,15 @@ The decisive comparison is not CompPareto versus raw MGDA. It is: **under equal 
 - Does the method outperform a scalarization tuned with the same total search budget?
 - Are gains due to task-balanced data rather than update geometry?
 - Does “partial overlap” matter empirically, or can a representation-level method explain the same result more simply?
+
+## 8. Mathematical tools for the next theory iteration
+
+The next theory should combine existing tools rather than claim that any one is new:
+
+- [Analyzing Inexact Hypergradients for Bilevel Learning](https://arxiv.org/abs/2301.04764) provides a priori and computable a posteriori error bounds that can inform finite private-response and curvature terms.
+- [The stochastic multi-gradient algorithm](https://arxiv.org/abs/1907.04472) shows that the multi-gradient direction can be biased even when individual stochastic gradients are unbiased; deterministic MGDA geometry cannot be transferred verbatim to minibatches.
+- [Bilevel Optimization with Coupled Decision-Dependent Distributions](https://proceedings.mlr.press/v202/lu23a.html) is a direct prior-work threat and a template when upper- and lower-level data distributions depend on the other decision level.
+- [Decision-Dependent Stochastic Optimization: The Role of Distribution Dynamics](https://arxiv.org/abs/2503.07324) is relevant to later rollout/policy-induced distribution shift.
+- [Chebyshev Policies and the Mountain Car Problem](https://arxiv.org/abs/2605.22305) motivates an exact-oracle benchmark and regret analysis before large-model claims.
+
+The preferred new target is a computable robust common-descent certificate for finite task-native responses under explicit approximation, sampling, and distribution-shift error. Generic deterministic or stochastic MOBL Pareto-stationarity is already covered by WC-MHGD and related work.
