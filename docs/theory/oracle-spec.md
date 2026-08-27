@@ -65,8 +65,9 @@ The constant-term geometric sum uses \(\sum_{l=0}^{K-1}M_i^l=(I-M_i^K)(\eta_iC_i
 
 **Analytic sensitivity.** \(Z_k=\partial\phi_{i,k}/\partial x_i\) obeys \(Z_{k+1}=M_iZ_k-\eta_iH_{\phi x}^i\), \(Z_0=0\) (the snapshot \(\phi_{i,0}\) is external to this window and independent of the candidate \(x_i\)). Closed form:
 \[
-Z_K=-H_{\phi x}^i\big(I-M_i^K\big)C_i^{-1}.
+Z_K=-\big(I-M_i^K\big)C_i^{-1}H_{\phi x}^i.
 \]
+(\(M_i^K\) and \(C_i^{-1}\) commute since \(M_i=I-\eta_iC_i\) shares eigenvectors with \(C_i\); the left-multiplication order relative to \(H_{\phi x}^i\) is forced by the recursion \(Z_{k+1}=M_iZ_k-\eta_iH_{\phi x}^i\), where \(M_i\) always multiplies \(Z_k\) on the left.)
 
 ## 5. Momentum state and recurrence
 
