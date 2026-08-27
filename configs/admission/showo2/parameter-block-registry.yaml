@@ -1,0 +1,73 @@
+# Show-o2 1.5B parameter-block registry (draft)
+#
+# Generated 2026-08-27 from models.Showo2Qwen2_5.from_pretrained(
+#   "showlab/show-o2-1.5B", use_safetensors=False
+# ).named_parameters(), config=showo2_1.5b_demo_432x432.yaml
+# (sha256 d9f754ce8bdaf3a96cb6862782b51c781e2b0d3099bf37e15d244048c0559982).
+# See reports/T210/parameter-block-registry.md for full derivation and source
+# citations. This is a draft admission artifact, not a training config: no
+# joint post-training has been started or authorized.
+
+total_params: 3063740640
+
+blocks:
+  shared_llm_backbone:
+    description: >
+      Qwen2.5-1.5B-Instruct transformer backbone + LM head. Receives the
+      fused per-token embedding stream (text + fused image tokens) and runs
+      identically for both the understanding and generation forward paths.
+    top_level_modules: [showo]
+    param_count: 1776267776
+    fraction_of_total: 0.5798
+    example_param: showo.model.embed_tokens.weight
+
+  shared_fusion_junction:
+    description: >
+      Projects the concatenation of the understanding-branch and
+      generation-branch image embeddings into a single fused image token
+      stream before it enters the shared LLM backbone. Structurally a
+      junction between the two private branches, not private to either.
+    top_level_modules: [fusion_proj]
+    param_count: 6493824
+    fraction_of_total: 0.0021
+    example_param: fusion_proj.0.weight
+
+  understanding_private:
+    description: >
+      Image-understanding branch: patchifies the VAE latent for the
+      understanding path (image_embedder_und), adds SigLIP positional
+      embeddings (position_embedding), and runs an 8-layer transformer
+      encoder adapted from SigLIP's vision encoder (und_trans, SigLIP's
+      final layer removed). Feeds only into the fusion junction above; not
+      used on the pure-generation (no source image) path.
+    top_level_modules: [image_embedder_und, position_embedding, und_trans]
+    param_count: 397141792
+    fraction_of_total: 0.1296
+    example_param: und_trans.layers.0.self_attn.k_proj.weight
+
+  generation_private:
+    description: >
+      Image-generation branch: patchifies the VAE latent for the generation
+      path (image_embedder_gen); embeds the flow-matching timestep
+      (time_embed, time_embed_proj) and injects it into the shared LLM's
+      input stream and into the diffusion head's adaLN conditioning;
+      projects the shared backbone's output hidden states into the
+      diffusion head's width (diff_proj); and runs the 10-block refiner
+      transformer (diffusion_head_a) plus final adaLN projection layer
+      (diffusion_head_b) that predicts the flow-matching velocity. Used only
+      when sampling/denoising an image (t2i path); absent from the
+      pure-understanding (mmu) forward path.
+    top_level_modules: [image_embedder_gen, time_embed, time_embed_proj, diff_proj, diffusion_head_a, diffusion_head_b]
+    param_count: 883837248
+    fraction_of_total: 0.2884
+    example_param: diffusion_head_a.0.self_attn.q_proj.weight
+
+frozen_non_trainable:
+  wan21_vae:
+    description: >
+      Wan2.1 3D causal VAE encoder/decoder. Loaded separately from
+      Showo2Qwen2_5 (models.WanVAE), used only to encode images to /
+      decode images from latents; not part of named_parameters() above and
+      not trained.
+    checkpoint: Wan2.1_VAE.pth
+    sha256: "38071ab59bd94681c686fa51d75a1968f64e470262043be31f7a094e442fd981"
