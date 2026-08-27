@@ -2,7 +2,7 @@
 id: T210
 title: Show-o2 checkpoint, training-interface, and evaluation admission
 parent: T200
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T215, T300]
 allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-08-27
 ---
 
 # T210: Show-o2 admission
@@ -70,3 +70,7 @@ declared dependencies.
 
 - 2026-08-26 — Authorized for audit and smoke only; no training authorized.
 - 2026-08-27 — Remote executor created branch `agent/T210-showo2-admission` from `origin/main`, set status to `running`, and published the first report (`reports/T210/first-report.md`) before any GPU execution.
+- 2026-08-27 — Remote executor completed environment + checkpoint smoke on H20-FoldUMM, fixing an upstream unpinned `torch`/`torchvision` version clobber (`reports/T210/environment-checkpoint-smoke.md`).
+- 2026-08-27 — Remote executor completed both task-path smokes (`inference_mmu.py`, `inference_t2i.py`, both exit 0 on GPU with the pinned checkpoint), fixing an upstream unpinned `wandb`/`protobuf` incompatibility, and recorded a previously-undocumented external component (`CompVis/stable-diffusion-safety-checker`) (`reports/T210/task-path-smoke.md`).
+- 2026-08-27 — Remote executor published the parameter-block registry draft, enumerating `named_parameters()` on the loaded checkpoint and correcting two boundary omissions from the stage-1 provisional reading (`reports/T210/parameter-block-registry.md`, `configs/admission/showo2/parameter-block-registry.yaml`).
+- 2026-08-27 — Remote executor submitted `reports/T210/{result-summary,claim-check,failure-ledger}.md`, flagging 2 unresolved license-status open items (Wan2.1 VAE, safety checker) for local-reviewer decision, and set status to `awaiting_review`. No training was started or authorized; successor opening (T215/T300) is left to local review per `reports/README.md`.
