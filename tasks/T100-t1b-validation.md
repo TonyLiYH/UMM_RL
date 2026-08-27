@@ -23,7 +23,10 @@ The compensation-aware quadratic and approximation machinery must match independ
 
 ## Objective
 
-Complete random overlap, KKT reference, indefinite-curvature, approximation-error, negotiation-audit, finite-response posterior-error, and graph-localized robust-certificate evidence.
+Complete random overlap, KKT reference, indefinite-curvature,
+approximation-error, negotiation-audit, exact finite-response oracle,
+finite-response posterior-error, and graph-localized robust-certificate
+evidence.
 
 ## Dependencies and inputs
 
@@ -39,11 +42,17 @@ Reference implementations must be independent of the formula under test; failure
 
 ## Execution stages
 
-Execute T110, T120, and T130; use their outputs to open T140, T150, and T160; use accepted T150 and T160 to open T170; integrate a T1b decision report.
+Execute T110, T120, T130, and T155 in parallel; use their outputs to open
+T140, T150, and T160; use accepted T150 and T160 to open T170; integrate a T1b
+decision report.
 
 ## Pass/fail gate
 
-All seven children are accepted, independent-solver and finite-response posterior errors satisfy the preregistered thresholds, the robust certificate meets its simultaneous-coverage gate, and no unhandled trust-region counterexample remains.
+All eight children are accepted, the exact-oracle cross-checks and independent
+solver satisfy their preregistered thresholds, finite-response posterior errors
+satisfy their coverage and tightness thresholds, the robust certificate meets
+its simultaneous-coverage gate, and no unhandled trust-region counterexample
+remains.
 
 ## First report
 

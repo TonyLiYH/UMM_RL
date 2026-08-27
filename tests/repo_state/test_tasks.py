@@ -124,5 +124,5 @@ def test_rejects_terminal_acceptance_without_local_review(tmp_path: Path) -> Non
 def test_accepts_initial_repository_task_tree() -> None:
     tasks = load_tasks(Path("tasks"), SCHEMA)
 
-    assert len(tasks) == 27
+    assert len(tasks) == 28
     assert validate_task_graph(tasks) == []

@@ -15,6 +15,7 @@ Current authorized remote entries:
 - T110 random overlap families;
 - T120 independent KKT/direct reference;
 - T130 indefinite-curvature trust-region tests;
+- T155 exact finite-response oracle benchmark;
 - T210 Show-o2 admission audit and smoke.
 
 These tasks do not authorize joint post-training. T300 remains closed until
@@ -61,8 +62,10 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 
 ## Immediate next actions
 
-1. Execute T110, T120, and T130 under the task contracts.
-2. Execute T210 as an admission audit/smoke without joint training.
+1. Execute T110, T120, T130, and T155 under the task contracts.
+2. Execute T210 as an admission audit/smoke without joint training. The same
+   remote executor may perform T155 and T210 sequentially, but each task uses
+   its own branch and evidence package.
 3. Open T140/T150 only after their declared prerequisites are accepted.
 4. Accept T210 before authorizing T215; accept T100, T170, T210, and T215 before changing T300 to `ready`.
 5. Complete the new planned T160 finite-response posterior-certificate and T170 graph-localized robust-certificate contracts after their dependencies are accepted; neither task is authorized yet.

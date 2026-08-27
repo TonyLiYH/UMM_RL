@@ -2,8 +2,9 @@
 
 ## 1. Purpose
 
-The first Show-o2 attempt is an admission and diagnostic-feasibility programme,
-not a joint-training result. It should answer three questions in order:
+The first Show-o2 attempt is paired with an exact-oracle track. It is an
+admission and diagnostic-feasibility programme, not a joint-training result. It
+should answer three real-model questions in order:
 
 1. Can the official checkpoint and both task paths be reproduced?
 2. Can shared/private blocks and independent optimizer state be identified,
@@ -14,6 +15,10 @@ not a joint-training result. It should answer three questions in order:
 
 The attempt does not test whether CompPareto improves final model quality. That
 claim remains behind T1b, T170, and the formal D0 Gate.
+
+One executor may perform T155 and T210 sequentially. The tasks still use
+separate branches and evidence packages so that oracle failures and Show-o2
+admission failures remain independently reviewable.
 
 ## 2. Scientific claims served
 
@@ -27,6 +32,8 @@ claim remains behind T1b, T170, and the formal D0 Gate.
 ## 3. Execution DAG
 
 ```text
+T155 exact finite-response oracle ───────────────┐
+                                                 │
 T210 Show-o2 admission
   ├─ official revision, license, checkpoint and dependency audit
   ├─ understanding smoke
@@ -44,8 +51,9 @@ T215 Show-o2 finite-response diagnostic feasibility
 T300 formal held-out D0 diagnostics
 ```
 
-T210 may run in parallel with the currently authorized T110, T120, and T130
-CPU tasks. T215 remains planned until T210 is accepted.
+T155 and T210 may be executed sequentially by one remote Agent, or in parallel
+with the currently authorized T110, T120, and T130 tasks. T215 remains planned
+until T210 is accepted; T160 later consumes accepted T155 plus T110–T130.
 
 ## 4. T210 admission protocol
 

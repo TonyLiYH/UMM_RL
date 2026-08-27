@@ -15,7 +15,7 @@ def test_cli_validates_repository() -> None:
     )
 
     assert completed.returncode == 0, completed.stdout + completed.stderr
-    assert "task_tree=pass tasks=27" in completed.stdout
+    assert "task_tree=pass tasks=28" in completed.stdout
     assert "run_manifests=pass manifests=1" in completed.stdout
     assert "research_state=pass" in completed.stdout
 
@@ -57,6 +57,6 @@ def test_cli_reports_run_schema_error_as_run_failure(tmp_path: Path) -> None:
     )
 
     assert completed.returncode == 1
-    assert "task_tree=pass tasks=27" in completed.stdout
+    assert "task_tree=pass tasks=28" in completed.stdout
     assert "run_manifests=fail manifests=1" in completed.stdout
     assert "'task_id' is a required property" in completed.stdout

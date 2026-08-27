@@ -25,6 +25,7 @@ T000  CompPareto / UMM_RL research [root]  running
 │   ├── T130  Indefinite curvature and trust-region rejection  ready
 │   ├── T140  CG/unroll/diagonal/low-rank error curves  planned
 │   ├── T150  Negotiation feasibility and KKT audit  planned
+│   ├── T155  Exact finite-response oracle benchmark  ready
 │   ├── T160  Finite-horizon optimizer-response posterior certificate  planned
 │   └── T170  Graph-localized robust descent and resource allocation  planned
 ├── T200  Public-model admission programme  running
@@ -54,6 +55,7 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T110](T110-overlap-family.md) | P0 | `agent/T110-overlap-family` | CPU synthetic task families |
 | [T120](T120-independent-kkt-reference.md) | P0 | `agent/T120-independent-kkt-reference` | CPU independent reference solver |
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
+| [T155](T155-exact-finite-response-oracle.md) | P0 | `agent/T155-exact-oracle` | CPU exact finite-response oracle |
 | [T210](T210-showo2-admission.md) | P0 | `agent/T210-showo2-admission` | Read-only/code audit before GPU |
 
 No persistent real-model training task is authorized. T215 requires accepted
@@ -69,6 +71,7 @@ accepted T100, T170, T210, and T215; T400 requires accepted T300.
 | T110 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T120 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T130 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T155 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T200 | T000 | running | P0 | local-research-agent | user |
 | T210 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T215 | T200 | planned | P0 | unassigned | local-research-agent |

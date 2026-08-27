@@ -7,7 +7,7 @@ priority: P0
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T160-finite-response-certificate
-depends_on: [T110, T120, T130]
+depends_on: [T110, T120, T130, T155]
 blocks: [T170]
 allowed_paths: ["docs/theory/", "src/comppareto/", "tests/", "configs/t1c/", "runs/t1c-response-*/", "reports/T160/", "tasks/T160-finite-response-certificate.md"]
 source_revision: "c481c0ee25245ebace0d6d50d881145a972046cf"
@@ -27,7 +27,9 @@ Formalize rerun-response and commit-response semantics; implement exact finite-h
 
 ## Dependencies and inputs
 
-Accepted overlap families, independent reference solver, and indefinite-curvature behavior from T110–T130; the corrected protocol definitions in `docs/theory/formulation.md`.
+Accepted overlap families, independent reference solver, indefinite-curvature
+behavior from T110–T130, the accepted T155 exact oracle, and the corrected
+protocol definitions in `docs/theory/formulation.md`.
 
 ## Allowed changes
 
@@ -40,11 +42,10 @@ The operational target is \(F_i^{K,\mathrm{rerun}}\) unless a test explicitly na
 ## Execution stages
 
 1. State the finite-horizon sensitivity recurrence and norm conventions.
-2. Implement exact SGD and momentum trajectory/sensitivity oracles.
-3. Add diagonal Adam-like state only after the first two references pass.
-4. Implement approximate sensitivities and per-step tangent residuals.
-5. Bound or estimate finite-horizon propagation gains.
-6. Compare posterior bounds with realized hypergradient error and issue a claim check.
+2. Import and independently verify the accepted T155 exact references.
+3. Implement approximate sensitivities and per-step tangent residuals.
+4. Bound or estimate finite-horizon propagation gains.
+5. Compare posterior bounds with realized hypergradient error and issue a claim check.
 
 ## Pass/fail gate
 
