@@ -2,7 +2,7 @@
 id: T210
 title: Show-o2 checkpoint, training-interface, and evaluation admission
 parent: T200
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -69,3 +69,4 @@ declared dependencies.
 ## Review history
 
 - 2026-08-26 — Authorized for audit and smoke only; no training authorized.
+- 2026-08-27 — Remote executor created branch `agent/T210-showo2-admission` from `origin/main`, set status to `running`, and published the first report (`reports/T210/first-report.md`) before any GPU execution.
