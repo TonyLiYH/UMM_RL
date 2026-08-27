@@ -2,7 +2,7 @@
 id: T155
 title: Exact finite-response oracle benchmark
 parent: T100
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -112,3 +112,4 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
 ## Review history
 
 - 2026-08-27 — Authorized for CPU execution as the exact-oracle entry point.
+- 2026-08-27 — Remote executor set status to `running` on `agent/T155-exact-oracle`; first report drafted before implementation.
