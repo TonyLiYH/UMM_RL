@@ -2,7 +2,7 @@
 id: T155
 title: Exact finite-response oracle benchmark
 parent: T100
-status: awaiting_review
+status: revision_needed
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T160]
 allowed_paths: ["docs/theory/oracle-spec.md", "src/comppareto/oracle/", "tests/oracle/", "configs/oracle/", "runs/oracle-*/", "reports/T155/", "tasks/T155-exact-finite-response-oracle.md"]
 source_revision: "ce08894204e75ac26f17b9d65fa03694cba1b636"
 created_at: 2026-08-27
-updated_at: 2026-08-27
+updated_at: 2026-08-28
 ---
 
 # T155: Exact finite-response oracle benchmark
@@ -114,3 +114,8 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
 - 2026-08-27 — Authorized for CPU execution as the exact-oracle entry point.
 - 2026-08-27 — Remote executor set status to `running` on `agent/T155-exact-oracle`; first report drafted before implementation.
 - 2026-08-27 — Remote executor implemented the oracle core and sweep infrastructure (`src/comppareto/oracle/`, `configs/oracle/baseline.yaml`), ran 52 unit tests (all passing) and the resolved 288-case baseline sweep (`runs/oracle-20260827-baseline/`, 286/288 passed). Submitted evidence under `reports/T155/` (`result-summary.md`, `claim-check.md`, `failure-ledger.md`) and set status to `awaiting_review`. Two unresolved `loss_change`-tolerance failures (case_index 41, 287) are flagged in `reports/T155/failure-ledger.md` for local-reviewer decision; no tolerance was changed and no seed was dropped.
+- 2026-08-28 — Local review of `e1cb034` requested revision. Blocking items:
+  invalid formal run manifest, missing serialized detailed references, missing
+  Pareto reference, inaccurate autodiff terminology, two unresolved unstable
+  loss-change checks, and an out-of-scope `CHANGELOG.md` edit. Full review:
+  `reports/T155/local-review.md`.
