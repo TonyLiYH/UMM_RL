@@ -4,9 +4,14 @@ Reruns performed per local review R1/R2/R5, after the R1 migration moved Show-o2
 tokenizer, SigLIP, and Wan2.1 VAE files (plus the HF cache metadata for them) to local SSD inside
 the H20-FoldUMM container (`/dockerdata/t210-showo2/`). All three runs below executed with
 `HF_HOME=/dockerdata/t210-showo2/hf_cache`, `HF_HUB_OFFLINE=1`, `TRANSFORMERS_OFFLINE=1`, and
-`http_proxy`/`https_proxy` unset — any attempted shared-storage or network fallback would hard-fail
-rather than silently succeed. A `grep -rn "apdcephfs_cq7"` across every log in
-`/dockerdata/t210-showo2/r2_runs/` returned zero matches, confirming no fallback occurred.
+`http_proxy`/`https_proxy` unset. **No shared-storage or network fallback was observed**: a
+`grep -rn "apdcephfs_cq7"` across every log in `/dockerdata/t210-showo2/r2_runs/` returned zero
+matches. Per local review R11, this is qualified rather than overstated: the evidence is
+log-content-based (absence of a shared-storage path string in captured stdout/stderr/wandb logs),
+not file-access-syscall-level evidence — no `strace`/`lsof` tracing of the process tree was
+performed this round, so it does not prove every individual file-read syscall targeted the SSD path.
+A stronger guarantee (e.g. `strace -f -e trace=openat,open` across the full inference process tree)
+is a documented limitation, deferred rather than performed this round.
 
 Instrumentation: `configs/admission/showo2/timing_wrapper.py`, an external harness that runs the
 *unmodified* `inference_mmu.py`/`inference_t2i.py` via `runpy` and records wall-clock/memory by
@@ -24,7 +29,7 @@ filesystem cache).
 |---|---|---|---|---|---|---|
 | `mmu_cold1` (understanding, 1st cold process) | ~9.36s | n/a* | ~38.4s | 14,891,230,720 B (~13.87 GiB) | 41,315,991,552 B (~38.48 GiB) | 18,804,124 KiB (~17.94 GiB) |
 | `mmu_cold2` (understanding, 2nd cold process, same SSD cache) | ~8.67s | ~26.85s | ~38.17s | 14,891,230,720 B (~13.87 GiB) | 41,315,991,552 B (~38.48 GiB) | 18,804,124 KiB (~17.94 GiB) |
-| `t2i_fresh1` (generation, fresh process) | ~8.66s | ~6.35s | ~22.0s | 13,269,985,792 B (~12.36 GiB) | 13,627,293,696 B (~12.69 GiB) | (see `timing_stats.json`) |
+| `t2i_fresh1` (generation, fresh process) | ~8.66s | ~6.35s | ~22.0s | 13,269,985,792 B (~12.36 GiB) | 13,627,293,696 B (~12.69 GiB) | 18,805,096 KiB (~17.94 GiB) |
 
 \* `mmu_cold1`'s `output_ready` timestamp was not captured: the module-level `wandb.log` patch alone
 did not fire for this run (Show-o2's MMU path calls `run.log(...)` on the `wandb.sdk.wandb_run.Run`
@@ -83,11 +88,39 @@ process-level state changes are being missed by not measuring a warm pass.
 |---|---|---|
 | Peak GPU allocated | 14,891,230,720 B (~13.87 GiB) | 13,269,985,792 B (~12.36 GiB) |
 | Peak GPU reserved | 41,315,991,552 B (~38.48 GiB) | 13,627,293,696 B (~12.69 GiB) |
-| Peak host RSS | 18,804,124 KiB (~17.94 GiB) | (per-run `timing_stats.json`, comparable order) |
+| Peak host RSS | 18,804,124 KiB (~17.94 GiB) | 18,805,096 KiB (~17.94 GiB) |
 
 These are measured figures, replacing `first-report.md`'s prior "~10-20GB estimate" for the T2I
 path with a concrete number, and adding a first measured figure for the MMU path (not previously
 estimated).
+
+### R12 — completed resource/storage fields
+
+- **Local-SSD filesystem type**: `xfs`, on `/dev/mapper/gpu-gpu_volume`, a local block device (not a
+  network filesystem) — confirmed via a live `df -T /dockerdata/t210-showo2/hf_cache` run this round
+  and classified by `comppareto.repo_state.storage_preflight.classify_filesystem` as `local`; see
+  `configs/admission/showo2/storage-preflight.json` (`status: pass`, `filesystem_class: local`).
+- **Available capacity before migration**: not separately captured by a dedicated pre-migration `df`
+  snapshot; inferred from the post-migration snapshot in `t210_migration.log` (`9.0T size, 15G used,
+  9.0T avail, 1% use`) combined with the exact copied-bytes total below — the destination was
+  effectively empty before migration (headroom exceeded the ~15GB payload by more than 3 orders of
+  magnitude), so pre-migration free space was ~9.0TiB within measurement rounding.
+- **Available capacity after migration** (measured directly, `storage_preflight` run):
+  capacity 9,895,604,649,984 bytes (~9.0TiB), free 9,880,387,366,912 bytes.
+- **Exact copied bytes**: 15,212,441,037 bytes total, sum of `t210_migration.log`'s five
+  per-component `dst_bytes` fields (5,661,863,511 + 3,098,960,731 + 3,511,951,720 + 2,432,055,195 +
+  507,609,880 — the third-largest figure is the full `CompVis/stable-diffusion-safety-checker` repo
+  directory, which includes files beyond the single blob referenced by the manifest's
+  `safety-checker-checkpoint` artifact). This is ~4.8MB less than the 15,217,283,072-byte delta
+  implied by the post-migration `storage_preflight` used-space reading, attributable to filesystem
+  metadata/directory overhead not counted by the per-component `cp` byte totals.
+- **Migration wall-clock**: 256.269s (~4m16s) summed across the five `COPY` operations in
+  `t210_migration.log` (96.571 + 48.452 + 58.666 + 43.797 + 8.783s); the log's own start/end
+  timestamps span 4m17s (`16:09:51` to `16:14:08`), consistent within rounding/logging overhead.
+- **T2I host RSS**: 18,805,096 KiB (~17.94 GiB), added to the R5 table above.
+- **Measured durable evidence footprint**: 38,941,345 bytes (~37.13 MiB) measured via
+  `du -sb /apdcephfs_cq7/.../T210-showo2-admission/` this round — supersedes the prior "~4.5MB"
+  estimate below, which undercounted the `.tar` bundle copies.
 
 **Total GPU wall-clock for this smoke round**: `mmu_cold1` (~38.4s) + `mmu_cold2` (~38.2s) +
 `t2i_fresh1` (~22.0s) = **~98.6s (~0.0274 GPU-hours)** on a single H20 device. This is smoke-test
@@ -95,14 +128,36 @@ scale by design (one image in, one caption/image out per run), not a training or
 workload.
 
 **Footprint**:
-- Local SSD footprint (R1 migration): ~15 GB (`t210_migration.log`, copied bytes for the four
-  checkpoint/asset components plus HF cache metadata).
+- Local SSD footprint (R1 migration): 15,212,441,037 bytes exactly (~14.17 GiB); see R12 field above.
 - Shared-storage (`/apdcephfs_cq7`) original footprint: retained unchanged as the provenance copy
   per R1 requirement 5, unaffected by this migration (~37 GB across all fp32 checkpoints, per
   `first-report.md`'s prior estimate; not re-measured this round since the R1 requirement is only
   to *keep*, not to re-audit, this copy).
 - R2 evidence footprint (this rerun's logs/artifacts, durable CQ7 copy):
-  `/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/` ≈ 4.5 MB.
+  `/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/` = 38,941,345 bytes
+  (~37.13 MiB), measured via `du -sb` this round (R12; supersedes the prior ~4.5MB estimate, which
+  undercounted the `.tar` bundle copies).
+
+## Exit-code evidence (metrics.json)
+
+`configs/admission/showo2/timing_wrapper.py` runs each official script in-process via `runpy` rather
+than as a subprocess, so it never captures a literal `$?` exit code. `runs/admission-showo2-2026-08-28/metrics.json`'s
+`smoke.mmu.exit_code`/`smoke.t2i.exit_code` fields are instead justified by indirect evidence,
+checked this round across all three run directories' `stderr.log`/`stdout.log`:
+
+- No `Traceback` string (a Python unhandled-exception marker) appears in any of the six log files.
+- `grep -in "traceback\|error"` on each `stderr.log` matches only two benign, non-fatal lines per
+  run: a TensorFlow oneDNN informational notice, and `wandb`'s internal git-root detection failing
+  gracefully (`git root error: Cmd('git') failed due to: exit code(128)`) — `wandb` catches this
+  internally and continues; it does not abort the run.
+- Each run's `timing_stats.json` has a populated `output_ready`/`process_end` timestamp (except
+  `mmu_cold1`, explained above) and a fully populated `wandb_run/` directory including generated
+  media, which would not exist had the script raised before completing its output-write path.
+- `mmu_cold1`/`mmu_cold2` produced bit-identical output hashes (reproducibility check above),
+  inconsistent with a partial/crashed run.
+
+This is process-output-level evidence, not a literal captured exit code — recorded transparently as
+such rather than asserting a `$?` value that was never captured.
 
 ## Evidence index (R4)
 
@@ -120,7 +175,12 @@ r2_runs/{mmu_cold1,mmu_cold2,t2i_fresh1}.tar   # single-file tarball of each run
 
 Referenced by SHA-256 and byte size from the R3 admission manifest
 (`runs/admission-showo2-2026-08-28/manifest.json`) as `artifacts`, per the "large artifacts may
-remain outside Git" allowance in local review R3.
+remain outside Git" allowance in local review R3. Remote reverification of every manifest artifact's
+existence, byte size, and SHA-256 (R13) is recorded in
+`configs/admission/showo2/artifact-verification.json` (21/21 pass, 0 failed, covering both the
+5 immutable-provenance and 5 local-SSD-execution-copy artifacts added per R10). Storage preflight
+evidence (R11/R12) is recorded in `configs/admission/showo2/storage-preflight.json`. Exit-code and
+resource-summary evidence (R12) is recorded in `runs/admission-showo2-2026-08-28/metrics.json`.
 
 The resolved config used for all three reruns
 (`showo2_1.5b_demo_432x432.yaml`, unmodified from `first-report.md`'s original) has sha256

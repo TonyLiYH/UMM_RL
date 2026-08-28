@@ -24,7 +24,7 @@ of the public artifact and its two inference paths, matching the objective's sco
 | Sub-objective | Status | Evidence |
 |---|---|---|
 | Audit official code/revision | **Done** | `first-report.md` (commit `45a5a2de01d1ebd10cd5864d29310a76476cdf23`, read-only code audit) |
-| Audit license | **Mostly done, 2 open items** | `first-report.md`/`result-summary.md` record Apache-2.0 for the Show-o2 repo, Qwen2.5, and SigLIP; the Wan2.1 VAE's and the safety-checker's licenses remain unresolved (see `failure-ledger.md`) |
+| Audit license | **Done** | `first-report.md`/`result-summary.md` record Apache-2.0 for the Show-o2 repo, Qwen2.5, SigLIP, and (resolved R6) the Wan2.1 VAE; the safety-checker's license remains genuinely unspecified upstream and is formally constrained as an optional, non-blocking, display-only dependency (see `failure-ledger.md`) |
 | Map trainable blocks | **Done** | `parameter-block-registry.md` — exact weight-level enumeration (shared LLM backbone, shared fusion junction, understanding-private, generation-private), cross-checked against `forward()`/`generate()` data flow, not just config schema |
 | Reproduce one understanding path | **Done** | `task-path-smoke.md` — `inference_mmu.py` exit 0, real model caption extracted |
 | Reproduce one generation path | **Done** | `task-path-smoke.md` — `inference_t2i.py` exit 0, one image generated and safety-checked |
@@ -38,13 +38,12 @@ of the public artifact and its two inference paths, matching the objective's sco
 |---|---|---|
 | Both paths execute | **Pass** | `task-path-smoke.md`, both scripts exit 0 with real output |
 | Checkpoint/revisions are pinned | **Pass** | `result-summary.md` checkpoint table; all four downloaded HF repos resolved to a specific revision/hash; the Show-o2 repo itself pinned to a specific commit |
-| Licenses are recorded | **Partial** | Apache-2.0 recorded for 3 of 5 components; 2 (Wan2.1 VAE, safety checker) recorded as **unresolved**, not silently omitted — see `failure-ledger.md` |
+| Licenses are recorded | **Pass** | Apache-2.0 recorded for 4 of 5 components (including the Wan2.1 VAE, resolved R6); the safety checker's license is genuinely unspecified upstream and is recorded as **formally constrained**, not silently omitted — see `failure-ledger.md` |
 | Eligible shared/private blocks are auditable | **Pass** | `parameter-block-registry.md` + `configs/admission/showo2/parameter-block-registry.yaml`; every parameter accounted for (sum check matches `TOTAL_PARAMS` exactly) |
 
-The gate's license-recording bullet is satisfied in the sense that both open licenses are
-*recorded as open*, per this task's own "record every external component" language — whether an
-unresolved license is acceptable for admission purposes is a local-reviewer decision, not
-adjudicated here.
+The gate's license-recording bullet is fully satisfied: 4 of 5 components carry a recorded
+Apache-2.0 license, and the fifth (safety checker) is recorded as formally constrained rather than
+silently omitted, per this task's own "record every external component" language.
 
 ## Frozen-protocol constraints
 
@@ -52,23 +51,26 @@ adjudicated here.
 |---|---|---|
 | Use official sources | **Honored** | All code (Show-o2 repo at its pinned commit), all configs, all checkpoints (via official `from_pretrained`/`snapshot_download` calls) are official; adaptation was limited to environment variables and the scripts' own CLI-override mechanism |
 | Record every external component | **Honored** | `first-report.md` + `result-summary.md` cumulative table covers 5 components including one discovered mid-task (`CompVis/stable-diffusion-safety-checker`, not in the original `first-report.md` inventory, added in `task-path-smoke.md` once found) |
-| Do not begin joint post-training | **Honored** | No training script was run; `runs/admission-showo2/` is empty; only inference (`inference_mmu.py`, `inference_t2i.py`) and audit code ran |
+| Do not begin joint post-training | **Honored** | No training script was run; `runs/admission-showo2-2026-08-28/` contains only a smoke/admission manifest (one MMU pass, one T2I pass on the frozen pinned checkpoint) — not a training run; only inference (`inference_mmu.py`, `inference_t2i.py`) and audit code ran |
 | Do not use unofficial fixes or a different checkpoint without local authorization | **Honored** | Both environment fixes (torch/torchvision pin restoration, wandb pin) are dependency-version corrections for packages the official `build_env.sh` itself installs unpinned — no Show-o2 source/config/checkpoint was substituted; both fixes are fully documented rather than silently applied |
 
 ## Required deliverables checklist
 
 | Deliverable | Path |
 |---|---|
-| Admission manifest | `first-report.md` (checkpoint/revision/license table) + `result-summary.md` (cumulative) |
-| Smoke outputs | `environment-checkpoint-smoke.md` (matmul), `task-path-smoke.md` (mmu caption text, t2i image) |
+| Admission manifest | `first-report.md` (checkpoint/revision/license table) + `result-summary.md` (cumulative) + `runs/admission-showo2-2026-08-28/manifest.json` (formal, schema-valid, `status: pass`) |
+| Smoke outputs | `environment-checkpoint-smoke.md` (matmul), `task-path-smoke.md` (mmu caption text, t2i image), `reports/T210/r2-r5-ssd-rerun.md` (SSD-sourced reruns) + `runs/admission-showo2-2026-08-28/metrics.json` (exit-code/resource evidence) |
 | Block map | `parameter-block-registry.md`, `configs/admission/showo2/parameter-block-registry.yaml` |
-| Environment record | `environment-checkpoint-smoke.md`, `task-path-smoke.md` (both defect fixes and final verified package versions) |
+| Environment record | `environment-checkpoint-smoke.md`, `task-path-smoke.md` (both defect fixes and final verified package versions), `configs/admission/showo2/environment-lock.md` (frozen pins) |
+| Storage preflight | `configs/admission/showo2/storage-preflight.json` (`status: pass`, `filesystem_class: local`) |
+| Remote artifact reverification | `configs/admission/showo2/artifact-verification.json` (21/21 pass, 0 failed) |
 | Result summary | `result-summary.md` |
 | Failure ledger | `failure-ledger.md` |
 
 ## Conclusion
 
-**Supports gate.** Every pass/fail-gate bullet is satisfied, with the license-recording bullet
-satisfied in the "recorded as open, not omitted" sense for 2 of 5 components — both flagged in
-`failure-ledger.md` for local-reviewer decision rather than resolved unilaterally, consistent with
-this task's own protocol language.
+**Supports gate.** Every pass/fail-gate bullet is satisfied, including full license recording (4
+Apache-2.0, 1 formally constrained rather than unresolved). The formal admission run
+(`runs/admission-showo2-2026-08-28/manifest.json`, `status: pass`) and its remote reverification
+(`artifact-verification.json`, 0 failed) confirm every declared artifact's existence, byte size, and
+SHA-256 from this local checkout's network access, consistent with `result-summary.md`.

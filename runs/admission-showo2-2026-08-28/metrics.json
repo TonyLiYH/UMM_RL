@@ -1,0 +1,33 @@
+{
+  "run_id": "admission-showo2-2026-08-28",
+  "smoke": {
+    "mmu": {
+      "exit_code": 0,
+      "runs": ["mmu_cold1", "mmu_cold2"],
+      "exit_code_evidence": "indirect: no literal $? captured (timing_wrapper.py runs the official script in-process via runpy, not as a subprocess); no Traceback string in stdout.log/stderr.log across both runs; only benign non-fatal lines (TensorFlow oneDNN notice, wandb git-root detection warning) matched by grep -in \"traceback|error\"; timing_stats.json fully populated; wandb_run/ media fully written; bit-identical output hashes across both cold runs. See reports/T210/r2-r5-ssd-rerun.md#exit-code-evidence-metricsjson."
+    },
+    "t2i": {
+      "exit_code": 0,
+      "runs": ["t2i_fresh1"],
+      "exit_code_evidence": "indirect: same methodology as mmu above, applied to t2i_fresh1's stdout.log/stderr.log/timing_stats.json/wandb_run/."
+    }
+  },
+  "resources": {
+    "mmu_peak_alloc_bytes": 14891230720,
+    "mmu_peak_reserved_bytes": 41315991552,
+    "mmu_peak_rss_kib": 18804124,
+    "t2i_peak_alloc_bytes": 13269985792,
+    "t2i_peak_reserved_bytes": 13627293696,
+    "t2i_peak_rss_kib": 18805096,
+    "total_gpu_wallclock_seconds": 98.6,
+    "total_gpu_hours": 0.0274,
+    "ssd_migration_wallclock_seconds": 256.269,
+    "ssd_migration_copied_bytes": 15212441037,
+    "durable_evidence_footprint_bytes": 38941345
+  },
+  "artifacts": {
+    "checked": 21,
+    "passed": 21,
+    "failed": 0
+  }
+}

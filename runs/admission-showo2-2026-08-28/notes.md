@@ -35,6 +35,14 @@ instrumentation (`configs/admission/showo2/timing_wrapper.py`) works by monkeypa
 - **Raw per-run logs/stats/wandb media**: durable copies at
   `/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/{mmu_cold1,mmu_cold2,t2i_fresh1}/`,
   each also bundled into a single hash-addressed `.tar` referenced as a manifest artifact.
+- **Storage preflight (R11/R12)**: `configs/admission/showo2/storage-preflight.json`.
+- **Remote artifact reverification (R13)**: `configs/admission/showo2/artifact-verification.json`.
+- **Exit-code/resource-summary evidence (R12)**: `runs/admission-showo2-2026-08-28/metrics.json`.
+- **Immutable provenance vs. SSD-execution copies (R10)**: `manifest.json` records each migrated
+  component's local-SSD copy as its own separate sibling artifact (`*-ssd-execution` artifact IDs)
+  rather than a nested field on the provenance artifact, since `schemas/run-manifest.schema.json`
+  sets `additionalProperties: false` on artifact objects — the "separate artifact" alternative from
+  local review R10's wording is the only schema-valid option.
 
 ## Known limitations (documented, not silently omitted)
 
@@ -55,20 +63,43 @@ instrumentation (`configs/admission/showo2/timing_wrapper.py`) works by monkeypa
    an oversight on our side — reconfirmed via a live HF Hub API query on this run's execution date).
    Formally constrained per R6 as an optional, display-only dependency with a documented
    safety-checker-free evaluation path; not blocking for this read-only smoke.
+4. **~~Remote artifact reverification (R13) covers `canonical_uri` (provenance) paths, not
+   `ssd_execution` paths~~ — no longer applicable.** An earlier draft of this manifest recorded the
+   local-SSD execution copy as a nested `ssd_execution` field, which `scripts/verify_manifest_artifacts.py`
+   does not inspect. That draft was schema-invalid (`schemas/run-manifest.schema.json` sets
+   `additionalProperties: false` on artifact objects) and was replaced with 5 separate sibling
+   `*-ssd-execution` artifact entries, each with its own `canonical_uri` pointing at the
+   `/dockerdata` copy. `scripts/verify_manifest_artifacts.py` verifies these the same as any other
+   artifact — `configs/admission/showo2/artifact-verification.json` now reports 21/21 pass (10 model
+   artifacts covering 5 components x {provenance, SSD-execution}, plus 11 pre-existing run-evidence
+   artifacts), so both the shared-storage provenance copy and the local-SSD execution copy of every
+   migrated component are independently reverified. Note on *how*: the 11 pre-existing artifacts
+   and the 5 provenance artifacts resolve to `/apdcephfs_cq7`/`/apdcephfs_cq9` shared-storage paths,
+   reachable directly from this checkout; the 5 `*-ssd-execution` artifacts resolve to `/dockerdata`
+   paths, which only the H20-FoldUMM GPU container mounts, so `scripts/verify_manifest_artifacts.py`
+   was run inside that container (via `taiji_client exec`) to produce their portion of
+   `artifact-verification.json`; the combined output is committed here as the durable, hash-addressed
+   log R13 requires.
+5. **Migration-log discrepancy of ~4.8MB between exact copied bytes and post-migration used-space
+   reading**: see `reports/T210/r2-r5-ssd-rerun.md`'s R12 "Exact copied bytes" field — attributed to
+   filesystem metadata/directory overhead, not re-measured at the byte level this round.
 
-4. **One pre-existing repository test now fails, out of scope to fix here.**
-   `tests/repo_state/test_cli.py::test_cli_validates_repository` hardcodes
-   `"run_manifests=pass manifests=1"`, assuming exactly one run manifest exists repo-wide
-   (`runs/t1_synthetic/t1_manifest.json`). Adding this run's `manifest.json` makes the true count 2,
-   so that literal string no longer appears in the CLI's stdout (the validator itself still reports
-   `run_manifests=pass`, i.e. both manifests are schema-valid — only the hardcoded count assertion
-   fails). `tests/repo_state/` is outside T210's declared `allowed_paths`
-   (`tasks/T210-showo2-admission.md`, `configs/admission/showo2/`, `runs/admission-showo2/`,
-   `reports/T210/`, `src/comppareto/adapters/showo2/`, `tests/adapters/`), so this task does not edit
-   that test. Flagged here for the local reviewer rather than silently worked around.
+## Superseded limitation (resolved by the `origin/main` merge, left here for the record)
+
+The previous version of this note flagged
+`tests/repo_state/test_cli.py::test_cli_validates_repository` as failing because it hardcoded
+`manifests=1`. The `origin/main` merge (commit `a07a939` and predecessors) already fixed this
+upstream: the test now computes `expected_manifest_count = len(list(Path("runs").rglob("*manifest.json")))`
+dynamically rather than hardcoding a count, so it passes regardless of how many run manifests exist
+repo-wide. No longer a limitation; confirmed by the full test suite run below.
 
 ## Status
 
-`pass` — both task paths executed to completion on H20 GPU 0, from local SSD only, with zero
-observed shared-storage/network fallback, deterministic reproduction confirmed for the
-understanding path, and measured (not estimated) peak VRAM for both paths.
+`pass` — both task paths executed to completion on H20 GPU 0, from local SSD only, with no observed
+shared-storage/network fallback (log-content-based evidence; see
+`reports/T210/r2-r5-ssd-rerun.md`'s R11 qualification for the file-access-level-evidence limitation),
+deterministic reproduction confirmed for the understanding path, and measured (not estimated) peak
+VRAM/RSS for both paths. Remote reverification of every declared manifest artifact
+(`configs/admission/showo2/artifact-verification.json`): 21/21 pass, 0 failed. Storage preflight
+(`configs/admission/showo2/storage-preflight.json`): `status: pass`, `filesystem_class: local`.
+Exit-code and resource-summary evidence: `runs/admission-showo2-2026-08-28/metrics.json`.

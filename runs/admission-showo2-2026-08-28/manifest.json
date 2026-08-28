@@ -32,6 +32,9 @@
     "configs/admission/showo2/environment-lock.md",
     "configs/admission/showo2/timing_wrapper.py",
     "configs/admission/showo2/parameter-block-registry.yaml",
+    "configs/admission/showo2/storage-preflight.json",
+    "configs/admission/showo2/artifact-verification.json",
+    "runs/admission-showo2-2026-08-28/metrics.json",
     "runs/admission-showo2-2026-08-28/notes.md"
   ],
   "artifacts": [
@@ -43,9 +46,23 @@
       "bytes": 5661862314
     },
     {
+      "artifact_id": "showo2-1.5b-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "sha256": "a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "bytes": 5661862314
+    },
+    {
       "artifact_id": "qwen2.5-1.5b-instruct-checkpoint",
       "kind": "model_weights",
       "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--Qwen--Qwen2.5-1.5B-Instruct/blobs/dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "bytes": 3087467144
+    },
+    {
+      "artifact_id": "qwen2.5-1.5b-instruct-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--Qwen--Qwen2.5-1.5B-Instruct/blobs/dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
       "sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
       "bytes": 3087467144
     },
@@ -57,11 +74,39 @@
       "bytes": 3511950624
     },
     {
+      "artifact_id": "siglip-so400m-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--google--siglip-so400m-patch14-384/blobs/ea2abad2b7f8a9c1aa5e49a244d5d57ffa71c56f720c94bc5d240ef4d6e1d94a",
+      "sha256": "ea2abad2b7f8a9c1aa5e49a244d5d57ffa71c56f720c94bc5d240ef4d6e1d94a",
+      "bytes": 3511950624
+    },
+    {
       "artifact_id": "wan2.1-vae-checkpoint",
       "kind": "model_weights",
       "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/Wan2.1-I2V-14B-480P/Wan2.1_VAE.pth",
       "sha256": "38071ab59bd94681c686fa51d75a1968f64e470262043be31f7a094e442fd981",
       "bytes": 507609880
+    },
+    {
+      "artifact_id": "wan2.1-vae-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t210-showo2/assets/Wan2.1_VAE.pth",
+      "sha256": "38071ab59bd94681c686fa51d75a1968f64e470262043be31f7a094e442fd981",
+      "bytes": 507609880
+    },
+    {
+      "artifact_id": "safety-checker-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--CompVis--stable-diffusion-safety-checker/blobs/64b8393f1afd5a0c1ed2aa5f341fa7c08286839a48f3743162a76a2835c808bd",
+      "sha256": "64b8393f1afd5a0c1ed2aa5f341fa7c08286839a48f3743162a76a2835c808bd",
+      "bytes": 1216067303
+    },
+    {
+      "artifact_id": "safety-checker-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--CompVis--stable-diffusion-safety-checker/blobs/64b8393f1afd5a0c1ed2aa5f341fa7c08286839a48f3743162a76a2835c808bd",
+      "sha256": "64b8393f1afd5a0c1ed2aa5f341fa7c08286839a48f3743162a76a2835c808bd",
+      "bytes": 1216067303
     },
     {
       "artifact_id": "resolved-config-showo2-1.5b-demo",
