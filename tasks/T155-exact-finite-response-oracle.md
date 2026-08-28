@@ -2,7 +2,7 @@
 id: T155
 title: Exact finite-response oracle benchmark
 parent: T100
-status: ready
+status: revision_needed
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T160]
 allowed_paths: ["docs/theory/oracle-spec.md", "src/comppareto/oracle/", "tests/oracle/", "configs/oracle/", "runs/oracle-*/", "reports/T155/", "tasks/T155-exact-finite-response-oracle.md"]
 source_revision: "ce08894204e75ac26f17b9d65fa03694cba1b636"
 created_at: 2026-08-27
-updated_at: 2026-08-27
+updated_at: 2026-08-28
 ---
 
 # T155: Exact finite-response oracle benchmark
@@ -112,3 +112,8 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
 ## Review history
 
 - 2026-08-27 — Authorized for CPU execution as the exact-oracle entry point.
+- 2026-08-28 — Local review of `e1cb034` requested revision. Blocking items:
+  invalid formal run manifest, missing serialized detailed references, missing
+  Pareto reference, inaccurate autodiff terminology, two unresolved unstable
+  loss-change checks, and an out-of-scope `CHANGELOG.md` edit. Full review:
+  `reports/T155/local-review.md`.

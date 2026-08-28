@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-28
+
+- Added a six-paper core reading TODO covering unified-model transfer, task-specific parameters, multi-objective bilevel learning, inexact hypergradients, nonconvex Hessian-free MOBL, and Show-o2.
+
 ## 2026-08-27
 
 - Added a research-state handoff for subsequent local and remote agents.
