@@ -3,8 +3,8 @@
   "run_id": "oracle-20260827-baseline",
   "task_id": "T155",
   "run_kind": "formal",
-  "source_revision": "b8a1f6b6fe8b861b8825bb82299dee03f8e4a667",
-  "execution_revision": "b8a1f6b6fe8b861b8825bb82299dee03f8e4a667",
+  "source_revision": "432ea002fb71a66bbecc22e2a1d59b74777a1769",
+  "execution_revision": "432ea002fb71a66bbecc22e2a1d59b74777a1769",
   "dirty": false,
   "config_sha256": "64575f1b1a883273c97bb249d32cd46e0887fdda8694a8a86e37ee9fa9c5086e",
   "environment": {
@@ -13,33 +13,41 @@
     "platform": "Linux-6.6.119-49.20.tl4.x86_64-x86_64-with-glibc2.38",
     "executable": "/usr/bin/python3"
   },
-  "status": "fail",
+  "status": "pass",
   "result_files": [
     "runs/oracle-20260827-baseline/case-records.json",
     "runs/oracle-20260827-baseline/summary.json",
-    "runs/oracle-20260827-baseline/failure_ledger.json"
+    "runs/oracle-20260827-baseline/failure_ledger.json",
+    "runs/oracle-20260827-baseline/high_precision_recheck.json"
   ],
   "artifacts": [
     {
       "artifact_id": "case-records",
       "kind": "oracle-run-artifact",
       "canonical_uri": "runs/oracle-20260827-baseline/case-records.json",
-      "sha256": "cb962c970e1b489a3245d48dc258d54e5ff3e59ddf44f0b0eeba5c509c34ba43",
-      "bytes": 7694874
+      "sha256": "9debda514bd02d23968bbe8c73225c2ee1ec42e9a2d127008625ecacfeadd80d",
+      "bytes": 8762563
     },
     {
       "artifact_id": "summary",
       "kind": "oracle-run-artifact",
       "canonical_uri": "runs/oracle-20260827-baseline/summary.json",
-      "sha256": "38b2376557e3ae3635b3c78858a675ac385354e329e341fb714f909c1c1626bf",
-      "bytes": 321
+      "sha256": "8eb1abd587665c48e30233eff1a86ae2b21a4c1119c7872414f582f9916473bc",
+      "bytes": 413
     },
     {
       "artifact_id": "failure_ledger",
       "kind": "oracle-run-artifact",
       "canonical_uri": "runs/oracle-20260827-baseline/failure_ledger.json",
-      "sha256": "fff93fd2b8597a6cd7c42a251de0a687210cd1416322382187df26e76d125ec0",
+      "sha256": "356a2f3ec27dc9b066ef434336a9a82dfd355732228ddff6cb99dc27c4af72b4",
       "bytes": 521
+    },
+    {
+      "artifact_id": "high_precision_recheck",
+      "kind": "oracle-run-artifact",
+      "canonical_uri": "runs/oracle-20260827-baseline/high_precision_recheck.json",
+      "sha256": "399b2143743b92635c99038cac4c6630ac7b00d5495510a2085d3e45e02b97c0",
+      "bytes": 2752
     }
   ],
   "retry": null

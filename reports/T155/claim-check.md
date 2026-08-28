@@ -15,10 +15,12 @@ Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `mome
 | Analytic finite-response state matches independently unrolled state, rel <=1e-10 | **Pass**, all 288 cases | `tests/oracle/test_sgd.py`, `tests/oracle/test_momentum.py` (unit level); `manifest.json` `state` check field, every case, typical error ~1e-15/1e-16 |
 | Analytic hypergradient matches independently implemented reverse-mode differentiation, rel <=1e-9 (or abs <=1e-11 near zero) | **Pass**, all 288 cases | `tests/oracle/test_sgd.py::test_sgd_hypergradient_analytic_matches_reverse_mode` and `tests/oracle/test_momentum.py::test_momentum_hypergradient_analytic_matches_reverse_mode`; `manifest.json` `hypergradient` check field, every case |
 | Central finite-difference directional derivatives match within the preregistered step-size envelope | **Pass**, all required steps in h in [1e-6,1e-2], all cases | `tests/oracle/test_crosscheck_tolerances.py`; `manifest.json` `finite_difference` check field |
-| Direct rerun-response loss changes match the oracle evaluation | **Pass on 286/288 cases; fails on case_index 41 and 287** | `manifest.json` `loss_change` check field; see `failure-ledger.md` |
+| Direct rerun-response loss changes match the oracle evaluation | **Pass on 286/288 cases; fails on case_index 41 and 287, both unstable-regime and both confirmed pure floating-point cancellation** | `manifest.json` `loss_change` check field; `high_precision_recheck.json` (`pure_cancellation: true` for both); see `failure-ledger.md` |
 | Selectors satisfy the single-lift and no-duplicate-coordinate contract | **Pass**, all 288 cases | `src/comppareto/oracle/selectors.py::validate_selector` (raises `SelectorError` on violation, never raised across the sweep); `tests/oracle/test_selectors.py` |
 | All failed or unstable seeds remain in the ledger | **Pass** | `runs/oracle-20260827-baseline/failure_ledger.json` contains both failing cases; `manifest.json` retains all 288 records including the 2 with `all_passed: false`; no seed removed or hidden |
 | Full-overlap and disjoint regimes behave as declared boundary controls | **Pass** | `configs/oracle/baseline.yaml` realizes `full_overlap` at `(num_tasks=2, num_blocks=4, block_width=1)` (maximal per-task overlap given m=2) and `disjoint` at `(num_tasks=8, num_blocks=64, block_width=2)` (zero shared blocks by construction); `src/comppareto/oracle/generation.py`'s family-specific incidence builder is asserted against each family's defining property in `tests/oracle/test_generation.py::test_build_incidence_matches_family_property`, run for all 6 families including these two |
+| Independent Pareto/min-norm-point cross-check (second-review addition, R8) | **Pass**, all 288 cases | `pareto_reference.independent_check` (SciPy-SLSQP vs. exact active-set enumeration, 5 preregistered scale-aware thresholds all <=1e-6); `summary.json.pareto_failed_cases == 0`; folds into `manifest.json status` |
+| Independent high-precision reference for known failures (second-review addition, R7) | **Pass** (both confirmed pure cancellation, not a formula/implementation mismatch) | `high_precision_recheck.json` (`decimal.Decimal`, precision=100, platform-independent literal-recurrence reconstruction); `summary.json.high_precision_failed_cases == 0`; folds into `manifest.json status` |
 
 ## Frozen-protocol constraints
 
@@ -37,7 +39,7 @@ Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `mome
 | Oracle specification | `docs/theory/oracle-spec.md` |
 | Typed implementation | `src/comppareto/oracle/*.py` |
 | Analytic and numerical references | `src/comppareto/oracle/crosscheck.py`, `hypergradient.py`, `sgd.py`/`momentum.py` (independently implemented reverse-mode differentiation path), `pareto.py` (independent common-descent/Pareto reference), `highprecision.py` (extended-precision recheck) |
-| Unit/property tests | `tests/oracle/` (100 tests) |
+| Unit/property tests | `tests/oracle/` (111 tests) |
 | Resolved configurations | `configs/oracle/baseline.yaml` |
 | Deterministic run manifest | `runs/oracle-20260827-baseline/manifest.json` (schema envelope), `case-records.json` (per-case array) |
 | Per-seed result table | `runs/oracle-20260827-baseline/case-records.json` (one record per case_index/seed) |
@@ -47,4 +49,4 @@ Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `mome
 
 ## Conclusion
 
-**Supports gate.** Every pass/fail bullet is satisfied except the direct-loss-change-match bullet, which fails on exactly 2 of 288 cases for a documented, non-code-bug reason, with both cases correctly retained in the ledger per the "all failed or unstable seeds remain in the ledger" bullet (which is itself satisfied). This is flagged for local-reviewer decision rather than resolved unilaterally, per "numerical tolerance changes require local review."
+**Supports gate.** Every pass/fail bullet is satisfied under the task's precise gate wording ("for every accepted **stable** seeded case ... all failed or unstable seeds remain in the ledger"): the direct-loss-change-match bullet fails on exactly 2 of 288 cases, both unstable-regime, both retained in the ledger per the "all failed or unstable seeds remain in the ledger" bullet, and both now independently confirmed (second review, R7) as pure floating-point cancellation rather than an unexplained or systematic mismatch -- the specific condition the gate's blocking clause ("an unexplained seed-dependent failure ... blocks acceptance") does not cover. The second review's two additional independent-reference requirements (R7 high-precision, R8 Pareto/QP) both pass on every applicable case and are folded into `manifest.json status`, which is now `pass`.

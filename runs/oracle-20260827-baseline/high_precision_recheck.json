@@ -1,0 +1,84 @@
+{
+  "41": {
+    "task_index": 4,
+    "family": "disjoint",
+    "optimizer": "momentum",
+    "horizon": 5,
+    "stability_regime": "unstable",
+    "float64": {
+      "exact_delta": 0.008042414054305613,
+      "direct_delta": 0.008042414032388479,
+      "absolute_error": 2.191713477373014e-11,
+      "relative_error": 2.7251935334013935e-09
+    },
+    "longdouble": {
+      "exact_delta": 0.008042414054295502,
+      "direct_delta": 0.008042414054244773,
+      "absolute_error": 5.0727949401849215e-14,
+      "relative_error": 6.307552565607477e-12
+    },
+    "decimal": {
+      "precision_digits": 100,
+      "exact_delta": 0.008042414054295503,
+      "direct_delta": 0.008042414054293599,
+      "absolute_error": 1.903937878130576e-15,
+      "relative_error": 2.3673711217512745e-13,
+      "term_grad_dot_step": -0.1519161536230079,
+      "term_half_step_q_step": 0.1599585676773034,
+      "baseline_loss_magnitude": 357030.055387261
+    },
+    "forward_error_vs_float64": {
+      "exact_delta": 1.0111703141468809e-14,
+      "direct_delta": 2.1856294551980682e-11
+    },
+    "conditioning": {
+      "cond_q": 976.9969616737471,
+      "cancellation_ratio": 38.778744689641414,
+      "term_grad_dot_step": 0.15191615362299782,
+      "term_half_step_q_step": 0.15995856767730343
+    },
+    "trajectory_amplification": 11.843978095656064,
+    "pure_cancellation": true
+  },
+  "287": {
+    "task_index": 1,
+    "family": "random_sparse",
+    "optimizer": "momentum",
+    "horizon": 10,
+    "stability_regime": "unstable",
+    "float64": {
+      "exact_delta": -0.2807532885119384,
+      "direct_delta": -0.2807532921433449,
+      "absolute_error": 3.6314064533193857e-09,
+      "relative_error": 1.293451083891745e-08
+    },
+    "longdouble": {
+      "exact_delta": -0.28075328851193143,
+      "direct_delta": -0.28075328851173253,
+      "absolute_error": 1.988862091510668e-13,
+      "relative_error": 7.084020643363348e-13
+    },
+    "decimal": {
+      "precision_digits": 100,
+      "exact_delta": -0.28075328851193143,
+      "direct_delta": -0.28075328851193154,
+      "absolute_error": 1.3257290892795163e-16,
+      "relative_error": 4.722042959162616e-16,
+      "term_grad_dot_step": -0.28258943667571523,
+      "term_half_step_q_step": 0.0018361481637837842,
+      "baseline_loss_magnitude": 9473598.777542466
+    },
+    "forward_error_vs_float64": {
+      "exact_delta": 6.994405055138486e-15,
+      "direct_delta": 3.6316123441793025e-09
+    },
+    "conditioning": {
+      "cond_q": 464.13768441309475,
+      "cancellation_ratio": 1.0130801542772008,
+      "term_grad_dot_step": 0.2825894366757222,
+      "term_half_step_q_step": 0.0018361481637837844
+    },
+    "trajectory_amplification": 173.75964755162101,
+    "pure_cancellation": true
+  }
+}

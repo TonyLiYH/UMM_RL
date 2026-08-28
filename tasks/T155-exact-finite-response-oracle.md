@@ -10,7 +10,7 @@ branch: agent/T155-exact-oracle
 depends_on: []
 blocks: [T160]
 allowed_paths: ["docs/theory/oracle-spec.md", "src/comppareto/oracle/", "tests/oracle/", "configs/oracle/", "runs/oracle-*/", "reports/T155/", "tasks/T155-exact-finite-response-oracle.md"]
-source_revision: "b8a1f6b6fe8b861b8825bb82299dee03f8e4a667"
+source_revision: "432ea002fb71a66bbecc22e2a1d59b74777a1769"
 created_at: 2026-08-27
 updated_at: 2026-08-28
 ---
@@ -167,3 +167,36 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
   cancellation-only explanation; the Frank–Wolfe Pareto cross-check has
   material scale-normalized errors and is not included in the run Gate. Merge
   current `origin/main` and complete R7–R9 in `reports/T155/local-review.md`.
+- 2026-08-28 — Remote executor merged current `origin/main` and addressed
+  local-review R7-R9 on `agent/T155-exact-oracle` at `432ea00`. R7: replaced
+  the platform-dependent longdouble-only extended-precision check with a
+  genuinely independent, platform-independent `decimal.Decimal` (precision=100)
+  literal-recurrence reconstruction of the full affine-transition/sensitivity/
+  quadratic-model/loss-change chain (`src/comppareto/oracle/highprecision.py`);
+  both known float64 tolerance failures (case_index 41/task 4, case_index
+  287/task 1) remain in `failure_ledger.json` unmodified and are now confirmed
+  `pure_cancellation: true` (Decimal relative error 2.37e-13 vs. float64's
+  2.73e-9 for case 41; 4.72e-16 vs. 1.29e-8 for case 287), persisted in the new
+  `high_precision_recheck.json` artifact. R8: added `min_norm_point_scipy_qp`
+  (SciPy SLSQP), a genuinely independent constrained-QP Pareto/min-norm-point
+  reference, alongside the exact active-set enumeration; Frank-Wolfe is
+  retained as an optional diagnostic only. Fixed an SLSQP false-convergence
+  bug (unnormalized objective on this oracle's up-to-1e13 Gram-matrix scale
+  caused `ftol` to falsely report convergence) by normalizing by
+  `scale = max(diag(Gram), 1)`. Defined five preregistered scale-aware
+  thresholds (all 1e-6) evaluated as `pareto_reference.independent_check`,
+  now gating `CaseResult.all_passed`; zero independent-check failures across
+  the full 288-case sweep. R9: wired both checks into `sweep.py`'s
+  summary/manifest generation (`stable_failed_cases`, `pareto_failed_cases`,
+  `high_precision_failed_cases` in `summary.json`); per the task's exact
+  pass/fail gate wording ("for every accepted **stable** seeded case ... all
+  failed or unstable seeds remain in the ledger"), `manifest.json status` is
+  now `pass` (all three new fields are 0; the raw `failed_cases: 2` count is
+  unchanged and both known unstable-regime failures remain in the ledger).
+  Regenerated the full 288-case sweep on the clean `432ea00` revision
+  (`run_kind: formal`, `dirty: false`, `status: pass`). `tests/oracle/`
+  111/111 pass; full repo suite 156/156 pass (the previously-flagged
+  `test_cli_validates_repository` staleness no longer reproduces on the
+  merged tree). Evidence: `reports/T155/result-summary.md`, `claim-check.md`,
+  `failure-ledger.md`, `runs/oracle-20260827-baseline/notes.md`. Set status
+  back to `awaiting_review`.

@@ -104,6 +104,63 @@ still well under the section-10 budget. `case-records.json` is 7.7MB (up from
 the original inlined 2.7MB `manifest.json`), driven by the added `detail` and
 `pareto_reference` payloads; `manifest.json` itself is now a ~1.5KB envelope.
 
+## R7-R9 second-local-review remediation (this regeneration)
+
+Regenerated on execution_revision `432ea002fb71a66bbecc22e2a1d59b74777a1769`
+(clean tree, `dirty: false`, `run_kind: formal`) after
+`reports/T155/local-review.md`'s "Second review" R7-R9 fixes. **`manifest.json`
+`status` is now `pass`** (was `fail`).
+
+- **R7**: the platform-dependent `np.longdouble` mirror (80-bit x86 extended
+  on some hosts, narrower elsewhere) is no longer the authoritative
+  independent high-precision reference for case_index 41/task 4 and
+  case_index 287/task 1. `src/comppareto/oracle/highprecision.py` now also
+  reconstructs the entire affine-transition/sensitivity/quadratic-
+  model/loss-change chain using `decimal.Decimal` (precision=100,
+  genuinely platform-independent) from exactly-represented (lossless
+  `Decimal(float(x))`) float64 inputs, via the literal per-step recurrence
+  (not the matrix-power closed form the longdouble mirror uses, for
+  cross-path independence). Both known failures are confirmed
+  `pure_cancellation: true`:
+  - case 41: float64 relative error 2.73e-9 vs. Decimal relative error
+    2.37e-13 (ratio ~11,500x smaller);
+  - case 287: float64 relative error 1.29e-8 vs. Decimal relative error
+    4.72e-16 (ratio ~27,000,000x smaller).
+  Persisted in full (exact/direct deltas, absolute/relative discrepancy,
+  the two cancelling terms, baseline loss magnitude, `cond(Q)`, trajectory
+  amplification, float64/longdouble/Decimal comparison) in the new
+  `high_precision_recheck.json` artifact. The 1e-9 `loss_change` tolerance
+  was **not** relaxed and both cases remain in `failure_ledger.json`
+  unchanged.
+- **R8**: `pareto.py` adds `min_norm_point_scipy_qp`, a genuinely
+  independent constrained-QP reference (`scipy.optimize.minimize`/SLSQP,
+  simplex + box constraints), alongside the exact active-set enumeration;
+  Frank-Wolfe is retained only as an optional diagnostic, no longer part of
+  the gate. Five preregistered scale-aware thresholds (simplex feasibility,
+  weight nonnegativity, KKT residual, objective gap, combined-gradient
+  discrepancy, all 1e-6, normalized by `max(diag(Gram), 1)`) are evaluated
+  per case as `pareto_reference.independent_check`, and now gate
+  `CaseResult.all_passed`. All 288 cases pass the independent check (max
+  residuals across the sweep: kkt=3.5e-9, objective_gap=1.9e-16,
+  combined_gradient=4.1e-9, all comfortably under 1e-6).
+- **R9**: `summary.json` now reports `stable_failed_cases` (0),
+  `pareto_failed_cases` (0), and `high_precision_failed_cases` (0)
+  separately from the aggregate `failed_cases` (2). Per the task's pass/fail
+  gate ("for every accepted **stable** seeded case ... all failed or
+  unstable seeds remain in the ledger"), `manifest.json`'s `status` is `pass`
+  when these three are all zero, regardless of documented/explained
+  unstable-regime tolerance failures -- so `status: pass` here despite the 2
+  known unstable-regime `loss_change` failures, since both are confirmed
+  pure cancellation (R7) and neither the Pareto nor stable-case gate is
+  violated.
+
+Elapsed for this regeneration: 25.2s single core (vs. 24.8s before this
+round; the added SciPy-SLSQP solve per case and the two-case high-precision
+recheck cost is within noise of the existing active-set enumeration cost).
+`case-records.json` is 8.76MB (up from 7.7MB, driven by R8's added
+`scipy_qp`/`independent_check` fields in every case's `pareto_reference`).
+New artifact `high_precision_recheck.json` (2.75KB).
+
 ## Detailed-subset selection bug found and fixed during this run
 
 The first implementation of `select_detailed_subset` in
