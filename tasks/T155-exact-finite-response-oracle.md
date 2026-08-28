@@ -117,3 +117,8 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
   Pareto reference, inaccurate autodiff terminology, two unresolved unstable
   loss-change checks, and an out-of-scope `CHANGELOG.md` edit. Full review:
   `reports/T155/local-review.md`.
+- 2026-08-28 — Second local review of `0ba8bf8` retained
+  `revision_needed`: the long-double tests fail and do not establish a
+  cancellation-only explanation; the Frank–Wolfe Pareto cross-check has
+  material scale-normalized errors and is not included in the run Gate. Merge
+  current `origin/main` and complete R7–R9 in `reports/T155/local-review.md`.

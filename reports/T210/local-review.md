@@ -123,3 +123,90 @@ Before resubmission:
 - repository validator and full tests pass;
 - T210 is returned to `awaiting_review` only after the revised evidence is
   pushed.
+
+## Second review — 2026-08-28
+
+Reviewed branch: `origin/agent/T210-showo2-admission` at
+`b05b4392815f9edaed7b4994a46cc57958139dcd`.
+
+Decision remains `revision_needed`, with a narrow evidence-consistency repair.
+
+The SSD migration is successful in operational terms: reported model loading
+decreased from approximately 26 minutes on shared storage to approximately
+8.7–9.4 seconds from `/dockerdata/t210-showo2/`. Both task paths were rerun,
+measured VRAM was added, the environment was frozen, and a schema-valid
+admission manifest was created.
+
+### R8 — merge authoritative main and use the authorized run path
+
+The task contract now authorizes date-stamped run directories through
+`runs/admission-showo2-*/`. Merge the latest `origin/main` so the submitted
+path is within the current contract and the repository manifest-count test is
+no longer hardcoded to one run.
+
+### R9 — reconcile all final reports with the revised evidence
+
+Several earlier summary passages remain stale, including statements that no
+admission run exists and that the Wan2.1 VAE remains unresolved.
+
+Update the final result summary and claim check so they consistently state:
+
+- the admission run and manifest path;
+- the resolved Wan2.1 revision and Apache-2.0 license;
+- the safety checker as the only remaining constrained license item;
+- the measured SSD load times, VRAM, RSS, GPU-hours, and storage footprint;
+- the exact status of the optional safety-checker-free scientific evaluation
+  path.
+
+Historical first-report statements may remain as dated observations, but the
+final summary and claim check must not contradict the final evidence.
+
+### R10 — distinguish provenance assets from SSD execution copies
+
+The current manifest records shared-storage provenance URIs for model weights
+but does not identify the local-SSD copies used by the reruns.
+
+For every runtime component, record both:
+
+- immutable provenance source URI and hash;
+- local-SSD execution URI and the matching verified hash/byte size.
+
+The SSD copy may be represented as a separate artifact or an additional
+manifest field. Ensure the task remains valid if the ephemeral container is
+later destroyed by preserving the migration/hash log in durable storage.
+
+### R11 — strengthen and accurately word the no-fallback evidence
+
+Offline environment variables and absence of `/apdcephfs_*` strings in logs
+support, but do not strictly prove, that every model read came from SSD.
+
+Either:
+
+1. collect file-access evidence using `strace`, process open-file inspection,
+   or an equivalent mechanism for one representative rerun; or
+2. change the claim to “no shared-storage or network fallback was observed,”
+   and list the evidence and its limitation.
+
+Do not use “proved zero fallback” without file-access-level evidence.
+
+### R12 — complete the missing resource fields
+
+Add the numeric T2I peak host RSS currently referenced only as “see
+`timing_stats.json`.” Summarize in the committed report:
+
+- actual local-SSD filesystem type;
+- available capacity before migration;
+- exact copied bytes;
+- migration wall-clock;
+- T2I host RSS;
+- measured durable evidence footprint.
+
+### R13 — remotely reverify every external artifact
+
+The local reviewer cannot access `/apdcephfs_*` or `/dockerdata/*`. Run an
+artifact verification command on the remote host that checks every manifest
+artifact's existence, byte size, and SHA-256. Commit the command output or a
+hash-addressed durable log and reference it from the manifest/run note.
+
+Resubmission requires the repository validator and complete test suite to pass
+with zero failures.

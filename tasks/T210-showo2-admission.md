@@ -9,7 +9,7 @@ reviewer: local-research-agent
 branch: agent/T210-showo2-admission
 depends_on: []
 blocks: [T215, T300]
-allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
+allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2-*/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
 updated_at: 2026-08-28
@@ -76,3 +76,9 @@ declared dependencies.
   smoke evidence, measured VRAM/GPU-hours, a frozen repaired environment, and
   resolution or formal containment of the two license/provenance open items.
   Full review: `reports/T210/local-review.md`.
+- 2026-08-28 — Second local review of `b05b439` confirmed the SSD loading
+  improvement and narrowed the remaining work to evidence consistency:
+  merge current `origin/main`, reconcile stale summaries, record provenance
+  and SSD execution URIs separately, qualify or strengthen no-fallback
+  evidence, complete resource fields, and remotely reverify all external
+  artifacts. Complete R8–R13 in `reports/T210/local-review.md`.
