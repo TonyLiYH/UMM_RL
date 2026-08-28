@@ -149,3 +149,8 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
   remediation (see `reports/T155/result-summary.md`). Evidence:
   `reports/T155/result-summary.md`, `claim-check.md`,
   `runs/oracle-20260827-baseline/notes.md`.
+- 2026-08-28 — Second local review of `0ba8bf8` retained
+  `revision_needed`: the long-double tests fail and do not establish a
+  cancellation-only explanation; the Frank–Wolfe Pareto cross-check has
+  material scale-normalized errors and is not included in the run Gate. Merge
+  current `origin/main` and complete R7–R9 in `reports/T155/local-review.md`.
