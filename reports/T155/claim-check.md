@@ -36,11 +36,11 @@ Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `mome
 |---|---|
 | Oracle specification | `docs/theory/oracle-spec.md` |
 | Typed implementation | `src/comppareto/oracle/*.py` |
-| Analytic and numerical references | `src/comppareto/oracle/crosscheck.py`, `hypergradient.py`, `sgd.py`/`momentum.py` (independently implemented reverse-mode differentiation path) |
-| Unit/property tests | `tests/oracle/` (52 tests) |
+| Analytic and numerical references | `src/comppareto/oracle/crosscheck.py`, `hypergradient.py`, `sgd.py`/`momentum.py` (independently implemented reverse-mode differentiation path), `pareto.py` (independent common-descent/Pareto reference), `highprecision.py` (extended-precision recheck) |
+| Unit/property tests | `tests/oracle/` (100 tests) |
 | Resolved configurations | `configs/oracle/baseline.yaml` |
-| Deterministic run manifest | `runs/oracle-20260827-baseline/manifest.json` |
-| Per-seed result table | `runs/oracle-20260827-baseline/manifest.json` (one record per case_index/seed) |
+| Deterministic run manifest | `runs/oracle-20260827-baseline/manifest.json` (schema envelope), `case-records.json` (per-case array) |
+| Per-seed result table | `runs/oracle-20260827-baseline/case-records.json` (one record per case_index/seed) |
 | Boundary and failure cases | full-overlap/disjoint families (see above); `runs/oracle-20260827-baseline/failure_ledger.json` |
 | Summary report | this `reports/T155/` directory |
 | Failure ledger | `runs/oracle-20260827-baseline/failure_ledger.json`, `reports/T155/failure-ledger.md` |

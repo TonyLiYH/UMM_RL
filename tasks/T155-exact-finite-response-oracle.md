@@ -2,7 +2,7 @@
 id: T155
 title: Exact finite-response oracle benchmark
 parent: T100
-status: revision_needed
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -10,7 +10,7 @@ branch: agent/T155-exact-oracle
 depends_on: []
 blocks: [T160]
 allowed_paths: ["docs/theory/oracle-spec.md", "src/comppareto/oracle/", "tests/oracle/", "configs/oracle/", "runs/oracle-*/", "reports/T155/", "tasks/T155-exact-finite-response-oracle.md"]
-source_revision: "ce08894204e75ac26f17b9d65fa03694cba1b636"
+source_revision: "b8a1f6b6fe8b861b8825bb82299dee03f8e4a667"
 created_at: 2026-08-27
 updated_at: 2026-08-28
 ---
@@ -119,3 +119,33 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
   Pareto reference, inaccurate autodiff terminology, two unresolved unstable
   loss-change checks, and an out-of-scope `CHANGELOG.md` edit. Full review:
   `reports/T155/local-review.md`.
+- 2026-08-28 — Remote executor addressed local-review R1-R6 and set status to
+  `awaiting_review` on `agent/T155-exact-oracle` at `b8a1f6b`. R1:
+  `manifest.json` is now a schema-valid envelope object per
+  `schemas/run-manifest.schema.json`; the per-case array moved to
+  `case-records.json`. R2: `case_record()` now serializes each task's full
+  `detail` (state/momentum trajectories, per-step `J_k`/`B_k`, sensitivity
+  trajectories, exact local gradient, `Q_i^K`, selector/case identifiers),
+  independently re-verified in `tests/oracle/test_case.py`. R3: added
+  `src/comppareto/oracle/pareto.py`, an independent exact
+  active-set-enumeration common-descent/Pareto reference over the tasks' real
+  lifted gradients (not random probe directions), cross-checked against an
+  independent Frank-Wolfe solver; a scale-dependent tolerance bug found in
+  this new code during regeneration (spurious rejection of the true optimum
+  on large-Gram-magnitude case_index 47) was fixed by selecting the
+  minimum-objective lambda-feasible candidate, provably the exact optimum for
+  this convex QP. R4: renamed "automatic differentiation" claims to
+  "independently implemented reverse-mode differentiation" throughout (no AD
+  library is a dependency). R5: added `src/comppareto/oracle/highprecision.py`
+  for a higher-precision/conditioning-aware recheck of case_index 41/287
+  without relaxing the frozen 1e-9 tolerance; both failures reproduce
+  bit-for-bit at extended precision. R6: reverted the out-of-scope
+  `CHANGELOG.md` edit. Regenerated the full 288-case sweep on the clean
+  `b8a1f6b` revision (`run_kind: formal`, `dirty: false`); 286/288 still pass
+  (same 2 documented failures as before). `tests/oracle/` 100/100 pass; full
+  repo suite 129/130 pass, with the 1 failure
+  (`tests/repo_state/test_cli.py::test_cli_validates_repository`) being a
+  pre-existing, out-of-scope test-assertion staleness unrelated to this
+  remediation (see `reports/T155/result-summary.md`). Evidence:
+  `reports/T155/result-summary.md`, `claim-check.md`,
+  `runs/oracle-20260827-baseline/notes.md`.

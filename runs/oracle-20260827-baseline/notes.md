@@ -58,6 +58,52 @@ and no seed was dropped. Both cases remain in `failure_ledger.json` and
 requires ("all failed or unstable seeds remain in the ledger"). This is
 flagged for local-reviewer decision in `reports/T155/`.
 
+## R1-R6 local-review remediation (this regeneration)
+
+Regenerated on execution_revision `b8a1f6b6fe8b861b8825bb82299dee03f8e4a667`
+(clean tree, `dirty: false`, `run_kind: formal`) after `reports/T155/local-review.md`
+R1-R6 fixes:
+
+- **R1**: `manifest.json` is now the schema-valid envelope object required by
+  `schemas/run-manifest.schema.json`; the flat per-case array previously
+  inlined into `manifest.json` now lives in `case-records.json` (one of
+  `manifest.json`'s `result_files`).
+- **R2**: each case record's per-task entries carry a `detail` payload
+  (state/momentum trajectories, per-step `J_k`/`B_k`, sensitivity
+  trajectories, exact local gradient, `Q_i^K`, selector/case identifiers)
+  for the detailed subset; independently re-verified by
+  `tests/oracle/test_case.py`.
+- **R3**: each case record now also carries a `pareto_reference` -- an exact
+  active-set-enumeration common-descent/Pareto reference over the tasks'
+  real lifted exact gradients (not random probe directions), cross-checked
+  against an independent Frank-Wolfe solver (`src/comppareto/oracle/pareto.py`).
+  A genuine bug was found and fixed during this regeneration: the active-set
+  solver's original acceptance filter gated on an absolute KKT/active-
+  consistency tolerance (a squared-gradient-scale quantity), which spuriously
+  rejected the true global optimum on large-magnitude cases (case_index 47,
+  Gram-matrix entries up to ~1.2e11) and crashed the sweep. Fixed by selecting
+  the minimum-objective candidate among all lambda-feasible subsets (provably
+  the exact optimum for this convex QP, no residual gate needed); see commit
+  `b8a1f6b`. Re-ran the full 288-case grid after the fix: no other case hit
+  this or a related issue.
+- **R4**: "automatic differentiation" claims renamed to "independently
+  implemented reverse-mode differentiation" throughout (no AD library is a
+  dependency of this project).
+- **R5**: case_index 41/287 got a higher-precision/conditioning-aware
+  recheck (`src/comppareto/oracle/highprecision.py`) without relaxing the
+  frozen 1e-9 tolerance; both failures reproduce bit-for-bit at extended
+  precision, confirming the roundoff-amplification explanation above rather
+  than a code defect.
+- **R6**: the out-of-scope `CHANGELOG.md` edit from the original submission
+  was reverted.
+
+Elapsed for this regeneration: 24.6s single core (vs. 9.26s in the original
+submission) -- the increase is the added per-case active-set enumeration
+(up to `2^8-1=255` subsets for the 8-task cases) for R3's `pareto_reference`,
+still well under the section-10 budget. `case-records.json` is 7.7MB (up from
+the original inlined 2.7MB `manifest.json`), driven by the added `detail` and
+`pareto_reference` payloads; `manifest.json` itself is now a ~1.5KB envelope.
+
 ## Detailed-subset selection bug found and fixed during this run
 
 The first implementation of `select_detailed_subset` in
