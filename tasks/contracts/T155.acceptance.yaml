@@ -1,0 +1,48 @@
+schema_version: 1
+task_id: T155
+base_ref: origin/main
+required_files:
+  - reports/T155/result-summary.md
+  - reports/T155/claim-check.md
+  - reports/T155/failure-ledger.md
+  - runs/oracle-*/manifest.json
+  - runs/oracle-*/case-records.json
+  - runs/oracle-*/summary.json
+  - runs/oracle-*/failure_ledger.json
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: artifact-hashes
+    command: .venv/bin/python scripts/verify_manifest_artifacts.py --manifest runs/oracle-20260827-baseline/manifest.json --output /tmp/T155-artifact-verification.json
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/oracle-20260827-baseline/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: runs/oracle-20260827-baseline/summary.json
+    path: stable_failed_cases
+    op: "=="
+    value: 0
+  - file: runs/oracle-20260827-baseline/summary.json
+    path: pareto_failed_cases
+    op: "=="
+    value: 0
+  - file: runs/oracle-20260827-baseline/summary.json
+    path: high_precision_failed_cases
+    op: "=="
+    value: 0
+forbidden_claims:
+  - file: reports/T155/result-summary.md
+    when:
+      file: runs/oracle-20260827-baseline/manifest.json
+      path: status
+      equals: fail
+    phrases:
+      - supports gate
+      - passes gate
