@@ -6,14 +6,14 @@ Each row maps a claim or pass/fail-gate bullet from `tasks/T155-exact-finite-res
 
 > "A small structured shared/private multi-task system can provide exact finite-response trajectories, hypergradients, realized loss changes, and high-accuracy Pareto references without claiming to simulate the full behavior of a unified multimodal model."
 
-Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `momentum.py`), hypergradients (`hypergradient.py`), and realized loss changes (`crosscheck.py::exact_loss_change`) exactly in closed form for the linear-quadratic system defined in `docs/theory/oracle-spec.md`. All three are independently cross-checked (state vs. unroll, hypergradient vs. reverse-mode AD, loss-change vs. direct evaluation) and pass at machine precision in 286/288 generated cases. No claim of UMM realism is made anywhere in `docs/theory/oracle-spec.md` or the code; section 1 of the spec explicitly frames this as a mechanism-validation benchmark, matching the frozen protocol's own language.
+Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `momentum.py`), hypergradients (`hypergradient.py`), and realized loss changes (`crosscheck.py::exact_loss_change`) exactly in closed form for the linear-quadratic system defined in `docs/theory/oracle-spec.md`. All three are independently cross-checked (state vs. unroll, hypergradient vs. independently implemented reverse-mode differentiation, loss-change vs. direct evaluation) and pass at machine precision in 286/288 generated cases. No claim of UMM realism is made anywhere in `docs/theory/oracle-spec.md` or the code; section 1 of the spec explicitly frames this as a mechanism-validation benchmark, matching the frozen protocol's own language. No automatic-differentiation library is used anywhere in this implementation (none is available under `pyproject.toml`); every reverse-mode gradient is a hand-coded backward pass over the literal unroll (see §7a of the spec).
 
 ## Pass/fail gate bullets
 
 | Gate bullet | Status | Evidence |
 |---|---|---|
 | Analytic finite-response state matches independently unrolled state, rel <=1e-10 | **Pass**, all 288 cases | `tests/oracle/test_sgd.py`, `tests/oracle/test_momentum.py` (unit level); `manifest.json` `state` check field, every case, typical error ~1e-15/1e-16 |
-| Analytic hypergradient matches full AD, rel <=1e-9 (or abs <=1e-11 near zero) | **Pass**, all 288 cases | `tests/oracle/test_sgd.py::test_hypergradient_matches_reverse_mode_ad` and momentum analogue; `manifest.json` `hypergradient` check field, every case |
+| Analytic hypergradient matches independently implemented reverse-mode differentiation, rel <=1e-9 (or abs <=1e-11 near zero) | **Pass**, all 288 cases | `tests/oracle/test_sgd.py::test_sgd_hypergradient_analytic_matches_reverse_mode` and `tests/oracle/test_momentum.py::test_momentum_hypergradient_analytic_matches_reverse_mode`; `manifest.json` `hypergradient` check field, every case |
 | Central finite-difference directional derivatives match within the preregistered step-size envelope | **Pass**, all required steps in h in [1e-6,1e-2], all cases | `tests/oracle/test_crosscheck_tolerances.py`; `manifest.json` `finite_difference` check field |
 | Direct rerun-response loss changes match the oracle evaluation | **Pass on 286/288 cases; fails on case_index 41 and 287** | `manifest.json` `loss_change` check field; see `failure-ledger.md` |
 | Selectors satisfy the single-lift and no-duplicate-coordinate contract | **Pass**, all 288 cases | `src/comppareto/oracle/selectors.py::validate_selector` (raises `SelectorError` on violation, never raised across the sweep); `tests/oracle/test_selectors.py` |
@@ -36,7 +36,7 @@ Supported. `src/comppareto/oracle/` implements the trajectories (`sgd.py`, `mome
 |---|---|
 | Oracle specification | `docs/theory/oracle-spec.md` |
 | Typed implementation | `src/comppareto/oracle/*.py` |
-| Analytic and numerical references | `src/comppareto/oracle/crosscheck.py`, `hypergradient.py` (reverse-mode AD path) |
+| Analytic and numerical references | `src/comppareto/oracle/crosscheck.py`, `hypergradient.py`, `sgd.py`/`momentum.py` (independently implemented reverse-mode differentiation path) |
 | Unit/property tests | `tests/oracle/` (52 tests) |
 | Resolved configurations | `configs/oracle/baseline.yaml` |
 | Deterministic run manifest | `runs/oracle-20260827-baseline/manifest.json` |

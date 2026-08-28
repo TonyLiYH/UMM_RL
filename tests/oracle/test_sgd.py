@@ -7,8 +7,10 @@ from comppareto.oracle.noise import NoiseModel
 from comppareto.oracle.sgd import (
     sgd_closed_form_state,
     sgd_commit_gradient,
+    sgd_input_jacobian,
     sgd_reverse_mode_gradient,
     sgd_sensitivity,
+    sgd_sensitivity_trajectory,
     sgd_state_jacobian,
     sgd_unroll,
 )
@@ -133,3 +135,33 @@ def test_sgd_state_jacobian_matches_stable_contraction(rng: np.random.Generator)
     eta = 0.5 / np.max(np.linalg.eigvalsh(task.private_curvature))
     m = sgd_state_jacobian(task, eta)
     assert np.max(np.abs(np.linalg.eigvals(m))) < 1.0
+
+
+@pytest.mark.parametrize("p_i,d_i,steps", [(3, 4, 5), (5, 2, 1), (2, 8, 10)])
+def test_sgd_sensitivity_trajectory_final_step_matches_closed_form(
+    rng: np.random.Generator, p_i: int, d_i: int, steps: int
+) -> None:
+    task = make_task(rng, p_i, d_i)
+    eta = 0.05
+
+    trajectory = sgd_sensitivity_trajectory(task, eta, steps)
+    closed_form = sgd_sensitivity(task, eta, steps)
+
+    assert trajectory.shape == (steps + 1, d_i, p_i)
+    assert np.allclose(trajectory[0], np.zeros((d_i, p_i)))
+    rel_err = np.linalg.norm(trajectory[-1] - closed_form) / np.linalg.norm(closed_form)
+    assert rel_err <= STATE_REL_TOL
+
+
+def test_sgd_sensitivity_trajectory_obeys_one_step_recursion(rng: np.random.Generator) -> None:
+    task = make_task(rng, 4, 6)
+    eta = 0.05
+    m = sgd_state_jacobian(task, eta)
+    b = sgd_input_jacobian(task, eta)
+
+    trajectory = sgd_sensitivity_trajectory(task, eta, 6)
+    for k in range(6):
+        rel_err = np.linalg.norm(trajectory[k + 1] - (m @ trajectory[k] + b)) / max(
+            np.linalg.norm(trajectory[k + 1]), 1e-30
+        )
+        assert rel_err <= 1e-12

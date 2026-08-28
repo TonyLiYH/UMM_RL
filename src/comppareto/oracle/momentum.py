@@ -2,8 +2,8 @@
 
 Matches ``docs/theory/oracle-spec.md`` section 5. Mirrors the three
 independent code paths in ``sgd.py`` (literal unroll, analytic closed form
-via matrix powers, hand-coded reverse-mode AD), lifted to the augmented
-state ``u_k = (phi_k, v_k)``.
+via matrix powers, independently implemented reverse-mode differentiation),
+lifted to the augmented state ``u_k = (phi_k, v_k)``.
 """
 
 from __future__ import annotations
@@ -109,6 +109,24 @@ def momentum_sensitivity(task: OracleTask, eta: float, beta: float, steps: int) 
     for l in range(steps):
         w = w + np.linalg.matrix_power(a, l) @ b
     return w
+
+
+def momentum_sensitivity_trajectory(task: OracleTask, eta: float, beta: float, steps: int) -> FloatArray:
+    """The full sensitivity trajectory ``W_0..W_K``, shape ``(steps+1, 2d, p_i)``.
+
+    Forward recursion ``W_0=0``, ``W_{k+1} = A_i W_k + B_k`` (``A_i`` from
+    :func:`momentum_transition_jacobian`, ``B_k`` from
+    :func:`momentum_input_jacobian`), independent of
+    :func:`momentum_sensitivity`'s explicit-matrix-power sum: the two must
+    agree at ``k=steps`` as a cross-check.
+    """
+
+    a = momentum_transition_jacobian(task, eta, beta)
+    b = momentum_input_jacobian(task, eta)
+    trajectory = np.zeros((steps + 1, 2 * task.private_dim, task.shared_dim))
+    for k in range(steps):
+        trajectory[k + 1] = a @ trajectory[k] + b
+    return trajectory
 
 
 def momentum_reverse_mode_gradient(

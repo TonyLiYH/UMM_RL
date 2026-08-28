@@ -10,16 +10,20 @@ Uses only already-declared dependencies (``numpy``, ``PyYAML``) since
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import platform
 import subprocess
+import sys
 import time
 from dataclasses import replace
 from pathlib import Path
 
+import numpy
 import yaml
 
 from comppareto.oracle.case import CaseSpec, run_case
-from comppareto.oracle.manifest import case_record
+from comppareto.oracle.manifest import build_run_manifest, case_record
 
 COVERAGE_ATTRS = ("family", "optimizer", "horizon", "stability_regime")
 
@@ -124,6 +128,26 @@ def _git_head(repo_root: Path) -> str:
     ).stdout.strip()
 
 
+def _git_dirty(repo_root: Path) -> bool:
+    status = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=repo_root, capture_output=True, text=True, check=True
+    ).stdout
+    return bool(status.strip())
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _environment_snapshot() -> dict[str, str]:
+    return {
+        "python_version": platform.python_version(),
+        "numpy_version": numpy.__version__,
+        "platform": platform.platform(),
+        "executable": sys.executable,
+    }
+
+
 def run_sweep(config: dict, source_revision: str) -> dict:
     cases = enumerate_cases(config)
     full_coverage = {attr: set() for attr in COVERAGE_ATTRS}
@@ -183,7 +207,7 @@ def run_sweep(config: dict, source_revision: str) -> dict:
         "detailed_subset_coverage_gaps": coverage_gaps,
         "elapsed_seconds": elapsed,
     }
-    return {"manifest": records, "summary": summary, "failures": failures}
+    return {"case_records": records, "summary": summary, "failures": failures}
 
 
 def main() -> None:
@@ -191,23 +215,60 @@ def main() -> None:
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--source-revision", type=str, default=None)
+    parser.add_argument("--run-id", type=str, default=None)
     args = parser.parse_args()
 
     with open(args.config) as f:
         config = yaml.safe_load(f)
 
     repo_root = Path(__file__).resolve().parents[3]
-    source_revision = args.source_revision or _git_head(repo_root)
+    execution_revision = _git_head(repo_root)
+    source_revision = args.source_revision or execution_revision
+    dirty = _git_dirty(repo_root)
+    config_sha256 = _sha256_file(args.config)
 
     outcome = run_sweep(config, source_revision)
 
     args.out.mkdir(parents=True, exist_ok=True)
+    written = {
+        "case-records.json": outcome["case_records"],
+        "summary.json": outcome["summary"],
+        "failure_ledger.json": outcome["failures"],
+    }
+    for name, payload in written.items():
+        with open(args.out / name, "w") as f:
+            json.dump(payload, f, indent=2)
+
+    result_files = [str((args.out / name).relative_to(repo_root)) for name in written]
+    artifacts = [
+        {
+            "artifact_id": Path(name).stem,
+            "kind": "oracle-run-artifact",
+            "canonical_uri": str((args.out / name).relative_to(repo_root)),
+            "sha256": _sha256_file(args.out / name),
+            "bytes": (args.out / name).stat().st_size,
+        }
+        for name in written
+    ]
+    status = "pass" if outcome["summary"]["failed_cases"] == 0 else "fail"
+    run_id = args.run_id or args.out.name
+
+    manifest = build_run_manifest(
+        run_id=run_id,
+        task_id="T155",
+        run_kind="formal" if not dirty else "diagnostic",
+        source_revision=source_revision,
+        execution_revision=execution_revision,
+        dirty=dirty,
+        config_sha256=config_sha256,
+        environment=_environment_snapshot(),
+        status=status,
+        result_files=result_files,
+        artifacts=artifacts,
+        retry=None,
+    )
     with open(args.out / "manifest.json", "w") as f:
-        json.dump(outcome["manifest"], f, indent=2)
-    with open(args.out / "summary.json", "w") as f:
-        json.dump(outcome["summary"], f, indent=2)
-    with open(args.out / "failure_ledger.json", "w") as f:
-        json.dump(outcome["failures"], f, indent=2)
+        json.dump(manifest, f, indent=2)
 
     print(json.dumps(outcome["summary"], indent=2))
 

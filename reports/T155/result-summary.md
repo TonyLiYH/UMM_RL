@@ -26,7 +26,7 @@ Task: `tasks/T155-exact-finite-response-oracle.md`. Branch: `agent/T155-exact-or
 | Check | Tolerance | Result |
 |---|---|---|
 | analytic state vs. independent unroll | rel <=1e-10 | pass on every task in every case (typical error ~1e-15 to 1e-16) |
-| analytic hypergradient vs. hand-coded reverse-mode AD | rel <=1e-9 | pass on every task in every case (typical error ~1e-15 to 1e-16) |
+| analytic hypergradient vs. independently implemented reverse-mode differentiation | rel <=1e-9 | pass on every task in every case (typical error ~1e-15 to 1e-16) |
 | central finite-difference directional derivative, h in [1e-6, 1e-2] | rel <=1e-6 | pass on every task in every case within the required envelope |
 | exact quadratic loss-change identity vs. direct evaluation | rel <=1e-9 | pass except the 2 tasks in the 2 failing cases (see failure-ledger.md) |
 

@@ -18,12 +18,21 @@ from numpy.typing import NDArray
 
 from comppareto.oracle import crosscheck as cc
 from comppareto.oracle import generation as gen
+from comppareto.oracle import hypergradient as hg
+from comppareto.oracle import pareto
+from comppareto.oracle import sgd
 from comppareto.oracle import stability as st
-from comppareto.oracle.momentum import momentum_transition_jacobian
+from comppareto.oracle.momentum import (
+    momentum_closed_form_state,
+    momentum_input_jacobian,
+    momentum_sensitivity,
+    momentum_sensitivity_trajectory,
+    momentum_transition_jacobian,
+    momentum_unroll,
+)
 from comppareto.oracle.noise import NoiseModel
 from comppareto.oracle.seeds import CaseSeeds, case_seeds
 from comppareto.oracle.selectors import BlockLayout, GraphFamily, build_incidence
-from comppareto.oracle.sgd import sgd_state_jacobian
 
 FloatArray = NDArray[np.float64]
 
@@ -81,6 +90,7 @@ class CaseResult:
     gradient_cosine_realized: float | None
     gradient_scale_realized: float | None
     tasks: tuple[TaskCaseResult, ...]
+    pareto_reference: dict
 
     @property
     def all_passed(self) -> bool:
@@ -116,6 +126,8 @@ def run_case(spec: CaseSpec) -> CaseResult:
         gradient_scale_target=spec.gradient_scale_target,
     )
     per_task_results = []
+    task_selectors: list[FloatArray] = []
+    task_local_gradients: list[FloatArray] = []
     for i, task in enumerate(tasks):
         p_i = task.shared_dim
         x_i = seeds.gradient.standard_normal(p_i)
@@ -123,13 +135,47 @@ def run_case(spec: CaseSpec) -> CaseResult:
         probe = seeds.probe_direction.standard_normal(p_i)
         probe /= np.linalg.norm(probe)
         step = 0.01 * seeds.probe_direction.standard_normal(p_i)
+        d = task.private_dim
 
         if spec.optimizer == "sgd":
             eigs_c = np.linalg.eigvalsh(task.private_curvature)
             eta, target_rho = st.sgd_eta_for_regime(eigs_c, spec.stability_regime, seeds.noise)
             noise = noise_model.sample(seeds.noise, spec.horizon, task.private_dim)
             checks = cc.check_sgd_case(task, x_i, phi_0, eta, noise, probe, step)
-            realized_actual = st.spectral_radius(sgd_state_jacobian(task, eta))
+            realized_actual = st.spectral_radius(sgd.sgd_state_jacobian(task, eta))
+
+            # analytic_grad/q_i_k duplicate crosscheck.check_sgd_case's internal
+            # computation rather than changing its return type, per the standing
+            # decision to keep that already-tested function's signature stable.
+            phi_k_closed = sgd.sgd_closed_form_state(task, x_i, phi_0, eta, noise)
+            z_k = sgd.sgd_sensitivity(task, eta, spec.horizon)
+            analytic_grad = hg.rerun_gradient(task, x_i, phi_k_closed, z_k)
+            r_k = sgd.sgd_closed_form_state(task, np.zeros_like(x_i), phi_0, eta, noise)
+            _, q_i_k = hg.quadratic_model(task, z_k, r_k)
+
+            detail = None
+            if spec.keep_full_detail:
+                phi_trajectory = sgd.sgd_unroll(task, x_i, phi_0, eta, noise)
+                z_trajectory = sgd.sgd_sensitivity_trajectory(task, eta, spec.horizon)
+                j_k = sgd.sgd_state_jacobian(task, eta)
+                b_k = sgd.sgd_input_jacobian(task, eta)
+                detail = {
+                    "x_i": x_i.tolist(),
+                    "phi_0": phi_0.tolist(),
+                    "noise": noise.tolist(),
+                    "state_trajectory": {"phi": phi_trajectory.tolist()},
+                    "per_step_jacobians": {
+                        "J_k": np.repeat(j_k[np.newaxis], spec.horizon, axis=0).tolist(),
+                        "B_k": np.repeat(b_k[np.newaxis], spec.horizon, axis=0).tolist(),
+                    },
+                    "sensitivity_trajectory": {"Z": z_trajectory.tolist()},
+                    "exact_local_gradient": analytic_grad.tolist(),
+                    "Q_i_K": q_i_k.tolist(),
+                    "selector": task.selector.tolist(),
+                    "selector_hash": selector_hash(task.selector),
+                    "case_index": spec.case_index,
+                    "task_index": i,
+                }
         elif spec.optimizer == "momentum":
             beta = spec.beta if spec.beta is not None else 0.9
             eta, target_rho = st.momentum_eta_for_regime(task, beta, spec.stability_regime, seeds.noise)
@@ -137,12 +183,43 @@ def run_case(spec: CaseSpec) -> CaseResult:
             v_0 = seeds.gradient.standard_normal(task.private_dim)
             checks = cc.check_momentum_case(task, x_i, phi_0, v_0, eta, beta, noise, probe, step)
             realized_actual = st.spectral_radius(momentum_transition_jacobian(task, eta, beta))
+
+            phi_k_closed, v_k_closed = momentum_closed_form_state(task, x_i, phi_0, v_0, eta, beta, noise)
+            w_k = momentum_sensitivity(task, eta, beta, spec.horizon)
+            z_k_phi = w_k[:d]
+            analytic_grad = hg.rerun_gradient(task, x_i, phi_k_closed, z_k_phi)
+            r_k_phi, _ = momentum_closed_form_state(task, np.zeros_like(x_i), phi_0, v_0, eta, beta, noise)
+            _, q_i_k = hg.quadratic_model(task, z_k_phi, r_k_phi)
+
+            detail = None
+            if spec.keep_full_detail:
+                phi_trajectory, v_trajectory = momentum_unroll(task, x_i, phi_0, v_0, eta, beta, noise)
+                w_trajectory = momentum_sensitivity_trajectory(task, eta, beta, spec.horizon)
+                a_k = momentum_transition_jacobian(task, eta, beta)
+                b_k = momentum_input_jacobian(task, eta)
+                detail = {
+                    "x_i": x_i.tolist(),
+                    "phi_0": phi_0.tolist(),
+                    "v_0": v_0.tolist(),
+                    "noise": noise.tolist(),
+                    "state_trajectory": {"phi": phi_trajectory.tolist(), "v": v_trajectory.tolist()},
+                    "per_step_jacobians": {
+                        "J_k": np.repeat(a_k[np.newaxis], spec.horizon, axis=0).tolist(),
+                        "B_k": np.repeat(b_k[np.newaxis], spec.horizon, axis=0).tolist(),
+                    },
+                    "sensitivity_trajectory": {"W": w_trajectory.tolist()},
+                    "exact_local_gradient": analytic_grad.tolist(),
+                    "Q_i_K": q_i_k.tolist(),
+                    "selector": task.selector.tolist(),
+                    "selector_hash": selector_hash(task.selector),
+                    "case_index": spec.case_index,
+                    "task_index": i,
+                }
         else:  # pragma: no cover - exhaustive Literal
             raise ValueError(f"unknown optimizer {spec.optimizer!r}")
 
-        detail = None
-        if spec.keep_full_detail:
-            detail = {"x_i": x_i.tolist(), "phi_0": phi_0.tolist(), "noise": noise.tolist()}
+        task_selectors.append(task.selector)
+        task_local_gradients.append(analytic_grad)
 
         per_task_results.append(
             TaskCaseResult(
@@ -160,6 +237,11 @@ def run_case(spec: CaseSpec) -> CaseResult:
             )
         )
 
+    # R3: independent exact/high-accuracy common-descent (Pareto) reference
+    # over the tasks' real lifted exact rerun-response gradients (spec §6),
+    # not random probe directions -- see comppareto.oracle.pareto.
+    pareto_reference = pareto.case_pareto_reference(task_selectors, task_local_gradients)
+
     return CaseResult(
         spec=spec,
         incidence_hash=incidence_hash,
@@ -167,4 +249,5 @@ def run_case(spec: CaseSpec) -> CaseResult:
         gradient_cosine_realized=diagnostics.gradient_cosine_realized,
         gradient_scale_realized=diagnostics.gradient_scale_realized,
         tasks=tuple(per_task_results),
+        pareto_reference=pareto_reference,
     )

@@ -7,8 +7,10 @@ from comppareto.oracle.noise import NoiseModel
 from comppareto.oracle.momentum import (
     momentum_closed_form_state,
     momentum_commit_gradient,
+    momentum_input_jacobian,
     momentum_reverse_mode_gradient,
     momentum_sensitivity,
+    momentum_sensitivity_trajectory,
     momentum_transition_jacobian,
     momentum_unroll,
 )
@@ -157,3 +159,33 @@ def test_momentum_transition_jacobian_stable_contraction(rng: np.random.Generato
 
     result = minimize_scalar(rho, bounds=(1e-8, 2.0 / lam_max), method="bounded")
     assert result.fun < 1.0
+
+
+@pytest.mark.parametrize("p_i,d_i,steps,beta", [(3, 4, 5, 0.9), (5, 2, 1, 0.5), (2, 8, 10, 0.9)])
+def test_momentum_sensitivity_trajectory_final_step_matches_closed_form(
+    rng: np.random.Generator, p_i: int, d_i: int, steps: int, beta: float
+) -> None:
+    task = make_task(rng, p_i, d_i)
+    eta = 0.05
+
+    trajectory = momentum_sensitivity_trajectory(task, eta, beta, steps)
+    closed_form = momentum_sensitivity(task, eta, beta, steps)
+
+    assert trajectory.shape == (steps + 1, 2 * d_i, p_i)
+    assert np.allclose(trajectory[0], np.zeros((2 * d_i, p_i)))
+    rel_err = np.linalg.norm(trajectory[-1] - closed_form) / np.linalg.norm(closed_form)
+    assert rel_err <= STATE_REL_TOL
+
+
+def test_momentum_sensitivity_trajectory_obeys_one_step_recursion(rng: np.random.Generator) -> None:
+    task = make_task(rng, 4, 6)
+    eta, beta = 0.05, 0.9
+    a = momentum_transition_jacobian(task, eta, beta)
+    b = momentum_input_jacobian(task, eta)
+
+    trajectory = momentum_sensitivity_trajectory(task, eta, beta, 6)
+    for k in range(6):
+        rel_err = np.linalg.norm(trajectory[k + 1] - (a @ trajectory[k] + b)) / max(
+            np.linalg.norm(trajectory[k + 1]), 1e-30
+        )
+        assert rel_err <= 1e-12

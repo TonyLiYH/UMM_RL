@@ -8,9 +8,9 @@ paths are provided so cross-checks are meaningful:
 - :func:`sgd_closed_form_state` / :func:`sgd_sensitivity` are the analytic
   closed forms, built from matrix powers and a geometric-series identity,
   never from the step-by-step loop;
-- :func:`sgd_reverse_mode_gradient` is a hand-coded reverse-mode
-  differentiation over the literal unroll's stored trajectory (the "full
-  automatic differentiation" reference), independent of the forward
+- :func:`sgd_reverse_mode_gradient` is an independently implemented
+  reverse-mode differentiation over the literal unroll's stored trajectory
+  (the hand-coded reverse-mode reference), independent of the forward
   sensitivity recursion above.
 """
 
@@ -83,6 +83,23 @@ def sgd_sensitivity(task: OracleTask, eta: float, steps: int) -> FloatArray:
     c = task.private_curvature
     m_k = np.linalg.matrix_power(m, steps)
     return -np.linalg.solve(c, (np.eye(d) - m_k)) @ task.h_phix
+
+
+def sgd_sensitivity_trajectory(task: OracleTask, eta: float, steps: int) -> FloatArray:
+    """The full sensitivity trajectory ``Z_0..Z_K``, shape ``(steps+1, d, p_i)``.
+
+    Forward recursion ``Z_0=0``, ``Z_{k+1} = M_i Z_k + B_k`` (``M_i`` from
+    :func:`sgd_state_jacobian`, ``B_k`` from :func:`sgd_input_jacobian`),
+    independent of :func:`sgd_sensitivity`'s closed-form geometric-series
+    shortcut: the two must agree at ``k=steps`` as a cross-check.
+    """
+
+    m = sgd_state_jacobian(task, eta)
+    b = sgd_input_jacobian(task, eta)
+    trajectory = np.zeros((steps + 1, task.private_dim, task.shared_dim))
+    for k in range(steps):
+        trajectory[k + 1] = m @ trajectory[k] + b
+    return trajectory
 
 
 def sgd_reverse_mode_gradient(
