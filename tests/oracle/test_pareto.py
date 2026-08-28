@@ -4,10 +4,16 @@ import numpy as np
 import pytest
 
 from comppareto.oracle.pareto import (
+    COMBINED_GRADIENT_REL_TOL,
+    KKT_RESIDUAL_REL_TOL,
+    OBJECTIVE_GAP_REL_TOL,
+    SIMPLEX_FEASIBILITY_ABS_TOL,
+    WEIGHT_NONNEGATIVITY_ABS_TOL,
     case_pareto_reference,
     lift_gradient,
     min_norm_point_active_set,
     min_norm_point_frank_wolfe,
+    min_norm_point_scipy_qp,
 )
 from comppareto.oracle.selectors import BlockLayout, build_incidence, build_task_selectors
 
@@ -132,3 +138,66 @@ def test_case_pareto_reference_reports_small_cross_check_error(rng: np.random.Ge
     assert summary["frank_wolfe"]["kkt_residual"] <= FW_KKT_TOL
     scale = max(np.linalg.norm(summary["active_set"]["combined_gradient"]), 1e-12)
     assert summary["cross_check_error"] / scale <= CROSS_CHECK_REL_TOL
+
+
+@pytest.mark.parametrize(
+    "family,num_tasks",
+    [
+        ("disjoint", 3),
+        ("partial", 4),
+        ("full_overlap", 3),
+        ("star", 4),
+        ("chain", 5),
+        ("random_sparse", 4),
+    ],
+)
+def test_scipy_qp_matches_active_set_across_families(
+    rng: np.random.Generator, family: str, num_tasks: int
+) -> None:
+    # R8: the gate-visible independent cross-check must be a genuinely
+    # different solver path (scipy.optimize.minimize/SLSQP), not Frank-Wolfe,
+    # and must agree with the exact active-set reference far more tightly
+    # than Frank-Wolfe does (CROSS_CHECK_REL_TOL above) on the same families.
+    layout = BlockLayout(tuple([3] * 9))
+    inc = build_incidence(family, num_tasks, layout.num_blocks, rng)
+    selectors = build_task_selectors(layout, inc)
+    local_grads = [rng.standard_normal(sel.shape[0]) for sel in selectors]
+    lifted = [lift_gradient(p, g) for p, g in zip(selectors, local_grads)]
+
+    exact = min_norm_point_active_set(lifted)
+    scipy_ref = min_norm_point_scipy_qp(lifted)
+
+    scale = max(float(np.max([np.dot(v, v) for v in lifted])), 1.0)
+    assert abs(float(np.sum(scipy_ref.weights)) - 1.0) <= SIMPLEX_FEASIBILITY_ABS_TOL
+    assert float(np.min(scipy_ref.weights)) >= -WEIGHT_NONNEGATIVITY_ABS_TOL
+    assert scipy_ref.kkt_residual / scale <= KKT_RESIDUAL_REL_TOL
+    assert abs(scipy_ref.objective - exact.objective) / scale <= OBJECTIVE_GAP_REL_TOL
+    combined_gradient_discrepancy = np.linalg.norm(
+        scipy_ref.combined_gradient - exact.combined_gradient
+    ) / (scale**0.5)
+    assert combined_gradient_discrepancy <= COMBINED_GRADIENT_REL_TOL
+
+
+def test_case_pareto_reference_independent_check_passes_and_gates(rng: np.random.Generator) -> None:
+    layout = BlockLayout(tuple([3] * 9))
+    inc = build_incidence("partial", 4, layout.num_blocks, rng)
+    selectors = build_task_selectors(layout, inc)
+    local_grads = [rng.standard_normal(sel.shape[0]) for sel in selectors]
+
+    summary = case_pareto_reference(selectors, local_grads)
+
+    assert "scipy_qp" in summary
+    assert "independent_check" in summary
+    ic = summary["independent_check"]
+    for key in (
+        "simplex_feasibility_residual",
+        "weight_nonnegativity_residual",
+        "kkt_residual_normalized",
+        "objective_gap",
+        "combined_gradient_discrepancy",
+        "thresholds",
+        "all_passed",
+    ):
+        assert key in ic
+    assert ic["all_passed"] is True
+    assert summary["all_passed"] is True

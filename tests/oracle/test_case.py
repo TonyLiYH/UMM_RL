@@ -228,6 +228,28 @@ def test_case_result_pareto_reference_uses_real_task_selectors_and_gradients(opt
     )
 
 
+def test_case_result_all_passed_gates_on_pareto_independent_check() -> None:
+    # R8 (second local review): "a stored pareto_reference without a passing
+    # independent check is insufficient" -- CaseResult.all_passed must flip
+    # to False if the Pareto independent_check fails, even when every task's
+    # own checks pass.
+    from comppareto.oracle.case import run_case
+
+    spec = _first_case("momentum")
+    result = run_case(spec)
+    assert all(t.checks.all_passed for t in result.tasks)
+    assert result.pareto_reference["independent_check"]["all_passed"] is True
+    assert result.all_passed is True
+
+    broken_pareto_reference = dict(result.pareto_reference)
+    broken_pareto_reference["independent_check"] = dict(result.pareto_reference["independent_check"])
+    broken_pareto_reference["independent_check"]["all_passed"] = False
+    broken_result = replace(result, pareto_reference=broken_pareto_reference)
+
+    assert all(t.checks.all_passed for t in broken_result.tasks)
+    assert broken_result.all_passed is False
+
+
 def test_case_record_serializes_detail_and_pareto_reference_round_trip() -> None:
     from comppareto.oracle.case import run_case
 

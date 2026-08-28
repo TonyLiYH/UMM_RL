@@ -13,6 +13,7 @@ from comppareto.oracle.highprecision import (
     quadratic_model_hp,
     recheck_known_failures,
     recheck_momentum_loss_change,
+    recheck_momentum_loss_change_decimal,
     reconstruct_task_inputs,
     rerun_gradient_hp,
     sensitivity_hp,
@@ -80,20 +81,25 @@ def test_recheck_momentum_loss_change_reports_all_fields(
 
     report = recheck_momentum_loss_change(task, x_i, phi_0, v_0, eta, beta, noise, step)
 
-    for key in ("float64", "longdouble", "forward_error_vs_float64", "conditioning"):
+    for key in ("float64", "longdouble", "decimal", "forward_error_vs_float64", "conditioning", "trajectory_amplification"):
         assert key in report
     for key in ("exact_delta", "direct_delta", "absolute_error", "relative_error"):
         assert key in report["float64"]
         assert key in report["longdouble"]
+        assert key in report["decimal"]
+    for key in ("precision_digits", "term_grad_dot_step", "term_half_step_q_step", "baseline_loss_magnitude"):
+        assert key in report["decimal"]
     for key in ("cond_q", "cancellation_ratio", "term_grad_dot_step", "term_half_step_q_step"):
         assert key in report["conditioning"]
     assert isinstance(report["pure_cancellation"], bool)
+    assert report["decimal"]["precision_digits"] >= 80
 
     # Every reported scalar must be finite and JSON-serializable as a plain float.
     json.dumps(report)
-    for section in ("float64", "longdouble"):
+    for section in ("float64", "longdouble", "decimal"):
         for value in report[section].values():
             assert np.isfinite(value)
+    assert np.isfinite(report["trajectory_amplification"])
 
 
 @pytest.mark.parametrize("case_index,task_index", KNOWN_FAILURES)
@@ -113,22 +119,92 @@ def test_longdouble_recheck_does_not_relax_the_frozen_tolerance(
 
 
 @pytest.mark.parametrize("case_index,task_index", KNOWN_FAILURES)
-def test_longdouble_pipeline_is_self_consistent_at_extended_precision(
+def test_longdouble_pipeline_reports_finite_diagnostic_values(
     run_config: dict, case_index: int, task_index: int
 ) -> None:
-    # The longdouble mirror should satisfy its own exact-loss-change identity
-    # far tighter than the float64 pipeline does, since it is not subject to
-    # the same catastrophic cancellation -- this is the independent evidence
-    # R5 asks for, without touching the frozen float64 ledger entry.
+    # R7 (second local review): numpy.longdouble's width is platform-dependent
+    # (e.g. 80-bit x86 extended on some hosts, identical to float64 on
+    # others), so it can no longer be asserted to strictly beat float64's
+    # relative error -- that assertion previously failed on a narrower-
+    # longdouble host. It remains a useful secondary diagnostic (reported
+    # alongside float64 and the platform-independent Decimal reference below)
+    # but is no longer the authoritative independent check.
     specs = {spec.case_index: spec for spec in enumerate_cases(run_config)}
     spec = specs[case_index]
     task, x_i, phi_0, v_0, eta, beta, noise, step = reconstruct_task_inputs(spec, task_index)
 
     report = recheck_momentum_loss_change(task, x_i, phi_0, v_0, eta, beta, noise, step)
 
-    assert report["longdouble"]["relative_error"] < report["float64"]["relative_error"]
+    assert np.isfinite(report["longdouble"]["relative_error"])
     assert report["conditioning"]["cond_q"] > 0
     assert report["conditioning"]["cancellation_ratio"] >= 1.0
+
+
+@pytest.mark.parametrize("case_index,task_index", KNOWN_FAILURES)
+def test_decimal_pipeline_establishes_pure_cancellation_for_known_failures(
+    run_config: dict, case_index: int, task_index: int
+) -> None:
+    # R7's authoritative independent reference: a platform-independent
+    # Decimal(precision>=80) reconstruction, built from exactly represented
+    # float64 inputs via a fully independent code path (literal-recurrence
+    # mirrors of momentum_unroll/momentum_sensitivity_trajectory, not the
+    # matrix-power closed form and not a cast of an already-computed
+    # float64/longdouble result). Its relative error must be dramatically
+    # smaller than float64's -- by orders of magnitude, not just "smaller" --
+    # to count as evidence of pure catastrophic cancellation rather than a
+    # formula/implementation mismatch (which R7 requires be fixed in the
+    # implementation, not the test, if it did not shrink this much).
+    specs = {spec.case_index: spec for spec in enumerate_cases(run_config)}
+    spec = specs[case_index]
+    task, x_i, phi_0, v_0, eta, beta, noise, step = reconstruct_task_inputs(spec, task_index)
+
+    report = recheck_momentum_loss_change(task, x_i, phi_0, v_0, eta, beta, noise, step)
+
+    assert report["decimal"]["precision_digits"] >= 80
+    assert report["decimal"]["relative_error"] < report["float64"]["relative_error"] / 100.0
+    assert report["pure_cancellation"] is True
+    assert report["trajectory_amplification"] > 0
+
+
+def test_decimal_pipeline_matches_float64_pipeline_on_a_well_conditioned_case(
+    rng: np.random.Generator,
+) -> None:
+    # Formula-correctness sanity check for the independent Decimal pipeline
+    # (used above for the two known extended-precision-failure cases) against
+    # the already-tested float64 pipeline, on a well-conditioned synthetic
+    # case where no catastrophic cancellation occurs -- confirms the Decimal
+    # mirror reproduces the same identity, not merely that it runs at higher
+    # precision.
+    from tests.oracle._helpers import make_task
+
+    task = make_task(rng, 3, 4)
+    eta, beta, steps = 0.05, 0.9, 5
+    x_i = rng.standard_normal(3)
+    phi_0 = rng.standard_normal(4)
+    v_0 = rng.standard_normal(4)
+    noise = 0.05 * rng.standard_normal((steps, 4))
+    step = 0.02 * rng.standard_normal(3)
+
+    d = task.private_dim
+    phi_k, _ = momentum_closed_form_state(task, x_i, phi_0, v_0, eta, beta, noise)
+    w_k = momentum_sensitivity(task, eta, beta, steps)
+    z_k_phi = w_k[:d]
+    r_k_phi, _ = momentum_closed_form_state(task, np.zeros_like(x_i), phi_0, v_0, eta, beta, noise)
+    _, q = quadratic_model(task, z_k_phi, r_k_phi)
+    grad = rerun_gradient(task, x_i, phi_k, z_k_phi)
+    exact_delta_f64 = exact_loss_change(grad, q, step)
+
+    def direct_loss(xi: np.ndarray) -> float:
+        phi_k_, _ = momentum_closed_form_state(task, xi, phi_0, v_0, eta, beta, noise)
+        return task.meta_loss(xi, phi_k_)
+
+    direct_delta_f64 = direct_loss(x_i + step) - direct_loss(x_i)
+
+    report = recheck_momentum_loss_change_decimal(task, x_i, phi_0, v_0, eta, beta, noise, step)
+
+    assert abs(report["exact_delta"] - exact_delta_f64) / abs(exact_delta_f64) <= 1e-9
+    assert abs(report["direct_delta"] - direct_delta_f64) / abs(direct_delta_f64) <= 1e-9
+    assert report["relative_error"] < 1e-15
 
 
 def test_recheck_known_failures_covers_both_ledger_entries(run_config: dict) -> None:

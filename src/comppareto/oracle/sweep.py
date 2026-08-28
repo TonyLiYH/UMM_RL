@@ -197,17 +197,57 @@ def run_sweep(config: dict, source_revision: str) -> dict:
     coverage_gaps = {attr: sorted(full_coverage[attr] - achieved_coverage[attr]) for attr in COVERAGE_ATTRS}
     coverage_gaps = {k: v for k, v in coverage_gaps.items() if v}
 
+    # Per the task's pass/fail gate ("For every accepted stable seeded
+    # case: ... all failed or unstable seeds remain in the ledger"), only
+    # stable-regime failures block acceptance; unstable-regime failures are
+    # permitted provided they are explained (see high_precision_failed_cases
+    # below) rather than unexplained/systematic.
+    stable_failed_cases = sum(1 for f in failures if f["stability_regime"] == "stable")
+
+    # R8 (second local review): the independent SciPy-SLSQP Pareto
+    # cross-check (pareto.case_pareto_reference's "independent_check") must
+    # be represented in run status, counted separately from other per-task
+    # check failures.
+    pareto_failed_cases = sum(
+        1 for r in records if not r["pareto_reference"]["independent_check"]["all_passed"]
+    )
+
+    # R7: every known float64 tolerance failure must be confirmed as pure
+    # floating-point cancellation (not a formula/implementation mismatch) by
+    # the independent Decimal(precision=100) reference; any failure that is
+    # not confirmed counts here and blocks a "pass" run status.
+    #
+    # Imported locally: highprecision.py imports enumerate_cases from this
+    # module for its own case reconstruction, so a module-level import here
+    # would be circular.
+    from comppareto.oracle.highprecision import recheck_known_failures
+
+    high_precision_report = recheck_known_failures(config)
+    high_precision_failed_cases = sum(
+        1 for entry in high_precision_report.values() if not entry["pure_cancellation"]
+    )
+
     summary = {
         "config_seed": config["config_seed"],
         "source_revision": source_revision,
         "total_cases": len(cases),
         "passed_cases": sum(1 for r in records if r["all_passed"]),
         "failed_cases": len(failures),
+        "stable_failed_cases": stable_failed_cases,
+        "pareto_failed_cases": pareto_failed_cases,
+        "high_precision_failed_cases": high_precision_failed_cases,
         "detailed_subset": sorted(detailed_indices),
         "detailed_subset_coverage_gaps": coverage_gaps,
         "elapsed_seconds": elapsed,
     }
-    return {"case_records": records, "summary": summary, "failures": failures}
+    return {
+        "case_records": records,
+        "summary": summary,
+        "failures": failures,
+        "high_precision_report": {
+            str(case_index): entry for case_index, entry in high_precision_report.items()
+        },
+    }
 
 
 def main() -> None:
@@ -235,6 +275,7 @@ def main() -> None:
         "case-records.json": outcome["case_records"],
         "summary.json": outcome["summary"],
         "failure_ledger.json": outcome["failures"],
+        "high_precision_recheck.json": outcome["high_precision_report"],
     }
     for name, payload in written.items():
         with open(args.out / name, "w") as f:
@@ -251,7 +292,17 @@ def main() -> None:
         }
         for name in written
     ]
-    status = "pass" if outcome["summary"]["failed_cases"] == 0 else "fail"
+    # Per the task's pass/fail gate, only stable-case failures, an unexplained
+    # (non-pure-cancellation) high-precision recheck, or an independent Pareto
+    # cross-check failure block a "pass" run status; documented, explained
+    # unstable-regime tolerance failures remain in the ledger without blocking.
+    status = (
+        "pass"
+        if outcome["summary"]["stable_failed_cases"] == 0
+        and outcome["summary"]["pareto_failed_cases"] == 0
+        and outcome["summary"]["high_precision_failed_cases"] == 0
+        else "fail"
+    )
     run_id = args.run_id or args.out.name
 
     manifest = build_run_manifest(

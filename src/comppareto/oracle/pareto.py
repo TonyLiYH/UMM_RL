@@ -5,18 +5,30 @@ lifted into the shared theta-space via each task's selector ``P_i``
 (:mod:`comppareto.oracle.selectors`). Given the ``m`` lifted gradients
 ``g_1,...,g_m`` in ``R^P``, this module finds the minimum-norm point in their
 convex hull -- the classical multiple-gradient common-descent direction
-(Desideri 2012 / Sener & Koltun 2018) -- by two independent methods:
+(Desideri 2012 / Sener & Koltun 2018) -- by three independent methods:
 
 (a) :func:`min_norm_point_active_set` -- exact active-set enumeration. For
     ``m<=8`` this enumerates every candidate active subset, solves the
     linear KKT system on that subset exactly, and checks feasibility and
-    optimality, giving the exact global optimum of the convex QP;
-(b) :func:`min_norm_point_frank_wolfe` -- an iterative conditional-gradient
-    solver with a closed-form exact line search (the objective is
-    quadratic), converged to a tight tolerance, as an independent numerical
-    cross-check of (a) that does not solve any linear system.
+    optimality, giving the exact global optimum of the convex QP. This is
+    the authoritative reference every other method is checked against;
+(b) :func:`min_norm_point_scipy_qp` -- an independent constrained-QP solve
+    via ``scipy.optimize.minimize`` (SLSQP), a genuinely different solver
+    path (already a declared dependency, used elsewhere in this task for
+    ``stability.py``'s bisection/bounded minimization) that never enumerates
+    subsets or forms the same KKT linear system as (a). R8
+    (``reports/T155/local-review.md`` second review) requires this as the
+    gate-visible independent cross-check: a case's Pareto reference is only
+    accepted if this solver's simplex feasibility, KKT residual, objective
+    gap, and combined-gradient discrepancy against (a) all clear
+    preregistered scale-aware thresholds (below);
+(c) :func:`min_norm_point_frank_wolfe` -- an iterative conditional-gradient
+    solver with a closed-form exact line search, retained as an optional
+    diagnostic per R8 -- it is reported but, since local audit found it does
+    not reliably converge to high accuracy on this oracle's gradient-scale
+    range, it is *not* part of the pass/fail gate.
 
-Both report the same optimality certificate: the KKT residual
+All three report the same optimality certificate: the KKT residual
 ``max(0, mu - min_i g_i . w)`` (should be ~0 at the optimum) and the
 active-set consistency ``max_i in active |g_i . w - mu|``, where ``w`` is the
 candidate min-norm point and ``mu = ||w||^2``.
@@ -34,8 +46,25 @@ from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
+from scipy.optimize import minimize
 
 FloatArray = NDArray[np.float64]
+
+# R8: preregistered, scale-aware acceptance thresholds for the independent
+# SciPy-QP cross-check against the exact active-set reference. "Scale-aware"
+# means every residual with squared-gradient units is normalized by
+# ``scale = max(||g_i||^2, 1.0)`` and every residual with gradient units is
+# normalized by ``sqrt(scale)`` before comparison against these dimensionless
+# tolerances -- required because this oracle's gradient magnitudes range over
+# many orders across cases (the same reason ``min_norm_point_frank_wolfe``'s
+# convergence tolerance below is scale-relative, and why an earlier absolute-
+# residual gate on the active-set method itself was found to spuriously
+# reject the correct answer on large-Gram-magnitude cases).
+SIMPLEX_FEASIBILITY_ABS_TOL = 1e-6
+WEIGHT_NONNEGATIVITY_ABS_TOL = 1e-6
+KKT_RESIDUAL_REL_TOL = 1e-6
+OBJECTIVE_GAP_REL_TOL = 1e-6
+COMBINED_GRADIENT_REL_TOL = 1e-6
 
 
 def lift_gradient(selector: FloatArray, local_gradient: FloatArray) -> FloatArray:
@@ -219,38 +248,156 @@ def min_norm_point_frank_wolfe(
     )
 
 
-def case_pareto_reference(selectors: Sequence[FloatArray], local_gradients: Sequence[FloatArray]) -> dict:
-    """Lift each task's local gradient and cross-check both min-norm-point solvers.
+def min_norm_point_scipy_qp(
+    gradients: Sequence[FloatArray], *, max_iterations: int = 2000, tolerance: float = 1e-18
+) -> ParetoReference:
+    """Independent constrained-QP cross-check via ``scipy.optimize.minimize`` (SLSQP).
 
-    Returns a plain-dict summary (weights, combined direction, objective,
-    KKT residuals for both methods, and the disagreement between them)
-    suitable for direct inclusion in a run manifest.
+    R8 (``reports/T155/local-review.md`` second review): a genuinely
+    different solver path from :func:`min_norm_point_active_set` -- SLSQP
+    never enumerates active subsets and never forms the same KKT linear
+    system; it iterates a sequential quadratic-programming step with a line
+    search on the simplex-constrained QP directly. ``scipy>=1.13`` is
+    already a declared dependency (also used by ``stability.py``'s
+    ``brentq``/``minimize_scalar``), so this adds no new dependency.
+
+    The objective passed to SLSQP is normalized by ``scale =
+    max(diag(Gram), 1)``: without normalization, SLSQP's ``ftol`` stopping
+    criterion (an absolute tolerance on the change in the objective value)
+    is measured against this oracle's raw squared-gradient scale, which
+    ranges up to ~1e13 across the baseline sweep -- empirically confirmed to
+    make SLSQP report false convergence after only a handful of iterations,
+    off from the true optimum by up to 4x in objective value on real
+    baseline cases. Even after normalization, the largest-scale cases still
+    need a loose ``ftol`` (1e-18, since the normalized optimum itself can sit
+    near 1e-13) and enough iterations (2000) to reach machine precision;
+    empirically this combination reproduces the exact active-set optimum to
+    ~1e-14 relative error across the full 288-case baseline sweep.
+    """
+
+    g = np.stack([np.asarray(v, dtype=np.float64) for v in gradients])
+    m = g.shape[0]
+    gram = g @ g.T
+    scale = max(float(np.max(np.diag(gram))), 1.0)
+
+    def objective(lam: FloatArray) -> float:
+        return float(lam @ gram @ lam) / scale
+
+    def objective_grad(lam: FloatArray) -> FloatArray:
+        return 2.0 * (gram @ lam) / scale
+
+    constraints = ({"type": "eq", "fun": lambda lam: np.sum(lam) - 1.0, "jac": lambda lam: np.ones(m)},)
+    bounds = [(0.0, 1.0)] * m
+    lam0 = np.full(m, 1.0 / m)
+    result = minimize(
+        objective,
+        lam0,
+        jac=objective_grad,
+        bounds=bounds,
+        constraints=constraints,
+        method="SLSQP",
+        options={"maxiter": max_iterations, "ftol": tolerance},
+    )
+
+    lam = np.clip(result.x, 0.0, None)
+    total = float(lam.sum())
+    if total > 0:
+        lam = lam / total
+    w = lam @ g
+    objective_val = float(w @ w)
+    proj = g @ w
+    kkt_residual = max(0.0, objective_val - float(np.min(proj)))
+    active_mask = lam > 1e-6
+    active_consistency = (
+        float(np.max(np.abs(proj[active_mask] - objective_val))) if active_mask.any() else 0.0
+    )
+    stationary = objective_val <= tolerance * scale
+    direction = np.zeros_like(w) if stationary else -w
+    return ParetoReference(
+        weights=lam,
+        combined_gradient=w,
+        direction=direction,
+        objective=objective_val,
+        stationary=stationary,
+        active_set=tuple(int(i) for i in np.nonzero(active_mask)[0]),
+        kkt_residual=kkt_residual,
+        active_consistency_residual=active_consistency,
+        method="scipy_slsqp",
+    )
+
+
+def _reference_dict(ref: ParetoReference) -> dict:
+    return {
+        "weights": ref.weights.tolist(),
+        "combined_gradient": ref.combined_gradient.tolist(),
+        "direction": ref.direction.tolist(),
+        "objective": ref.objective,
+        "stationary": ref.stationary,
+        "active_set": list(ref.active_set),
+        "kkt_residual": ref.kkt_residual,
+        "active_consistency_residual": ref.active_consistency_residual,
+    }
+
+
+def case_pareto_reference(selectors: Sequence[FloatArray], local_gradients: Sequence[FloatArray]) -> dict:
+    """Lift each task's local gradient and cross-check the min-norm-point solvers.
+
+    R8: the gate-visible independent check is now the SciPy-SLSQP QP solve
+    (:func:`min_norm_point_scipy_qp`) against the exact active-set reference
+    (:func:`min_norm_point_active_set`), scored against the preregistered
+    scale-aware thresholds above and surfaced as ``independent_check`` (with
+    ``all_passed``). Frank-Wolfe is retained and reported under
+    ``frank_wolfe`` as an optional diagnostic only -- it does not gate.
+
+    Returns a plain-dict summary suitable for direct inclusion in a run
+    manifest.
     """
 
     lifted = [lift_gradient(p, grad) for p, grad in zip(selectors, local_gradients)]
     exact = min_norm_point_active_set(lifted)
+    scipy_ref = min_norm_point_scipy_qp(lifted)
     iterative = min_norm_point_frank_wolfe(lifted)
+
+    scale = max(float(np.max([np.dot(v, v) for v in lifted])), 1.0)
+    simplex_feasibility_residual = abs(float(np.sum(scipy_ref.weights)) - 1.0)
+    weight_nonnegativity_residual = max(0.0, -float(np.min(scipy_ref.weights)))
+    kkt_residual_normalized = scipy_ref.kkt_residual / scale
+    objective_gap = abs(scipy_ref.objective - exact.objective) / scale
+    combined_gradient_discrepancy = float(
+        np.linalg.norm(scipy_ref.combined_gradient - exact.combined_gradient)
+    ) / (scale**0.5)
+
+    independent_check_passed = (
+        simplex_feasibility_residual <= SIMPLEX_FEASIBILITY_ABS_TOL
+        and weight_nonnegativity_residual <= WEIGHT_NONNEGATIVITY_ABS_TOL
+        and kkt_residual_normalized <= KKT_RESIDUAL_REL_TOL
+        and objective_gap <= OBJECTIVE_GAP_REL_TOL
+        and combined_gradient_discrepancy <= COMBINED_GRADIENT_REL_TOL
+    )
+
     cross_check_error = float(np.linalg.norm(exact.combined_gradient - iterative.combined_gradient))
+
     return {
-        "active_set": {
-            "weights": exact.weights.tolist(),
-            "combined_gradient": exact.combined_gradient.tolist(),
-            "direction": exact.direction.tolist(),
-            "objective": exact.objective,
-            "stationary": exact.stationary,
-            "active_set": list(exact.active_set),
-            "kkt_residual": exact.kkt_residual,
-            "active_consistency_residual": exact.active_consistency_residual,
-        },
-        "frank_wolfe": {
-            "weights": iterative.weights.tolist(),
-            "combined_gradient": iterative.combined_gradient.tolist(),
-            "direction": iterative.direction.tolist(),
-            "objective": iterative.objective,
-            "stationary": iterative.stationary,
-            "active_set": list(iterative.active_set),
-            "kkt_residual": iterative.kkt_residual,
-            "active_consistency_residual": iterative.active_consistency_residual,
+        "active_set": _reference_dict(exact),
+        "scipy_qp": _reference_dict(scipy_ref),
+        "frank_wolfe": _reference_dict(iterative),
+        "independent_check": {
+            "reference_method": "active_set_enumeration",
+            "cross_check_method": "scipy_slsqp",
+            "simplex_feasibility_residual": simplex_feasibility_residual,
+            "weight_nonnegativity_residual": weight_nonnegativity_residual,
+            "kkt_residual_normalized": kkt_residual_normalized,
+            "objective_gap": objective_gap,
+            "combined_gradient_discrepancy": combined_gradient_discrepancy,
+            "thresholds": {
+                "simplex_feasibility_abs_tol": SIMPLEX_FEASIBILITY_ABS_TOL,
+                "weight_nonnegativity_abs_tol": WEIGHT_NONNEGATIVITY_ABS_TOL,
+                "kkt_residual_rel_tol": KKT_RESIDUAL_REL_TOL,
+                "objective_gap_rel_tol": OBJECTIVE_GAP_REL_TOL,
+                "combined_gradient_rel_tol": COMBINED_GRADIENT_REL_TOL,
+            },
+            "all_passed": independent_check_passed,
         },
         "cross_check_error": cross_check_error,
+        "all_passed": independent_check_passed,
     }

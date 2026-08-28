@@ -94,7 +94,14 @@ class CaseResult:
 
     @property
     def all_passed(self) -> bool:
-        return all(t.checks.all_passed for t in self.tasks)
+        # R8 (second local review): a stored pareto_reference without a
+        # passing independent check is insufficient -- the SciPy-SLSQP
+        # cross-check against the exact active-set reference
+        # (pareto.case_pareto_reference's "independent_check") must gate
+        # alongside every task's own checks.
+        return all(t.checks.all_passed for t in self.tasks) and bool(
+            self.pareto_reference["independent_check"]["all_passed"]
+        )
 
 
 def _resolve_block_widths(num_blocks: int, block_width: int) -> tuple[int, ...]:
