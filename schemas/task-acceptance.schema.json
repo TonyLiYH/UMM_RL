@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompPareto task submission acceptance contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "base_ref",
+    "required_files",
+    "commands",
+    "metrics",
+    "forbidden_claims"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "task_id": {"type": "string", "pattern": "^T[0-9]{3}$"},
+    "base_ref": {"type": "string", "minLength": 1},
+    "required_files": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "command"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "command": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "path", "op", "value"],
+        "properties": {
+          "file": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "op": {"enum": ["==", "!=", "<", "<=", ">", ">="]},
+          "value": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "forbidden_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "when", "phrases"],
+        "properties": {
+          "file": {"type": "string", "minLength": 1},
+          "when": {
+            "type": "object",
+            "required": ["file", "path", "equals"],
+            "properties": {
+              "file": {"type": "string", "minLength": 1},
+              "path": {"type": "string", "minLength": 1},
+              "equals": {}
+            },
+            "additionalProperties": false
+          },
+          "phrases": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -9,7 +9,7 @@ reviewer: local-research-agent
 branch: agent/T210-showo2-admission
 depends_on: []
 blocks: [T215, T300]
-allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
+allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2-*/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
 updated_at: 2026-08-28
@@ -60,6 +60,32 @@ Record official URL/commit, checkpoint hash, external tokenizer/VAE revisions, c
 ## Failure and retry rules
 
 Do not use unofficial fixes or a different checkpoint without local authorization.
+
+## Automated submission gate
+
+Before downloading or loading large model assets, generate and retain a storage
+preflight using:
+
+```bash
+HF_HOME=<local-ssd-cache> \
+HF_HUB_OFFLINE=1 \
+TRANSFORMERS_OFFLINE=1 \
+.venv/bin/python scripts/model_storage_preflight.py \
+  --path <local-ssd-cache> \
+  --minimum-free-bytes <required-bytes> \
+  --output configs/admission/showo2/storage-preflight.json
+```
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T210
+```
+
+The machine-readable contract is `tasks/contracts/T210.acceptance.yaml`. It
+requires a local-filesystem preflight, remote artifact hash verification,
+schema-valid run evidence, successful MMU/T2I exit codes, and the complete
+repository test suite.
 
 ## Successor opening
 
@@ -114,3 +140,9 @@ declared dependencies.
   `runs/admission-showo2-2026-08-28/notes.md` rather than edited, since
   `tests/repo_state/` is outside this task's `allowed_paths`. Status set to
   `awaiting_review`.
+- 2026-08-28 — Second local review of `b05b439` confirmed the SSD loading
+  improvement and narrowed the remaining work to evidence consistency:
+  merge current `origin/main`, reconcile stale summaries, record provenance
+  and SSD execution URIs separately, qualify or strengthen no-fallback
+  evidence, complete resource fields, and remotely reverify all external
+  artifacts. Complete R8–R13 in `reports/T210/local-review.md`.

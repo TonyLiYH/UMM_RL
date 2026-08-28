@@ -7,6 +7,7 @@ import shutil
 
 
 def test_cli_validates_repository() -> None:
+    expected_manifest_count = len(list(Path("runs").rglob("*manifest.json")))
     completed = subprocess.run(
         [sys.executable, "-m", "comppareto.repo_state.cli", "--root", "."],
         capture_output=True,
@@ -16,7 +17,7 @@ def test_cli_validates_repository() -> None:
 
     assert completed.returncode == 0, completed.stdout + completed.stderr
     assert "task_tree=pass tasks=28" in completed.stdout
-    assert "run_manifests=pass manifests=1" in completed.stdout
+    assert f"run_manifests=pass manifests={expected_manifest_count}" in completed.stdout
     assert "research_state=pass" in completed.stdout
 
 
