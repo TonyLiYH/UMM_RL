@@ -1,0 +1,62 @@
+schema_version: 1
+task_id: T210
+base_ref: origin/main
+required_files:
+  - configs/admission/showo2/environment-lock.md
+  - configs/admission/showo2/storage-preflight.json
+  - configs/admission/showo2/artifact-verification.json
+  - configs/admission/showo2/parameter-block-registry.yaml
+  - reports/T210/result-summary.md
+  - reports/T210/claim-check.md
+  - reports/T210/failure-ledger.md
+  - reports/T210/r2-r5-ssd-rerun.md
+  - runs/admission-showo2-*/manifest.json
+  - runs/admission-showo2-*/metrics.json
+  - runs/admission-showo2-*/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/admission-showo2-2026-08-28/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/showo2/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/showo2/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/admission/showo2/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/admission-showo2-2026-08-28/metrics.json
+    path: smoke.mmu.exit_code
+    op: "=="
+    value: 0
+  - file: runs/admission-showo2-2026-08-28/metrics.json
+    path: smoke.t2i.exit_code
+    op: "=="
+    value: 0
+  - file: runs/admission-showo2-2026-08-28/metrics.json
+    path: artifacts.failed
+    op: "=="
+    value: 0
+forbidden_claims:
+  - file: reports/T210/result-summary.md
+    when:
+      file: runs/admission-showo2-2026-08-28/manifest.json
+      path: status
+      equals: fail
+    phrases:
+      - supports gate
+      - passes gate

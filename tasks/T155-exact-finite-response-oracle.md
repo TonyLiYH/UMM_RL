@@ -105,6 +105,19 @@ Every generated case records graph family, selector hashes, dimensions, seed, op
 
 Do not remove hard seeds, tune generation ranges after inspecting method performance, or describe the oracle as a realistic UMM simulator. Numerical tolerance changes require local review. Infrastructure retries preserve the same configuration and seed.
 
+## Automated submission gate
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T155
+```
+
+The machine-readable contract is `tasks/contracts/T155.acceptance.yaml`. A
+formal run with `status: fail`, any stable-case failure, any Pareto-reference
+failure, any independent high-precision-reference failure, a full-suite test
+failure, or an unauthorized changed path blocks submission.
+
 ## Successor opening
 
 Accepted T155 contributes the exact benchmark required by T160. T160 retains its other declared dependencies.

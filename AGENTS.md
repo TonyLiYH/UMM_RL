@@ -51,3 +51,20 @@ This repository is the source of truth for the CompPareto / UMM_RL research proj
 ## Completion checks
 
 Run the repository validator, unit tests, Python compilation, shell syntax checks, local-link checks, and `git diff --check`. A remote result remains `awaiting_review` until the local review side independently verifies it.
+
+Before changing a task to `awaiting_review`, the executor must also run:
+
+```bash
+bash scripts/validate_task_submission.sh <TASK_ID>
+```
+
+The validator reads `tasks/contracts/<TASK_ID>.acceptance.yaml` and checks the
+declared branch, latest base ancestry, allowed paths, required files, metrics,
+forbidden claims, repository validation, and complete test suite. A nonzero
+exit blocks submission. Do not replace the full command with task-local tests.
+
+For model tasks, run `scripts/model_storage_preflight.py` before downloading or
+loading large weights. The preflight must identify the filesystem type,
+available capacity, local cache path, and offline-cache settings. Large
+checkpoints should execute from verified local SSD when available; shared
+storage remains the immutable provenance source.

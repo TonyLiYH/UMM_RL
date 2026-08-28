@@ -61,6 +61,32 @@ Record official URL/commit, checkpoint hash, external tokenizer/VAE revisions, c
 
 Do not use unofficial fixes or a different checkpoint without local authorization.
 
+## Automated submission gate
+
+Before downloading or loading large model assets, generate and retain a storage
+preflight using:
+
+```bash
+HF_HOME=<local-ssd-cache> \
+HF_HUB_OFFLINE=1 \
+TRANSFORMERS_OFFLINE=1 \
+.venv/bin/python scripts/model_storage_preflight.py \
+  --path <local-ssd-cache> \
+  --minimum-free-bytes <required-bytes> \
+  --output configs/admission/showo2/storage-preflight.json
+```
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T210
+```
+
+The machine-readable contract is `tasks/contracts/T210.acceptance.yaml`. It
+requires a local-filesystem preflight, remote artifact hash verification,
+schema-valid run evidence, successful MMU/T2I exit codes, and the complete
+repository test suite.
+
 ## Successor opening
 
 Accepted T210 opens T215 and contributes to T300. T300 retains its other
