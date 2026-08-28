@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "run_id": "admission-showo2-2026-08-28",
+  "task_id": "T210",
+  "run_kind": "formal",
+  "source_revision": "dab902f90dedf500751ae852ceaeda5e1012f6ff",
+  "execution_revision": "7712c69bc8fa3048aec5ffcf99b1f91981179af4",
+  "dirty": false,
+  "config_sha256": "d9f754ce8bdaf3a96cb6862782b51c781e2b0d3099bf37e15d244048c0559982",
+  "environment": {
+    "container": "H20-FoldUMM",
+    "gpu_model": "NVIDIA H20",
+    "gpu_count": 8,
+    "gpus_used": 1,
+    "torch": "2.5.1+cu124",
+    "torchvision": "0.20.1+cu124",
+    "transformers": "4.47.0",
+    "diffusers": "0.31.0",
+    "wandb": "0.17.0",
+    "flash_attn": "2.8.3.post1",
+    "cuda_runtime": "12.4.99",
+    "hf_home": "/dockerdata/t210-showo2/hf_cache",
+    "hf_hub_offline": true,
+    "transformers_offline": true
+  },
+  "status": "pass",
+  "result_files": [
+    "reports/T210/r2-r5-ssd-rerun.md",
+    "reports/T210/failure-ledger.md",
+    "reports/T210/first-report.md",
+    "reports/T210/environment-checkpoint-smoke.md",
+    "configs/admission/showo2/environment-lock.md",
+    "configs/admission/showo2/timing_wrapper.py",
+    "configs/admission/showo2/parameter-block-registry.yaml",
+    "runs/admission-showo2-2026-08-28/notes.md"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "showo2-1.5b-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "sha256": "a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "bytes": 5661862314
+    },
+    {
+      "artifact_id": "qwen2.5-1.5b-instruct-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--Qwen--Qwen2.5-1.5B-Instruct/blobs/dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "bytes": 3087467144
+    },
+    {
+      "artifact_id": "siglip-so400m-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--google--siglip-so400m-patch14-384/blobs/ea2abad2b7f8a9c1aa5e49a244d5d57ffa71c56f720c94bc5d240ef4d6e1d94a",
+      "sha256": "ea2abad2b7f8a9c1aa5e49a244d5d57ffa71c56f720c94bc5d240ef4d6e1d94a",
+      "bytes": 3511950624
+    },
+    {
+      "artifact_id": "wan2.1-vae-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/Wan2.1-I2V-14B-480P/Wan2.1_VAE.pth",
+      "sha256": "38071ab59bd94681c686fa51d75a1968f64e470262043be31f7a094e442fd981",
+      "bytes": 507609880
+    },
+    {
+      "artifact_id": "resolved-config-showo2-1.5b-demo",
+      "kind": "config",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/showo2_admission/Show-o/show-o2/configs/showo2_1.5b_demo_432x432.yaml",
+      "sha256": "d9f754ce8bdaf3a96cb6862782b51c781e2b0d3099bf37e15d244048c0559982",
+      "bytes": 1786
+    },
+    {
+      "artifact_id": "mmu-cold1-run-bundle",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/mmu_cold1.tar",
+      "sha256": "ba35228ec883dc80476c7a9c0ec991331bb2a72a034a2f02e82bcf0fa1ba7b2d",
+      "bytes": 1546240
+    },
+    {
+      "artifact_id": "mmu-cold2-run-bundle",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/mmu_cold2.tar",
+      "sha256": "232ff32c3be2f02664e85c5d1b56abb011fb1a113c1f0dcadb79a08700b74925",
+      "bytes": 1546240
+    },
+    {
+      "artifact_id": "t2i-fresh1-run-bundle",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/t2i_fresh1.tar",
+      "sha256": "4b4baa93c529ce8d29521d7b236320847b3bba3d127777f2d33b58d6cd55f145",
+      "bytes": 1628160
+    },
+    {
+      "artifact_id": "r1-migration-log",
+      "kind": "log",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/t210_migration.log",
+      "sha256": "71f2099a7be898e6c0954bc20b9255bdebe10c081b865234a8954a86348e59b0",
+      "bytes": 1663
+    },
+    {
+      "artifact_id": "r1-hash-manifest",
+      "kind": "log",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/t210_hash_manifest.txt",
+      "sha256": "0f66719aa6304397805ce26dc7a7306efa9391703ac6edab0febdc46c8dc0f40",
+      "bytes": 4147
+    },
+    {
+      "artifact_id": "pip-freeze-snapshot",
+      "kind": "environment_snapshot",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/pip_freeze_20260828.txt",
+      "sha256": "d5db5cb61a13e4a327399d005debe058f3e1f351cde5d7c50478a5c97198e1cf",
+      "bytes": 5396
+    },
+    {
+      "artifact_id": "mmu-input-image",
+      "kind": "input",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/showo2_admission/Show-o/show-o2/docs/mmu/pexels-jane-pham-727419-1571673.jpg",
+      "sha256": "a128066cc9ef5f0aaa1d1ba72d6f73938e1be40b4f4b92f0afe9e7bc441a0671",
+      "bytes": 991169
+    },
+    {
+      "artifact_id": "mmu-output-caption-image",
+      "kind": "output",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/mmu_cold2/wandb_run/files/media/images/Multimodal understanding responses_0_c5e1e49d95ec77bf60a0.png",
+      "sha256": "c5e1e49d95ec77bf60a012be88bb790a7d15f6851002478ea886242b8f0ef7cf",
+      "bytes": 274255
+    },
+    {
+      "artifact_id": "t2i-prompt-file",
+      "kind": "input",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/showo2_admission/scratch/t2i_smoke_prompt.txt",
+      "sha256": "6283ed903605d6404cc98d53e6eb4fc7b206acf290289771844c2639716115ec",
+      "bytes": 78
+    },
+    {
+      "artifact_id": "t2i-output-image",
+      "kind": "output",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T210-showo2-admission/r2_runs/t2i_fresh1/wandb_run/files/media/images/Generated images_0_f55bf2430b3f5ee1419c.png",
+      "sha256": "f55bf2430b3f5ee1419c9e738c2817a8b3caa28e38e7ed8af1b57c77ce648f37",
+      "bytes": 361629
+    }
+  ],
+  "retry": null
+}
