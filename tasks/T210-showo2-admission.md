@@ -2,7 +2,7 @@
 id: T210
 title: Show-o2 checkpoint, training-interface, and evaluation admission
 parent: T200
-status: ready
+status: revision_needed
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T215, T300]
 allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-08-28
 ---
 
 # T210: Show-o2 admission
@@ -69,3 +69,10 @@ declared dependencies.
 ## Review history
 
 - 2026-08-26 — Authorized for audit and smoke only; no training authorized.
+- 2026-08-28 — Local review of `ce29888` requested revision. The model assets
+  and Hugging Face cache must be migrated from shared storage to GPU-container
+  local SSD, hashes reverified, and cold-process/warm-process loading measured.
+  The branch must also add a schema-valid admission manifest, raw hash-addressed
+  smoke evidence, measured VRAM/GPU-hours, a frozen repaired environment, and
+  resolution or formal containment of the two license/provenance open items.
+  Full review: `reports/T210/local-review.md`.
