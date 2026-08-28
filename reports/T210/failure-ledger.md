@@ -37,6 +37,48 @@
   unspecified license permits that use case before proceeding; this task did not need to make that
   determination since it performed inference only.
 
+## Resolution update (T210 R6, 2026-08-28)
+
+The two license/provenance items above were re-investigated per local review R6. Findings below;
+the original entries are left unmodified above per the no-edit-history convention.
+
+### 1. Wan2.1 VAE — resolved
+
+A live `huggingface_hub.HfApi().model_info("Wan-AI/Wan2.1-T2V-14B")` query (via the `star_proxy`
+network path, not the offline SSD cache used for the smoke runs themselves) returned:
+
+- **Resolved revision**: `a064a6c71f5be440641209c07bf2a5ce7a2ff5e4`
+- **License**: `apache-2.0` (from `card_data.license`; repo tags include `license:apache-2.0`)
+
+This matches the Apache-2.0 license already established for every other Show-o2 dependency in
+`first-report.md`. The pre-existing local copy's hash
+(`38071ab59bd94681c686fa51d75a1968f64e470262043be31f7a094e442fd981`) is unaffected by this query —
+this only adds the missing revision/license provenance, it does not re-download or replace the
+file. **No longer an open item.**
+
+### 2. `CompVis/stable-diffusion-safety-checker` — constrained, not resolvable further
+
+The same live query confirms the license field is still unset (`card_data.license is None`, no
+`license:*` tag) — the "License: More information needed" status on the model card is current, not
+stale. This cannot be resolved further from our side; per local review R6, it is instead formally
+constrained as follows:
+
+- **Defined as an optional, display-only dependency.** Reading `inference_t2i.py` (lines 92-93,
+  201-212): the safety checker runs strictly *after* the model has produced its generated image
+  (`images`/`pil_images`, line 198-199) and *only* gates what gets attached to the `wandb.log` call
+  for human-facing display (`checked_images`, `has_nsfw_concept`). It does not feed back into the
+  model, the transport/flow-matching sampler, or any tensor used for a scientific metric.
+- **Scientific evaluation path that does not require it**: any downstream evaluation (e.g.
+  computing FID/CLIP-score/other image-quality metrics) should read `images`/`pil_images` directly
+  at line 198-199, before the safety-checker call at line 201, and never construct or import
+  `StableDiffusionSafetyChecker`. This makes the unspecified-license dependency avoidable for any
+  evaluation pipeline while leaving the unmodified official inference script's own display path
+  untouched.
+- **Disposition remains non-blocking** for the read-only smoke inference performed by this task,
+  which used the official script unmodified (safety checker included, no redistribution of its
+  output occurred). The above constraint is provided for any successor task (e.g. training-loop
+  evaluation) that would otherwise need to decide whether to depend on it.
+
 ## Resolved issues (not outstanding — recorded for completeness)
 
 ### 1. `torch`/`torchvision` version clobber (environment defect)
@@ -71,9 +113,11 @@
 
 - No task-path execution failure occurred: both `inference_mmu.py` and `inference_t2i.py` ran to
   completion on the first attempt after the environment defects above were fixed.
-- 2 unresolved license-status open items (Wan2.1 VAE, safety checker), both non-blocking for the
-  inference-only work performed, both flagged for local-reviewer decision before any successor task
-  that would redistribute outputs or begin training.
+- Of the 2 original license-status open items: the Wan2.1 VAE item is now fully **resolved**
+  (revision + Apache-2.0 license confirmed live, see "Resolution update (T210 R6)" above); the
+  safety-checker item remains **formally constrained** (license genuinely unspecified upstream,
+  not resolvable from our side) rather than resolved, with an optional-dependency definition and a
+  safety-checker-free evaluation path now recorded for any successor task.
 - 2 environment defects found and fixed via dependency-pin restoration (not unofficial substitution),
   both fully documented.
 - No unofficial fix was applied to Show-o2 source, config, or checkpoint; no different checkpoint was
