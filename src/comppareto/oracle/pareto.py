@@ -82,21 +82,34 @@ def _solve_equality_subproblem(gram: FloatArray, active: tuple[int, ...]) -> tup
 
 
 def min_norm_point_active_set(
-    gradients: Sequence[FloatArray], *, tolerance: float = 1e-10
+    gradients: Sequence[FloatArray], *, tolerance: float = 1e-9
 ) -> ParetoReference:
     """Exact global minimum-norm point in ``conv(gradients)`` via active-set enumeration.
 
     Feasible for the oracle's ``m<=8`` task count: enumerates all ``2^m-1``
-    non-empty subsets, solves the equality-constrained sub-problem on each
-    exactly, and keeps the feasible (``lambda>=0``) candidate satisfying the
-    KKT optimality certificate with the smallest objective.
+    non-empty subsets and solves the equality-constrained sub-problem on
+    each exactly. ``tolerance`` gates only the ``lambda>=0`` feasibility
+    check -- weights are dimensionless (they sum to 1), so a fixed absolute
+    tolerance is scale-independent regardless of the gradients' magnitude.
+
+    Among the feasible candidates, the one with the smallest objective is
+    the exact global optimum: each feasible candidate is the equality-
+    constrained minimum over its own face of the simplex, a subset of the
+    full simplex, so its objective can only be >= the true global minimum;
+    the true active set's candidate attains that minimum exactly. This
+    means no separate KKT-residual/active-consistency acceptance gate is
+    needed -- and using one is actively wrong, since those residuals are in
+    squared-gradient units and this oracle's gradient magnitudes range over
+    many orders across cases (an earlier version gated on an absolute
+    residual threshold and spuriously rejected the correct answer on
+    large-scale cases where sum-of-squares terms reach ~1e11).
     """
 
     g = np.stack([np.asarray(v, dtype=np.float64) for v in gradients])
     m = g.shape[0]
     gram = g @ g.T
 
-    best: tuple[float, FloatArray, FloatArray, float, float, tuple[int, ...]] | None = None
+    best: tuple[float, FloatArray, FloatArray] | None = None
     for size in range(1, m + 1):
         for active in itertools.combinations(range(m), size):
             solved = _solve_equality_subproblem(gram, active)
@@ -113,31 +126,24 @@ def min_norm_point_active_set(
             lam /= total
             w = lam @ g
             objective = float(w @ w)
-            proj = g @ w
-            kkt_residual = max(0.0, objective - float(np.min(proj)))
-            active_mask = lam > tolerance
-            active_consistency = (
-                float(np.max(np.abs(proj[active_mask] - objective))) if active_mask.any() else 0.0
-            )
-            if kkt_residual <= tolerance and active_consistency <= tolerance:
-                if best is None or objective < best[0]:
-                    best = (
-                        objective,
-                        lam,
-                        w,
-                        kkt_residual,
-                        active_consistency,
-                        tuple(int(i) for i in np.nonzero(active_mask)[0]),
-                    )
+            if best is None or objective < best[0]:
+                best = (objective, lam, w)
 
     if best is None:
         # The full-support subset (active = every task) is always tried above
         # and always feasible for a convex hull membership problem, so this
         # branch is unreachable for a correct Gram matrix; kept as an explicit
         # guard rather than silently returning a wrong answer.
-        raise RuntimeError("active-set enumeration found no KKT-feasible candidate")
+        raise RuntimeError("active-set enumeration found no lambda-feasible candidate")
 
-    objective, lam, w, kkt_residual, active_consistency, active_set = best
+    objective, lam, w = best
+    proj = g @ w
+    kkt_residual = max(0.0, objective - float(np.min(proj)))
+    active_mask = lam > tolerance
+    active_consistency = (
+        float(np.max(np.abs(proj[active_mask] - objective))) if active_mask.any() else 0.0
+    )
+    active_set = tuple(int(i) for i in np.nonzero(active_mask)[0])
     stationary = objective <= tolerance
     direction = np.zeros_like(w) if stationary else -w
     return ParetoReference(
@@ -154,7 +160,7 @@ def min_norm_point_active_set(
 
 
 def min_norm_point_frank_wolfe(
-    gradients: Sequence[FloatArray], *, iterations: int = 20000, tolerance: float = 1e-13
+    gradients: Sequence[FloatArray], *, iterations: int = 20000, tolerance: float = 1e-10
 ) -> ParetoReference:
     """Independent iterative cross-check via conditional gradient (Frank-Wolfe).
 
@@ -162,22 +168,27 @@ def min_norm_point_frank_wolfe(
     solves a linear system. At each iteration, moves toward the vertex
     ``e_s`` with the most negative correlation ``g_s . w``, using the
     closed-form exact line search available because ``||lambda @ g||^2`` is
-    quadratic in the step length.
+    quadratic in the step length. ``tolerance`` is relative to the
+    gradients' squared-norm scale (``max_i ||g_i||^2``), not absolute --
+    the duality gap is a squared-gradient-unit quantity, and this oracle's
+    gradient magnitudes range over many orders across cases.
     """
 
     g = np.stack([np.asarray(v, dtype=np.float64) for v in gradients])
     m = g.shape[0]
+    scale = max(float(np.max(np.sum(g * g, axis=1))), 1.0)
+    abs_tol = tolerance * scale
     lam = np.full(m, 1.0 / m)
     w = lam @ g
     for _ in range(iterations):
         proj = g @ w
         s = int(np.argmin(proj))
         gap = float(w @ w - proj[s])
-        if gap <= tolerance:
+        if gap <= abs_tol:
             break
         gs = g[s]
         denom = float((gs - w) @ (gs - w))
-        if denom <= tolerance:
+        if denom <= abs_tol:
             break
         t = float(np.clip(gap / denom, 0.0, 1.0))
         lam = (1.0 - t) * lam
@@ -193,7 +204,7 @@ def min_norm_point_frank_wolfe(
     active_consistency = (
         float(np.max(np.abs(proj[active_mask] - objective))) if active_mask.any() else 0.0
     )
-    stationary = objective <= 1e-10
+    stationary = objective <= abs_tol
     direction = np.zeros_like(w) if stationary else -w
     return ParetoReference(
         weights=lam,

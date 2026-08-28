@@ -229,6 +229,7 @@ def main() -> None:
 
     outcome = run_sweep(config, source_revision)
 
+    args.out = args.out.resolve()
     args.out.mkdir(parents=True, exist_ok=True)
     written = {
         "case-records.json": outcome["case_records"],
