@@ -2,7 +2,7 @@
 id: T210
 title: Show-o2 checkpoint, training-interface, and evaluation admission
 parent: T200
-status: revision_needed
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -81,3 +81,36 @@ declared dependencies.
   smoke evidence, measured VRAM/GPU-hours, a frozen repaired environment, and
   resolution or formal containment of the two license/provenance open items.
   Full review: `reports/T210/local-review.md`.
+- 2026-08-28 — Remote executor addressed all R1-R7 revisions. R1: migrated the
+  four required components plus HF cache metadata to `/dockerdata/t210-showo2/`
+  local SSD (~15GB, hash-verified identical to the shared-storage originals,
+  which remain as provenance), reconfigured `HF_HOME`/offline-mode variables,
+  and proved zero shared-storage/network fallback across all R2 logs. R2: three
+  SSD-sourced reruns (`mmu_cold1`, `mmu_cold2`, `t2i_fresh1`) via a new external
+  timing/memory harness (`configs/admission/showo2/timing_wrapper.py`, no
+  Show-o2 source touched) measured ~8.7-9.4s model load (~150x faster than the
+  prior ~26min shared-storage load), full phase timings, and bit-identical
+  output hashes across the two cold understanding runs; same-process warm
+  inference was assessed and documented as not attempted (no loop entry point
+  in the official scripts; a custom warm-loop driver was judged too risky to
+  the audited code path). R3: committed a schema-valid
+  `runs/admission-showo2-2026-08-28/manifest.json` (`run_kind=formal`,
+  `dirty=false`) plus a run note, referencing 14 hash/byte-addressed artifacts.
+  R4: raw stdout/stderr/timing/wandb evidence for all three reruns preserved
+  durably outside Git. R5: measured peak VRAM for both paths (MMU ~13.87GiB
+  alloc/~38.48GiB reserved; T2I ~12.36GiB alloc/~12.69GiB reserved, replacing
+  the prior estimate) and reported GPU wall-clock/footprint in
+  `reports/T210/r2-r5-ssd-rerun.md`. R6: resolved the Wan2.1 VAE source revision
+  and Apache-2.0 license via a live HF Hub query; the safety-checker's license
+  remains genuinely unspecified upstream and is now formally constrained as an
+  optional, display-only dependency with a documented safety-checker-free
+  evaluation path (`reports/T210/failure-ledger.md`). R7: froze the repaired
+  environment's required pins in
+  `configs/admission/showo2/environment-lock.md`. Repository validator passes
+  (`run_manifests=pass manifests=2`); 29/30 tests pass — the one failure is a
+  pre-existing, out-of-scope `tests/repo_state/test_cli.py` assertion that
+  hardcodes a manifest count of 1, now stale because a second formal manifest
+  legitimately exists; flagged in
+  `runs/admission-showo2-2026-08-28/notes.md` rather than edited, since
+  `tests/repo_state/` is outside this task's `allowed_paths`. Status set to
+  `awaiting_review`.
