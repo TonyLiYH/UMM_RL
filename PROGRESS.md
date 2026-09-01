@@ -15,17 +15,21 @@ Current authorized remote entries:
 - T110 random overlap families;
 - T120 independent KKT/direct reference;
 - T130 indefinite-curvature trust-region tests;
-- T155 exact finite-response oracle benchmark — revision requested after local review;
-- T210 Show-o2 admission audit and smoke — revision requested, including local-SSD migration and repeat profiling.
+- T155 exact finite-response oracle benchmark — accepted 2026-09-01;
+- T210 Show-o2 admission audit and smoke — accepted with recorded limitations 2026-09-01;
+- T215 Show-o2 reversible finite-response diagnostics — ready;
+- T220 UniDDT admission — ready;
+- T230 SenseNova-U1 admission and routed-overlap audit — ready;
+- T240 UniAR boundary-control admission — ready.
 
 These tasks do not authorize joint post-training. T300 remains closed until
 T100, T170, T210, and T215 are accepted.
 
 The first Show-o2 execution plan is recorded in
 [`docs/plans/showo2-first-attempt.md`](docs/plans/showo2-first-attempt.md).
-T210 remains the immediate remote entry. The new T215 node is planned and
-becomes eligible only after local acceptance of T210; it authorizes reversible
-finite-response diagnostics, not persistent joint training.
+T215 is now authorized for reversible finite-response diagnostics. T220–T240
+are authorized as independent model-admission tasks. None authorizes persistent
+joint training.
 
 ## Decision gates
 
@@ -63,12 +67,14 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 ## Immediate next actions
 
 1. Continue T110, T120, and T130 under their task contracts.
-2. Revise T155 according to `reports/T155/local-review.md`.
-3. Revise T210 according to `reports/T210/local-review.md`; migrate all runtime
-   model assets to GPU-container local SSD and repeat the smoke with measured
-   cold-process and warm-process loading.
+2. Execute T215 on the accepted Show-o2 revision under the reversible,
+   no-persistent-update protocol.
+3. Execute T220, T230, and T240 independently under the common admission
+   contract and local-SSD preflight.
 4. Open T140/T150 only after their declared prerequisites are accepted.
-5. Accept T210 before authorizing T215; accept T100, T170, T210, and T215 before changing T300 to `ready`.
-6. Complete the planned T160 finite-response posterior-certificate and T170 graph-localized robust-certificate contracts after their dependencies are accepted; neither task is authorized yet.
-7. Freeze data-source, capability, split, and decontamination manifests before D0; do not attribute a data-scheduling gain to update geometry.
-8. Before opening the new theory contracts, freeze rerun-response versus commit-response semantics and define whether every error term is relative to \(F_i^K\), a longer response horizon, or an exact best response.
+5. Accept T100, T170, and T215 before changing T300 to `ready`.
+6. Complete the planned T160 finite-response posterior-certificate and T170
+   graph-localized robust-certificate contracts after their dependencies are
+   accepted; neither task is authorized yet.
+7. Freeze data-source, capability, split, and decontamination manifests before
+   D0; do not attribute a data-scheduling gain to update geometry.

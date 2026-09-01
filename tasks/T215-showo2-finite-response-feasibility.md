@@ -2,17 +2,17 @@
 id: T215
 title: Show-o2 finite-response diagnostic feasibility
 parent: T200
-status: planned
+status: ready
 priority: P0
-owner: unassigned
+owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T215-showo2-finite-response-feasibility
 depends_on: [T210]
 blocks: [T300, T310]
-allowed_paths: ["tasks/T215-showo2-finite-response-feasibility.md", "configs/feasibility/showo2/", "runs/feasibility-showo2-*/", "reports/T215/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
-source_revision: "c481c0ee25245ebace0d6d50d881145a972046cf"
+allowed_paths: ["tasks/T215-showo2-finite-response-feasibility.md", "configs/feasibility/showo2/", "runs/feasibility-showo2-v1/", "reports/T215/", "src/comppareto/adapters/showo2/", "tests/adapters/showo2/"]
+source_revision: "217d183473a14ad48852205ea3f2746301915729"
 created_at: 2026-08-27
-updated_at: 2026-08-27
+updated_at: 2026-09-01
 ---
 
 # T215: Show-o2 finite-response diagnostic feasibility
@@ -86,6 +86,10 @@ optimizer-state tensors and counters, rerun/commit pseudocode, batch and seed
 manifest, finite-difference directions, expected memory, expected runtime,
 required assets, and exact commands.
 
+Commit and push the first report before GPU execution. The executor may proceed
+without another approval only when the selected subspace and resource estimate
+remain inside this task's frozen protocol and the storage preflight passes.
+
 ## Required deliverables
 
 Adapter code, snapshot/restore and gradient tests, resolved configurations,
@@ -106,6 +110,22 @@ after observing diagnostic values. Infrastructure retries reuse the same
 configuration and seed. Numerical or differentiation failure counts as a
 result unless a task-wide preregistered rule applies.
 
+## Resource envelope
+
+- at most two H20 GPUs;
+- at most eight H20-equivalent GPU-hours;
+- \(K=1\) must pass before \(K=3\);
+- no full-backbone unroll and no persistent parameter update;
+- all model assets and caches execute from the accepted local-SSD layout.
+
+## Automated submission gate
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T215
+```
+
 ## Successor opening
 
 Accepted T215 contributes to T310 and T300. T300 still requires all of its
@@ -114,3 +134,5 @@ other declared dependencies.
 ## Review history
 
 - 2026-08-27 — Planned after the Show-o2 first-attempt design; T210 is not yet accepted.
+- 2026-09-01 — T210 accepted with recorded limitations; T215 authorized for
+  reversible diagnostic execution. No persistent training is authorized.

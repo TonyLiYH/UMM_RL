@@ -25,15 +25,15 @@ T000  CompPareto / UMM_RL research [root]  running
 │   ├── T130  Indefinite curvature and trust-region rejection  ready
 │   ├── T140  CG/unroll/diagonal/low-rank error curves  planned
 │   ├── T150  Negotiation feasibility and KKT audit  planned
-│   ├── T155  Exact finite-response oracle benchmark  revision_needed
+│   ├── T155  Exact finite-response oracle benchmark  accepted
 │   ├── T160  Finite-horizon optimizer-response posterior certificate  planned
 │   └── T170  Graph-localized robust descent and resource allocation  planned
 ├── T200  Public-model admission programme  running
-│   ├── T210  Show-o2 admission  revision_needed
-│   ├── T215  Show-o2 finite-response diagnostic feasibility  planned
-│   ├── T220  UniDDT admission  planned
-│   ├── T230  SenseNova-U1 admission  planned
-│   └── T240  UniAR boundary-control admission  planned
+│   ├── T210  Show-o2 admission  accepted
+│   ├── T215  Show-o2 finite-response diagnostic feasibility  ready
+│   ├── T220  UniDDT admission  ready
+│   ├── T230  SenseNova-U1 admission  ready
+│   └── T240  UniAR boundary-control admission  ready
 ├── T300  D0 compensation-aware conflict diagnostics  planned
 │   ├── T310  Shared/private parameter-block registry  planned
 │   ├── T320  Identical-A_i^K hypergradient cache  planned
@@ -55,8 +55,10 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T110](T110-overlap-family.md) | P0 | `agent/T110-overlap-family` | CPU synthetic task families |
 | [T120](T120-independent-kkt-reference.md) | P0 | `agent/T120-independent-kkt-reference` | CPU independent reference solver |
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
-| [T155](T155-exact-finite-response-oracle.md) | P0 | `agent/T155-exact-oracle` | Revision required after local review |
-| [T210](T210-showo2-admission.md) | P0 | `agent/T210-showo2-admission` | Revision required; rerun from local SSD |
+| [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
+| [T220](T220-uniddt-admission.md) | P1 | `agent/T220-uniddt-admission` | UniDDT dual-path admission |
+| [T230](T230-sensenova-u1-admission.md) | P1 | `agent/T230-sensenova-u1-admission` | SenseNova-U1 admission and routed-overlap audit |
+| [T240](T240-uniar-admission.md) | P1 | `agent/T240-uniar-admission` | UniAR boundary-control admission |
 
 No persistent real-model training task is authorized. T215 requires accepted
 T210 and is limited to reversible diagnostic feasibility. T300 requires
@@ -71,9 +73,12 @@ accepted T100, T170, T210, and T215; T400 requires accepted T300.
 | T110 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T120 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T130 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T155 | T100 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
+| T155 | T100 | accepted | P0 | remote-gpu-agent | local-research-agent |
 | T200 | T000 | running | P0 | local-research-agent | user |
-| T210 | T200 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
-| T215 | T200 | planned | P0 | unassigned | local-research-agent |
+| T210 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
+| T215 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T220 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
+| T230 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
+| T240 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
 | T160 | T100 | planned | P0 | unassigned | local-research-agent |
 | T170 | T100 | planned | P0 | unassigned | local-research-agent |

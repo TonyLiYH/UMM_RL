@@ -1,0 +1,75 @@
+schema_version: 1
+task_id: T215
+base_ref: origin/main
+required_files:
+  - configs/feasibility/showo2/storage-preflight.json
+  - configs/feasibility/showo2/artifact-verification.json
+  - configs/feasibility/showo2/resolved-config.yaml
+  - reports/T215/first-report.md
+  - reports/T215/result-summary.md
+  - reports/T215/claim-check.md
+  - reports/T215/failure-ledger.md
+  - runs/feasibility-showo2-v1/manifest.json
+  - runs/feasibility-showo2-v1/metrics.json
+  - runs/feasibility-showo2-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/feasibility-showo2-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/feasibility/showo2/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/feasibility/showo2/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/feasibility/showo2/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: snapshot_restore.failed
+    op: "=="
+    value: 0
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: finite_difference.failed
+    op: "=="
+    value: 0
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: protocols.raw_measured
+    op: "=="
+    value: true
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: protocols.commit_measured
+    op: "=="
+    value: true
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: protocols.rerun_measured
+    op: "=="
+    value: true
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 8
+  - file: runs/feasibility-showo2-v1/metrics.json
+    path: persistent_updates
+    op: "=="
+    value: 0
+forbidden_claims:
+  - file: reports/T215/result-summary.md
+    when:
+      file: runs/feasibility-showo2-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, passes gate]

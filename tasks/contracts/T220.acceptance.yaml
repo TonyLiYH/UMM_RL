@@ -1,0 +1,64 @@
+schema_version: 1
+task_id: T220
+base_ref: origin/main
+required_files:
+  - configs/admission/uniddt/storage-preflight.json
+  - configs/admission/uniddt/artifact-verification.json
+  - configs/admission/uniddt/environment-lock.md
+  - configs/admission/uniddt/parameter-block-registry.yaml
+  - reports/T220/first-report.md
+  - reports/T220/result-summary.md
+  - reports/T220/claim-check.md
+  - reports/T220/failure-ledger.md
+  - runs/admission-uniddt-v1/manifest.json
+  - runs/admission-uniddt-v1/metrics.json
+  - runs/admission-uniddt-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/admission-uniddt-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/uniddt/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/uniddt/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/admission/uniddt/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/admission-uniddt-v1/metrics.json
+    path: smoke.understanding.exit_code
+    op: "=="
+    value: 0
+  - file: runs/admission-uniddt-v1/metrics.json
+    path: smoke.generation.exit_code
+    op: "=="
+    value: 0
+  - file: runs/admission-uniddt-v1/metrics.json
+    path: block_registry.unassigned_trainable_parameters
+    op: "=="
+    value: 0
+  - file: runs/admission-uniddt-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 10
+forbidden_claims:
+  - file: reports/T220/result-summary.md
+    when:
+      file: runs/admission-uniddt-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, passes gate]

@@ -2,17 +2,17 @@
 id: T240
 title: UniAR homogeneous-objective boundary-control admission
 parent: T200
-status: planned
+status: ready
 priority: P1
-owner: unassigned
+owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T240-uniar-admission
 depends_on: [T210]
 blocks: [T500]
-allowed_paths: ["tasks/T240-uniar-admission.md", "configs/admission/uniar/", "runs/admission-uniar/", "reports/T240/", "src/comppareto/adapters/uniar/", "tests/adapters/"]
-source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
+allowed_paths: ["tasks/T240-uniar-admission.md", "configs/admission/uniar/", "runs/admission-uniar-v1/", "reports/T240/", "src/comppareto/adapters/uniar/", "tests/adapters/uniar/"]
+source_revision: "217d183473a14ad48852205ea3f2746301915729"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-09-01
 ---
 
 # T240: UniAR admission
@@ -49,6 +49,10 @@ The admitted scope is executable and sufficient for the declared boundary-contro
 
 Return official revisions, available training entry points, unavailable components, and resource estimate.
 
+Commit and push the first report before downloading large assets or starting
+GPU work. Proceed only with the officially released scope, a passing storage
+preflight, and the declared resource envelope.
+
 ## Required deliverables
 
 Admission manifest, smokes, scope map, report, and failure ledger.
@@ -61,6 +65,22 @@ Record the visual tokenizer, decoder, and AR checkpoint revisions separately.
 
 Missing official decoder training remains a documented limitation.
 
+## Resource envelope
+
+- one H20 GPU by default;
+- at most eight H20-equivalent GPU-hours;
+- admission smoke and boundary-control scope audit only;
+- do not recreate or claim unreleased decoder training;
+- weights and caches must execute from verified local SSD.
+
+## Automated submission gate
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T240
+```
+
 ## Successor opening
 
 Acceptance contributes to T500.
@@ -68,4 +88,5 @@ Acceptance contributes to T500.
 ## Review history
 
 - 2026-08-26 — Planned; T210 format not yet accepted.
-
+- 2026-09-01 — T210 accepted; T240 authorized as an independent
+  homogeneous-objective boundary-control admission task.

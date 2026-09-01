@@ -2,7 +2,7 @@
 id: T155
 title: Exact finite-response oracle benchmark
 parent: T100
-status: awaiting_review
+status: accepted
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T160]
 allowed_paths: ["docs/theory/oracle-spec.md", "src/comppareto/oracle/", "tests/oracle/", "configs/oracle/", "runs/oracle-*/", "reports/T155/", "tasks/T155-exact-finite-response-oracle.md"]
 source_revision: "432ea002fb71a66bbecc22e2a1d59b74777a1769"
 created_at: 2026-08-27
-updated_at: 2026-08-28
+updated_at: 2026-09-01
 ---
 
 # T155: Exact finite-response oracle benchmark
@@ -200,3 +200,6 @@ Accepted T155 contributes the exact benchmark required by T160. T160 retains its
   merged tree). Evidence: `reports/T155/result-summary.md`, `claim-check.md`,
   `failure-ledger.md`, `runs/oracle-20260827-baseline/notes.md`. Set status
   back to `awaiting_review`.
+- 2026-09-01 — Integrated verification passed on `main`: task/run validation,
+  156 tests, local artifact hashes, stable-case Gate, Decimal high-precision
+  checks, and independent Pareto QP checks. Accepted by: local-research-agent.

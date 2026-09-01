@@ -2,7 +2,7 @@
 id: T210
 title: Show-o2 checkpoint, training-interface, and evaluation admission
 parent: T200
-status: awaiting_review
+status: accepted
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T215, T300]
 allowed_paths: ["tasks/T210-showo2-admission.md", "configs/admission/showo2/", "runs/admission-showo2-*/", "reports/T210/", "src/comppareto/adapters/showo2/", "tests/adapters/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-28
+updated_at: 2026-09-01
 ---
 
 # T210: Show-o2 admission
@@ -198,3 +198,7 @@ declared dependencies.
   manifest-count assertion (now computed dynamically), so that limitation no
   longer applies. Repository validator and full test suite re-run before
   resubmission; status returned to `awaiting_review`.
+- 2026-09-01 — Integrated verification passed on `main`: task/run validation,
+  156 tests, both smoke metrics, local-SSD preflight, and 21/21 remote artifact
+  checks. Accepted with the documented safety-checker, no-fallback-evidence,
+  and warm-inference limitations. Accepted by: local-research-agent.

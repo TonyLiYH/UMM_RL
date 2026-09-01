@@ -2,17 +2,17 @@
 id: T220
 title: UniDDT deep-sharing admission
 parent: T200
-status: planned
+status: ready
 priority: P1
-owner: unassigned
+owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T220-uniddt-admission
 depends_on: [T210]
 blocks: [T500]
-allowed_paths: ["tasks/T220-uniddt-admission.md", "configs/admission/uniddt/", "runs/admission-uniddt/", "reports/T220/", "src/comppareto/adapters/uniddt/", "tests/adapters/"]
-source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
+allowed_paths: ["tasks/T220-uniddt-admission.md", "configs/admission/uniddt/", "runs/admission-uniddt-v1/", "reports/T220/", "src/comppareto/adapters/uniddt/", "tests/adapters/uniddt/"]
+source_revision: "217d183473a14ad48852205ea3f2746301915729"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-09-01
 ---
 
 # T220: UniDDT admission
@@ -49,6 +49,10 @@ Both paths are reproducible and the NoisyViT/LLM/decoder split is programmatical
 
 Return official revisions, checkpoint size/hash plan, dependencies, commands, and expected GPU resources.
 
+Commit and push the first report before downloading large assets or starting
+GPU work. Proceed only if official sources are available, storage preflight
+passes, and the plan stays within the resource envelope.
+
 ## Required deliverables
 
 Admission manifest, block map, smokes, report, and failure ledger.
@@ -61,6 +65,21 @@ Use the common admission fields and external component revisions.
 
 No alternate fork or reimplemented model without local authorization.
 
+## Resource envelope
+
+- one H20 GPU by default, at most two when the official path requires it;
+- at most ten H20-equivalent GPU-hours;
+- admission smoke only; no fine-tuning or method comparison;
+- weights and caches must execute from verified local SSD.
+
+## Automated submission gate
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T220
+```
+
 ## Successor opening
 
 Acceptance contributes to T500.
@@ -68,4 +87,5 @@ Acceptance contributes to T500.
 ## Review history
 
 - 2026-08-26 — Planned; T210 format not yet accepted.
-
+- 2026-09-01 — T210 accepted; T220 authorized as an independent deep-sharing
+  admission task.

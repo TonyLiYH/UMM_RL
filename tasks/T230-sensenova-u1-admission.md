@@ -2,17 +2,17 @@
 id: T230
 title: SenseNova-U1 native pixel/MoT admission
 parent: T200
-status: planned
+status: ready
 priority: P1
-owner: unassigned
+owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T230-sensenova-u1-admission
 depends_on: [T210]
 blocks: [T500]
-allowed_paths: ["tasks/T230-sensenova-u1-admission.md", "configs/admission/sensenova-u1/", "runs/admission-sensenova-u1/", "reports/T230/", "src/comppareto/adapters/sensenova_u1/", "tests/adapters/"]
-source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
+allowed_paths: ["tasks/T230-sensenova-u1-admission.md", "configs/admission/sensenova-u1/", "runs/admission-sensenova-u1-v1/", "reports/T230/", "src/comppareto/adapters/sensenova_u1/", "tests/adapters/sensenova_u1/"]
+source_revision: "217d183473a14ad48852205ea3f2746301915729"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-09-01
 ---
 
 # T230: SenseNova-U1 admission
@@ -49,6 +49,10 @@ Released U1 code exposes a reproducible full-parameter path and both task evalua
 
 Return exact official release, code/checkpoint revisions, missing components, and GPU estimate.
 
+Commit and push the first report before downloading large assets or starting
+GPU work. Proceed only with the released U1 path, a passing storage preflight,
+and the declared resource envelope.
+
 ## Required deliverables
 
 Admission manifest, smokes, block map, report, and failure ledger.
@@ -61,6 +65,22 @@ Record model family/version explicitly so U1 and U1.5 evidence cannot mix.
 
 An unreleased pipeline is a blocker, not permission to recreate it.
 
+## Resource envelope
+
+- one H20 GPU by default, at most two when required by the official path;
+- at most twelve H20-equivalent GPU-hours;
+- admission smoke and static routed-overlap audit only;
+- no U1.5 preview substitution and no recreated missing training pipeline;
+- weights and caches must execute from verified local SSD.
+
+## Automated submission gate
+
+Before setting `awaiting_review`, run:
+
+```bash
+bash scripts/validate_task_submission.sh T230
+```
+
 ## Successor opening
 
 Acceptance contributes to T500.
@@ -68,4 +88,5 @@ Acceptance contributes to T500.
 ## Review history
 
 - 2026-08-26 — Planned; T210 format not yet accepted.
-
+- 2026-09-01 — T210 accepted; T230 authorized as an independent native
+  pixel/MoT admission and static-overlap stress audit.

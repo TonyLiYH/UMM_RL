@@ -1,0 +1,68 @@
+schema_version: 1
+task_id: T230
+base_ref: origin/main
+required_files:
+  - configs/admission/sensenova-u1/storage-preflight.json
+  - configs/admission/sensenova-u1/artifact-verification.json
+  - configs/admission/sensenova-u1/environment-lock.md
+  - configs/admission/sensenova-u1/parameter-block-registry.yaml
+  - reports/T230/first-report.md
+  - reports/T230/result-summary.md
+  - reports/T230/claim-check.md
+  - reports/T230/failure-ledger.md
+  - runs/admission-sensenova-u1-v1/manifest.json
+  - runs/admission-sensenova-u1-v1/metrics.json
+  - runs/admission-sensenova-u1-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/admission-sensenova-u1-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/sensenova-u1/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/sensenova-u1/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/admission/sensenova-u1/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/admission-sensenova-u1-v1/metrics.json
+    path: smoke.understanding.exit_code
+    op: "=="
+    value: 0
+  - file: runs/admission-sensenova-u1-v1/metrics.json
+    path: smoke.generation.exit_code
+    op: "=="
+    value: 0
+  - file: runs/admission-sensenova-u1-v1/metrics.json
+    path: block_registry.unassigned_trainable_parameters
+    op: "=="
+    value: 0
+  - file: runs/admission-sensenova-u1-v1/metrics.json
+    path: routed_overlap.static_assumption_violations_recorded
+    op: "=="
+    value: true
+  - file: runs/admission-sensenova-u1-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 12
+forbidden_claims:
+  - file: reports/T230/result-summary.md
+    when:
+      file: runs/admission-sensenova-u1-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, passes gate]

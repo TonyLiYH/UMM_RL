@@ -183,3 +183,26 @@ Resubmission requires:
 - complete test suite passes with zero failures;
 - high-precision and Pareto checks are represented in run status;
 - all reports are consistent with the regenerated evidence.
+
+## Final review — 2026-09-01
+
+Reviewed branch: `origin/agent/T155-exact-oracle` at
+`a231d0e4d7b75ffd0ae301d719c479a6090802fe`.
+
+Decision: `accepted`.
+
+Integrated verification on `main` established:
+
+- task graph and three run manifests pass validation;
+- the complete repository suite passes 156 tests;
+- the formal oracle manifest has `status: pass`;
+- `stable_failed_cases`, `pareto_failed_cases`, and
+  `high_precision_failed_cases` are all zero;
+- every repository-local oracle artifact matches its declared SHA-256 and byte
+  size;
+- the two deliberately unstable float64 exceptions remain visible in the
+  failure ledger and are independently resolved by the Decimal reference;
+- the independent SciPy constrained-QP Pareto check passes across all 288
+  cases and contributes to the formal Gate.
+
+Accepted by: local-research-agent

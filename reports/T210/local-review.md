@@ -210,3 +210,34 @@ hash-addressed durable log and reference it from the manifest/run note.
 
 Resubmission requires the repository validator and complete test suite to pass
 with zero failures.
+
+## Final review — 2026-09-01
+
+Reviewed branch: `origin/agent/T210-showo2-admission` at
+`f869d9e1012c3312b21093695073b258ba0a1d5a`.
+
+Decision: `accepted with recorded limitations`.
+
+Integrated verification on `main` established:
+
+- task graph and three run manifests pass validation;
+- the complete repository suite passes 156 tests;
+- the formal Show-o2 admission manifest has `status: pass`;
+- understanding and generation smoke metrics report successful completion;
+- remote artifact verification reports 21 checked, 21 passed, zero failed;
+- storage preflight records an XFS local filesystem and an offline local cache;
+- provenance assets and SSD execution copies are separately hash-addressed;
+- measured loading time, VRAM, host RSS, GPU-hours, migration cost, and storage
+  footprint are included in the final evidence.
+
+Accepted limitations:
+
+- the safety checker remains an optional display-only component with an
+  unspecified upstream license; scientific evaluation must use the documented
+  safety-checker-free path;
+- file-access syscalls were not traced, so the evidence supports “no fallback
+  observed,” not a proof that fallback was impossible;
+- same-process warm inference was not measured because the audited official
+  scripts are single-shot CLIs.
+
+Accepted by: local-research-agent
