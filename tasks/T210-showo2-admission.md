@@ -2,7 +2,7 @@
 id: T210
 title: Show-o2 checkpoint, training-interface, and evaluation admission
 parent: T200
-status: revision_needed
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -95,6 +95,11 @@ declared dependencies.
 ## Review history
 
 - 2026-08-26 — Authorized for audit and smoke only; no training authorized.
+- 2026-08-27 — Remote executor created branch `agent/T210-showo2-admission` from `origin/main`, set status to `running`, and published the first report (`reports/T210/first-report.md`) before any GPU execution.
+- 2026-08-27 — Remote executor completed environment + checkpoint smoke on H20-FoldUMM, fixing an upstream unpinned `torch`/`torchvision` version clobber (`reports/T210/environment-checkpoint-smoke.md`).
+- 2026-08-27 — Remote executor completed both task-path smokes (`inference_mmu.py`, `inference_t2i.py`, both exit 0 on GPU with the pinned checkpoint), fixing an upstream unpinned `wandb`/`protobuf` incompatibility, and recorded a previously-undocumented external component (`CompVis/stable-diffusion-safety-checker`) (`reports/T210/task-path-smoke.md`).
+- 2026-08-27 — Remote executor published the parameter-block registry draft, enumerating `named_parameters()` on the loaded checkpoint and correcting two boundary omissions from the stage-1 provisional reading (`reports/T210/parameter-block-registry.md`, `configs/admission/showo2/parameter-block-registry.yaml`).
+- 2026-08-27 — Remote executor submitted `reports/T210/{result-summary,claim-check,failure-ledger}.md`, flagging 2 unresolved license-status open items (Wan2.1 VAE, safety checker) for local-reviewer decision, and set status to `awaiting_review`. No training was started or authorized; successor opening (T215/T300) is left to local review per `reports/README.md`.
 - 2026-08-28 — Local review of `ce29888` requested revision. The model assets
   and Hugging Face cache must be migrated from shared storage to GPU-container
   local SSD, hashes reverified, and cold-process/warm-process loading measured.
@@ -102,9 +107,94 @@ declared dependencies.
   smoke evidence, measured VRAM/GPU-hours, a frozen repaired environment, and
   resolution or formal containment of the two license/provenance open items.
   Full review: `reports/T210/local-review.md`.
+- 2026-08-28 — Remote executor addressed all R1-R7 revisions. R1: migrated the
+  four required components plus HF cache metadata to `/dockerdata/t210-showo2/`
+  local SSD (~15GB, hash-verified identical to the shared-storage originals,
+  which remain as provenance), reconfigured `HF_HOME`/offline-mode variables,
+  and observed zero shared-storage/network fallback across all R2 logs (later
+  qualified in the R8-R13 round below as log-content-based, not
+  file-access-syscall-level, evidence). R2: three
+  SSD-sourced reruns (`mmu_cold1`, `mmu_cold2`, `t2i_fresh1`) via a new external
+  timing/memory harness (`configs/admission/showo2/timing_wrapper.py`, no
+  Show-o2 source touched) measured ~8.7-9.4s model load (~150x faster than the
+  prior ~26min shared-storage load), full phase timings, and bit-identical
+  output hashes across the two cold understanding runs; same-process warm
+  inference was assessed and documented as not attempted (no loop entry point
+  in the official scripts; a custom warm-loop driver was judged too risky to
+  the audited code path). R3: committed a schema-valid
+  `runs/admission-showo2-2026-08-28/manifest.json` (`run_kind=formal`,
+  `dirty=false`) plus a run note, referencing 14 hash/byte-addressed artifacts.
+  R4: raw stdout/stderr/timing/wandb evidence for all three reruns preserved
+  durably outside Git. R5: measured peak VRAM for both paths (MMU ~13.87GiB
+  alloc/~38.48GiB reserved; T2I ~12.36GiB alloc/~12.69GiB reserved, replacing
+  the prior estimate) and reported GPU wall-clock/footprint in
+  `reports/T210/r2-r5-ssd-rerun.md`. R6: resolved the Wan2.1 VAE source revision
+  and Apache-2.0 license via a live HF Hub query; the safety-checker's license
+  remains genuinely unspecified upstream and is now formally constrained as an
+  optional, display-only dependency with a documented safety-checker-free
+  evaluation path (`reports/T210/failure-ledger.md`). R7: froze the repaired
+  environment's required pins in
+  `configs/admission/showo2/environment-lock.md`. Repository validator passes
+  (`run_manifests=pass manifests=2`); 29/30 tests pass — the one failure is a
+  pre-existing, out-of-scope `tests/repo_state/test_cli.py` assertion that
+  hardcodes a manifest count of 1, now stale because a second formal manifest
+  legitimately exists; flagged in
+  `runs/admission-showo2-2026-08-28/notes.md` rather than edited, since
+  `tests/repo_state/` is outside this task's `allowed_paths`. Status set to
+  `awaiting_review`.
 - 2026-08-28 — Second local review of `b05b439` confirmed the SSD loading
   improvement and narrowed the remaining work to evidence consistency:
   merge current `origin/main`, reconcile stale summaries, record provenance
   and SSD execution URIs separately, qualify or strengthen no-fallback
   evidence, complete resource fields, and remotely reverify all external
   artifacts. Complete R8–R13 in `reports/T210/local-review.md`.
+- 2026-08-28 — Remote executor merged current `origin/main` (`be4856b`, no
+  conflicts) and addressed R8-R13. R8: confirmed the existing
+  `runs/admission-showo2-2026-08-28/` path already matches
+  `runs/admission-showo2-*/`. R9: reconciled `result-summary.md` and
+  `claim-check.md` with current evidence — resolved Wan2.1 VAE license
+  (Apache-2.0, revision `a064a6c71f5be440641209c07bf2a5ce7a2ff5e4`), reframed
+  the safety checker as the sole remaining formally-constrained (non-blocking)
+  item, added measured SSD load times/VRAM/RSS/GPU-hours/storage footprint,
+  and stated the safety-checker-free evaluation path's exact status
+  (defined, documented, not separately exercised this round). R10: initially attempted a
+  per-artifact `ssd_execution` sub-object (URI/sha256/bytes, cross-referencing
+  `t210_hash_manifest.txt`) on `manifest.json` for the four migrated model components plus a fifth,
+  new artifact (`safety-checker-checkpoint`, marked optional); this failed schema validation
+  (`schemas/run-manifest.schema.json` sets `additionalProperties: false` on artifact objects, which
+  is outside T210's `allowed_paths` and therefore not modifiable), so it was corrected to use R10's
+  other offered alternative — each local-SSD execution copy recorded as its own separate,
+  schema-compliant sibling artifact (5 new `*-ssd-execution` entries) alongside the unmodified
+  5 provenance artifacts — bringing the manifest to 21 hash/byte-addressed artifacts. R11: softened the
+  no-fallback claim in `result-summary.md`/`r2-r5-ssd-rerun.md` from "proved
+  zero fallback" to "no shared-storage or network fallback was observed,"
+  with an explicit documented limitation (log-content-based, not
+  file-access-syscall-level, evidence). R12: completed the missing resource
+  fields — T2I peak host RSS (18,805,096 KiB), local-SSD filesystem type
+  (`xfs`, local block device, confirmed live via `df -T` inside the
+  container), available capacity before/after migration (~9.0TiB, effectively
+  empty beforehand), exact copied bytes (15,212,441,037), migration
+  wall-clock (256.269s), and a corrected measured durable evidence footprint
+  (38,941,345 bytes via `du -sb`, superseding the prior ~4.5MB estimate).
+  R13: remotely reverified all 21 manifest artifacts' existence, byte size,
+  and SHA-256 — the 16 artifacts resolving to `/apdcephfs_cq7`/`/apdcephfs_cq9`
+  shared-storage paths from this local checkout directly, and the 5
+  `*-ssd-execution` artifacts (resolving to `/dockerdata`, mounted only inside
+  the H20-FoldUMM GPU container) via `taiji_client exec` running the same
+  verification script inside that container —
+  (`configs/admission/showo2/artifact-verification.json`, 21/21 pass, 0
+  failed) and committed the output as a durable, hash-addressed log
+  referenced from the manifest's `result_files` and from
+  `runs/admission-showo2-2026-08-28/notes.md`. Also produced the two other
+  contract-required files that did not previously exist:
+  `configs/admission/showo2/storage-preflight.json` (`status: pass`,
+  `filesystem_class: local`, generated live inside the H20-FoldUMM container)
+  and `runs/admission-showo2-2026-08-28/metrics.json` (smoke exit-code
+  evidence — justified indirectly, since the external timing harness never
+  captures a literal subprocess exit code — plus resource/artifact
+  summaries). Also corrected a stale limitation in
+  `runs/admission-showo2-2026-08-28/notes.md`: the `origin/main` merge
+  already fixed `tests/repo_state/test_cli.py`'s previously-hardcoded
+  manifest-count assertion (now computed dynamically), so that limitation no
+  longer applies. Repository validator and full test suite re-run before
+  resubmission; status returned to `awaiting_review`.
