@@ -1,0 +1,20 @@
+[
+  {
+    "case_index": 41,
+    "family": "disjoint",
+    "optimizer": "momentum",
+    "horizon": 5,
+    "stability_regime": "unstable",
+    "status": "check-failed",
+    "output_hash": "bccea6a8a8a25d1726eac33001cbe76db401a96d03e2b8c5a8428ea32abaadcf"
+  },
+  {
+    "case_index": 287,
+    "family": "random_sparse",
+    "optimizer": "momentum",
+    "horizon": 10,
+    "stability_regime": "unstable",
+    "status": "check-failed",
+    "output_hash": "7f00c9180862d845d9589c34efc655fded6807d383f69364890f8812dbf7f149"
+  }
+]
