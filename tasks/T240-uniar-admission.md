@@ -2,7 +2,7 @@
 id: T240
 title: UniAR homogeneous-objective boundary-control admission
 parent: T200
-status: running
+status: awaiting_review
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -105,3 +105,31 @@ Acceptance contributes to T500.
   real commit per the same user authorization (2026-09-03) covering all four
   tasks sharing this defect (T215/T220/T230/T240); this is the only
   frontmatter field changed.
+- 2026-09-03 — Remote executor completed the formal admission run
+  `runs/admission-uniar-v1/` (`manifest.json` status `pass`, 28/28 artifacts
+  reverified, 0 failed) after: storage preflight (`status: pass`,
+  `filesystem_class: local`); a fresh H20-FoldUMM venv build with four
+  documented upstream environment defects fixed (torch silently downgraded by
+  transitive installs x2, `flash-attn` ABI staleness after each torch
+  reinstall, a broken system `xformers`/`triton` leak via
+  `--system-site-packages`, and mixed CUDA12/CUDA13 `nvidia-*` packages
+  breaking cuDNN init); a ~43.7GiB checkpoint download to local SSD with
+  redundant `sd3_pipeline` fp16-duplicate shards excluded and every retained
+  file sha256-verified; both official smoke entry points
+  (`inference/chat.py`, `inference/generate.py`) run verbatim to completion
+  (`exit_code=0` each), the generation smoke producing a real, hash-verified
+  PNG; and a read-only AR trainable-block enumeration
+  (`configs/admission/uniar/parameter-block-registry.yaml`) showing
+  `shared_llm_backbone`/`understanding_private`/`generation_private` sum
+  exactly to the checkpoint's 9,627,074,032 total parameters. The
+  distinctive finding this task exists to establish — that visual-decoder
+  (SD3 pixel-decoder) training code is confirmed absent from the official
+  repository (its own sole README TODO item) — is documented via
+  `scope.unreleased_decoder_training_recorded=true` in
+  `runs/admission-uniar-v1/metrics.json`, with no attempt made to
+  reimplement, patch around, or claim support for it, per the frozen
+  protocol. Total GPU usage: ~0.69 GPU-hours on 1x H20, within the 8-hour
+  cap. `bash scripts/validate_task_submission.sh T240` passes every check
+  (task tree, run manifests, research state, full pytest suite, compile,
+  metrics assertions, whitespace); status set to `awaiting_review` for
+  local-reviewer decision — remote executor does not self-accept.
