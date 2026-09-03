@@ -71,6 +71,7 @@ from typing import Any
 
 import torch
 from torch import nn
+from torch.nn.attention import SDPBackend, sdpa_kernel
 from torch.nn.utils.stateless import _reparametrize_module
 
 from comppareto.adapters.showo2.protocols import LossFn
@@ -194,9 +195,28 @@ def call_with_overrides(
     unit test, which reproduced and then resolved a ``strict=True``
     ``RuntimeError: Missing key(s)`` failure on a toy module with an
     un-overridden second submodule).
+
+    Every forward call is additionally wrapped in
+    ``torch.nn.attention.sdpa_kernel(SDPBackend.MATH)``. This is an
+    infrastructure fix, not a protocol change: on the first real-checkpoint
+    GPU run (2026-09-03), the default SDPA backend selected on this
+    hardware/torch build for the model's internal
+    ``scaled_dot_product_attention`` calls was the memory-efficient kernel,
+    whose backward pass (``aten::_scaled_dot_product_efficient_attention_backward``)
+    does not implement a double-backward (raises ``RuntimeError: derivative
+    for ... is not implemented``) -- fatal for T215's rerun-response
+    protocol, which requires ``create_graph=True`` through the inner
+    adaptation step to reach ``theta_s`` in the outer meta-gradient. Forcing
+    the math backend (which does support double-backward) here changes only
+    which CUDA kernel computes an already-specified mathematical operation
+    (``scaled_dot_product_attention``); it does not alter the trainable
+    subspace, response horizon, batches, seeds, K, lr, or any other frozen
+    protocol quantity, so it is a permitted infrastructure retry under the
+    task's "Infrastructure retries reuse the same configuration and seed"
+    rule rather than a re-run under expanded scope.
     """
 
-    with _reparametrize_module(model, overrides):
+    with sdpa_kernel(SDPBackend.MATH), _reparametrize_module(model, overrides):
         method = getattr(model, method_name)
         return method(**call_kwargs)
 
