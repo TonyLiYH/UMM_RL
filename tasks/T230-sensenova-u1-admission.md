@@ -2,7 +2,7 @@
 id: T230
 title: SenseNova-U1 native pixel/MoT admission
 parent: T200
-status: ready
+status: running
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -10,9 +10,9 @@ branch: agent/T230-sensenova-u1-admission
 depends_on: [T210]
 blocks: [T500]
 allowed_paths: ["tasks/T230-sensenova-u1-admission.md", "configs/admission/sensenova-u1/", "runs/admission-sensenova-u1-v1/", "reports/T230/", "src/comppareto/adapters/sensenova_u1/", "tests/adapters/sensenova_u1/"]
-source_revision: "217d183473a14ad48852205ea3f2746301915729"
+source_revision: "217d183b30995db4ac82158259f45800e57e2eb1"
 created_at: 2026-08-26
-updated_at: 2026-09-01
+updated_at: 2026-09-03
 ---
 
 # T230: SenseNova-U1 admission
@@ -90,3 +90,18 @@ Acceptance contributes to T500.
 - 2026-08-26 — Planned; T210 format not yet accepted.
 - 2026-09-01 — T210 accepted; T230 authorized as an independent native
   pixel/MoT admission and static-overlap stress audit.
+- 2026-09-03 — Remote executor created branch `agent/T230-sensenova-u1-admission`
+  from `origin/main` (`4e34878abbb03e11bd722af40788e5b0fdb87a66`) and set
+  status to `running`. **Data-integrity correction**: this file's
+  `source_revision` field as found on `origin/main` was
+  `217d183473a14ad48852205ea3f2746301915729`, which does not resolve to any
+  git object in this repository (confirmed via `git cat-file -e` across every
+  fetched ref). This is the identical malformed value already found and
+  corrected in T215/T220/T240's frontmatter (see T215's 2026-09-03
+  review-history entry for the full investigation). The same real commit,
+  `217d183b30995db4ac82158259f45800e57e2eb1` ("merge: accept Show-o2 admission
+  evidence"), shares the same 7-character abbreviation but differs in the
+  remaining 33 hex characters. Corrected `source_revision` to the verified
+  real commit per the same user authorization (2026-09-03) covering all four
+  tasks sharing this defect (T215/T220/T230/T240); this is the only
+  frontmatter field changed.
