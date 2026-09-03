@@ -1,0 +1,15 @@
+{
+  "capacity_bytes": 9895604649984,
+  "environment": {
+    "HF_HOME": "/dockerdata/t210-showo2/hf_cache",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "errors": [],
+  "filesystem_class": "local",
+  "filesystem_type": "xfs",
+  "free_bytes": 9880387366912,
+  "minimum_free_bytes": 10000000000,
+  "path": "/dockerdata/t210-showo2",
+  "status": "pass"
+}
