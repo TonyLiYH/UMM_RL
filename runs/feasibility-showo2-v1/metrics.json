@@ -1,0 +1,684 @@
+{
+  "task_results": {
+    "mmu": {
+      "task": "mmu",
+      "k1_gate_passed": false,
+      "variants": {
+        "disjoint_k1": {
+          "k": 1,
+          "raw_loss_meta": 0.6388905048370361,
+          "raw_grad_norm": 1.4539244174957275,
+          "commit_loss_adapt": 0.7501887679100037,
+          "commit_loss_meta": 0.6376368999481201,
+          "commit_grad_norm": 1.4047837257385254,
+          "rerun_param_only_loss_adapt": 0.7501887679100037,
+          "rerun_param_only_loss_meta": 0.6376373171806335,
+          "rerun_param_only_grad_norm": NaN,
+          "rerun_complete_loss_adapt": 0.7501887679100037,
+          "rerun_complete_loss_meta": 0.6376373171806335,
+          "rerun_complete_grad_norm": NaN,
+          "raw_vs_commit_cosine": 0.9775210330838652,
+          "raw_vs_rerun_cosine": NaN,
+          "commit_vs_rerun_cosine": NaN,
+          "rollback_ok_after_rerun_variants": false,
+          "rollback_ok_after_fd": true,
+          "rollback_detail": [
+            {
+              "name": "fusion_proj.0.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.k_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.k_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.v_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.v_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.q_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.q_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.out_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.out_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc2.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc2.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm2.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm2.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            }
+          ],
+          "finite_difference": [
+            {
+              "label": "rademacher_seed_42",
+              "eps": 5.789179431478951e-05,
+              "fd_value": -0.005662729064538589,
+              "analytic_value": NaN,
+              "reference_magnitude": 0.005662729064538589,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_43",
+              "eps": 5.789179431478951e-05,
+              "fd_value": -0.00411834841057352,
+              "analytic_value": NaN,
+              "reference_magnitude": 0.00411834841057352,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_44",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.00411834841057352,
+              "analytic_value": NaN,
+              "reference_magnitude": 0.00411834841057352,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "natural_raw_grad",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 1.36162894324587,
+              "analytic_value": NaN,
+              "reference_magnitude": 1.36162894324587,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            }
+          ],
+          "finite_difference_gate_passed": false
+        },
+        "same_batch_k1": {
+          "k": 1,
+          "raw_loss_meta": 0.6388905048370361,
+          "raw_grad_norm": 1.4539244174957275,
+          "commit_loss_adapt": 0.6388905048370361,
+          "commit_loss_meta": 0.6170790195465088,
+          "commit_grad_norm": 1.2799204587936401,
+          "rerun_param_only_loss_adapt": 0.6388905048370361,
+          "rerun_param_only_loss_meta": 0.6170786619186401,
+          "rerun_param_only_grad_norm": NaN,
+          "rerun_complete_loss_adapt": 0.6388905048370361,
+          "rerun_complete_loss_meta": 0.6170786619186401,
+          "rerun_complete_grad_norm": NaN,
+          "raw_vs_commit_cosine": 0.971934879473768,
+          "raw_vs_rerun_cosine": NaN,
+          "commit_vs_rerun_cosine": NaN,
+          "rollback_ok_after_rerun_variants": false,
+          "rollback_ok_after_fd": true,
+          "rollback_detail": [
+            {
+              "name": "fusion_proj.0.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.k_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.k_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.v_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.v_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.q_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.q_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.out_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.self_attn.out_proj.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc2.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.mlp.fc2.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm2.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "und_trans.layers.0.layer_norm2.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            }
+          ],
+          "finite_difference": [
+            {
+              "label": "rademacher_seed_42",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.00051479355132169,
+              "analytic_value": NaN,
+              "reference_magnitude": 0.00051479355132169,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_43",
+              "eps": 5.789179431478951e-05,
+              "fd_value": -0.0036035548592518295,
+              "analytic_value": NaN,
+              "reference_magnitude": 0.0036035548592518295,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_44",
+              "eps": 5.789179431478951e-05,
+              "fd_value": -0.008751490372468728,
+              "analytic_value": NaN,
+              "reference_magnitude": 0.008751490372468728,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "natural_raw_grad",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 1.2823507363423297,
+              "analytic_value": NaN,
+              "reference_magnitude": 1.2823507363423297,
+              "error": NaN,
+              "mode": "relative",
+              "passed": false
+            }
+          ],
+          "finite_difference_gate_passed": false
+        },
+        "disjoint_k3": null
+      }
+    },
+    "t2i": {
+      "task": "t2i",
+      "k1_gate_passed": false,
+      "variants": {
+        "disjoint_k1": {
+          "k": 1,
+          "raw_loss_meta": 0.09229712188243866,
+          "raw_grad_norm": 0.1675027459859848,
+          "commit_loss_adapt": 0.1501498520374298,
+          "commit_loss_meta": 0.0919317752122879,
+          "commit_grad_norm": 0.16232632100582123,
+          "rerun_param_only_loss_adapt": 0.1501498520374298,
+          "rerun_param_only_loss_meta": 0.0919317752122879,
+          "rerun_param_only_grad_norm": 0.15056897699832916,
+          "rerun_complete_loss_adapt": 0.1501498520374298,
+          "rerun_complete_loss_meta": 0.0919317752122879,
+          "rerun_complete_grad_norm": 0.15056897699832916,
+          "raw_vs_commit_cosine": 0.980646635857156,
+          "raw_vs_rerun_cosine": 0.967183415495484,
+          "commit_vs_rerun_cosine": 0.9858837217114197,
+          "rollback_ok_after_rerun_variants": false,
+          "rollback_ok_after_fd": true,
+          "rollback_detail": [
+            {
+              "name": "fusion_proj.0.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.q_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.k_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.v_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.o_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.q_norm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.k_norm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.mlp.gate_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.mlp.up_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.mlp.down_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.input_layernorm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.post_attention_layernorm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.adaLN_modulation.1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.adaLN_modulation.1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            }
+          ],
+          "finite_difference": [
+            {
+              "label": "rademacher_seed_42",
+              "eps": 5.789179431478951e-05,
+              "fd_value": -6.434919391521124e-05,
+              "analytic_value": 5.354118184186518e-05,
+              "reference_magnitude": 6.434919391521124e-05,
+              "error": 1.8320412204760936,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_43",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.0,
+              "analytic_value": -1.198501922772266e-05,
+              "reference_magnitude": 0.0,
+              "error": 1.198501922772266e-05,
+              "mode": "absolute",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_44",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.0001286983878304225,
+              "analytic_value": 7.310263754334301e-05,
+              "reference_magnitude": 0.0001286983878304225,
+              "error": 0.4319848229982056,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "natural_raw_grad",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.1471666064840881,
+              "analytic_value": 0.14562782645225525,
+              "reference_magnitude": 0.1471666064840881,
+              "error": 0.010456040732305903,
+              "mode": "relative",
+              "passed": false
+            }
+          ],
+          "finite_difference_gate_passed": false
+        },
+        "same_batch_k1": {
+          "k": 1,
+          "raw_loss_meta": 0.09229712188243866,
+          "raw_grad_norm": 0.1675027459859848,
+          "commit_loss_adapt": 0.09229712188243866,
+          "commit_loss_meta": 0.09036044776439667,
+          "commit_grad_norm": 0.15006758272647858,
+          "rerun_param_only_loss_adapt": 0.09229712188243866,
+          "rerun_param_only_loss_meta": 0.09036044776439667,
+          "rerun_param_only_grad_norm": 0.14937962591648102,
+          "rerun_complete_loss_adapt": 0.09229712188243866,
+          "rerun_complete_loss_meta": 0.09036044776439667,
+          "rerun_complete_grad_norm": 0.14937962591648102,
+          "raw_vs_commit_cosine": 0.9204480185567828,
+          "raw_vs_rerun_cosine": 0.9735046619111987,
+          "commit_vs_rerun_cosine": 0.9693769302372419,
+          "rollback_ok_after_rerun_variants": false,
+          "rollback_ok_after_fd": true,
+          "rollback_detail": [
+            {
+              "name": "fusion_proj.0.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "fusion_proj.3.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.q_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.k_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.v_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.o_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.q_norm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.self_attn.k_norm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.mlp.gate_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.mlp.up_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.mlp.down_proj.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.input_layernorm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.post_attention_layernorm.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.adaLN_modulation.1.weight",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            },
+            {
+              "name": "diffusion_head_a.0.adaLN_modulation.1.bias",
+              "data_max_abs_diff": 0.0,
+              "all_matches": true
+            }
+          ],
+          "finite_difference": [
+            {
+              "label": "rademacher_seed_42",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.0,
+              "analytic_value": 4.069181886734441e-05,
+              "reference_magnitude": 0.0,
+              "error": 4.069181886734441e-05,
+              "mode": "absolute",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_43",
+              "eps": 5.789179431478951e-05,
+              "fd_value": -6.434919391521124e-05,
+              "analytic_value": -5.692229024134576e-06,
+              "reference_magnitude": 6.434919391521124e-05,
+              "error": 0.9115415644268232,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "rademacher_seed_44",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 6.434919391521124e-05,
+              "analytic_value": 0.00010025056690210477,
+              "reference_magnitude": 6.434919391521124e-05,
+              "error": 0.5579148828841342,
+              "mode": "relative",
+              "passed": false
+            },
+            {
+              "label": "natural_raw_grad",
+              "eps": 5.789179431478951e-05,
+              "fd_value": 0.14452828953356445,
+              "analytic_value": 0.14542177319526672,
+              "reference_magnitude": 0.14452828953356445,
+              "error": 0.006182067639393041,
+              "mode": "relative",
+              "passed": false
+            }
+          ],
+          "finite_difference_gate_passed": false
+        },
+        "disjoint_k3": null
+      }
+    }
+  },
+  "snapshot_restore": {
+    "failed": 4
+  },
+  "finite_difference": {
+    "failed": 4
+  },
+  "protocols": {
+    "raw_measured": true,
+    "commit_measured": true,
+    "rerun_measured": true
+  },
+  "resources": {
+    "gpu_hours": 0.01601294271182269,
+    "wall_clock_seconds": 57.64659376256168,
+    "peak_memory_allocated_bytes": 44430516224,
+    "peak_memory_reserved_bytes": 47542435840,
+    "gpu_count_used": 1
+  },
+  "persistent_updates": 0,
+  "failure_reason": null
+}

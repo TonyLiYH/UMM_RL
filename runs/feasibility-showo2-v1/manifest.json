@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": "feasibility-showo2-v1",
+  "task_id": "T215",
+  "run_kind": "diagnostic",
+  "source_revision": "22892b1eb9cc0fec7c74e1cb53a80ab53fc8887a",
+  "execution_revision": "22892b1eb9cc0fec7c74e1cb53a80ab53fc8887a",
+  "dirty": true,
+  "config_sha256": "e2e5aa2c32ad901c8a1e8e8d405b18a70298b5263f16560484ceea4ba186a7f2",
+  "environment": {
+    "python_version": "3.10.12",
+    "torch_version": "2.5.1+cu124",
+    "platform": "Linux-5.4.241-1-tlinux4-0017.7-x86_64-with-glibc2.35",
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA H20"
+  },
+  "status": "fail",
+  "result_files": [
+    "runs/feasibility-showo2-v1/resolved-config.yaml",
+    "runs/feasibility-showo2-v1/metrics.json"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "resolved-config",
+      "kind": "showo2-feasibility-artifact",
+      "canonical_uri": "runs/feasibility-showo2-v1/resolved-config.yaml",
+      "sha256": "e2e5aa2c32ad901c8a1e8e8d405b18a70298b5263f16560484ceea4ba186a7f2",
+      "bytes": 1570
+    },
+    {
+      "artifact_id": "metrics",
+      "kind": "showo2-feasibility-artifact",
+      "canonical_uri": "runs/feasibility-showo2-v1/metrics.json",
+      "sha256": "c44fa8862528057e2b204b2de9cd5e166b066ce0048017319e038f1ae7f3d775",
+      "bytes": 23436
+    }
+  ],
+  "retry": null
+}

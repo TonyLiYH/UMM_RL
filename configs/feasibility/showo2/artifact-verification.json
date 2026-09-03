@@ -1,0 +1,25 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 1570,
+      "actual_sha256": "e2e5aa2c32ad901c8a1e8e8d405b18a70298b5263f16560484ceea4ba186a7f2",
+      "artifact_id": "resolved-config",
+      "canonical_uri": "runs/feasibility-showo2-v1/resolved-config.yaml",
+      "expected_bytes": 1570,
+      "expected_sha256": "e2e5aa2c32ad901c8a1e8e8d405b18a70298b5263f16560484ceea4ba186a7f2",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 23436,
+      "actual_sha256": "c44fa8862528057e2b204b2de9cd5e166b066ce0048017319e038f1ae7f3d775",
+      "artifact_id": "metrics",
+      "canonical_uri": "runs/feasibility-showo2-v1/metrics.json",
+      "expected_bytes": 23436,
+      "expected_sha256": "c44fa8862528057e2b204b2de9cd5e166b066ce0048017319e038f1ae7f3d775",
+      "status": "pass"
+    }
+  ],
+  "checked": 2,
+  "failed": 0,
+  "passed": 2
+}
