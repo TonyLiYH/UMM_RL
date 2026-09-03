@@ -2,7 +2,7 @@
 id: T215
 title: Show-o2 finite-response diagnostic feasibility
 parent: T200
-status: running
+status: blocked
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -157,3 +157,42 @@ other declared dependencies.
   (`git merge-base --is-ancestor 217d183473a14ad48852205ea3f2746301915729 HEAD`
   errors with "Not a valid commit name") independent of any work performed on
   this branch.
+- 2026-09-03 — Remote executor ran the real K=1 diagnostic against the accepted checkpoint for
+  both task paths (`runs/feasibility-showo2-v1/`). Two genuine infrastructure defects were found
+  and fixed as permitted infrastructure retries (commits `cd18c3b`, `22892b1`): the default SDPA
+  backend lacked double-backward support for `create_graph=True`; the finite-difference
+  Rademacher direction tensors were built on the wrong device. After both fixes, the diagnostic
+  completed without a Python exception but **the K=1 gate did not pass for either task path**:
+  MMU's rerun-response analytic gradient is `NaN` (confirmed root cause via an isolated repro on
+  the same container/torch build — AdamW's `eps`-outside-`sqrt` denominator differentiated through
+  an exactly-zero `grad_p` coordinate at optimizer step 1, an intrinsic property of the frozen
+  AdamW formula, not an infrastructure bug); T2I's analytic gradient is finite but misses the
+  declared finite-difference tolerance by 43%-183% relative error on 3 of 4 fixed directions
+  (reported as a genuine numerical-accuracy result). Per the task's explicit rule, K=3 was **not**
+  run for either task path. `persistent_updates: 0` and every actual parameter/gradient tensor
+  restored exactly in all runs (`data_max_abs_diff: 0.0`); the combined rollback check nonetheless
+  reports `snapshot_restore.failed: 4` due to an RNG-exact-restore sub-check artifact (see
+  `reports/T215/failure-ledger.md`, `ROLLBACK-RNG`), unrelated to any persistent parameter
+  mutation. Full numeric results: `reports/T215/result-summary.md`; claim-by-claim gate
+  determination: `reports/T215/claim-check.md`; complete failure/root-cause ledger:
+  `reports/T215/failure-ledger.md`. Cumulative GPU usage this session (including 3 earlier
+  infrastructure-debugging attempts): ~0.0323 GPU-hours on 1 H20 GPU, against the 8-hour/2-GPU
+  cap. Committed and pushed: `b2ad196` (results/reports), `37826a5` (removed an out-of-scope
+  `src/comppareto/adapters/__init__.py` file that `validate_task_submission.sh` flagged as an
+  unauthorized changed path outside this task's `allowed_paths`; confirmed unnecessary via direct
+  import test and the full showo2 test suite).
+  **Setting status to `blocked` rather than `awaiting_review`**: `tasks/contracts/T215.acceptance.yaml`
+  (outside this task's `allowed_paths`, so not modifiable by this executor) requires
+  `runs/feasibility-showo2-v1/manifest.json:status == "pass"` and
+  `metrics.json:{snapshot_restore.failed, finite_difference.failed} == 0` unconditionally, with no
+  branch for an honestly-reported, gated K=1 failure. The task's own pass/fail gate language
+  explicitly anticipates this outcome ("Unsupported transitions... or unstable finite differences
+  fail the affected configuration and remain in the ledger"), and the diagnostic's actual, correct
+  behavior when K=1 fails is to report the failure and skip K=3 — not to retry with a different
+  seed/subspace/tolerance to force a pass, which the failure/retry rules explicitly forbid. This is
+  therefore a genuine, out-of-scope blocker (a static acceptance-contract metric that cannot
+  represent a valid negative diagnostic result) rather than something this run can resolve; a
+  local-research-agent/task-owning decision is needed on whether `T215.acceptance.yaml` should be
+  revised to accept a documented K=1 failure as a valid submission, or whether T215 should be
+  formally closed as a negative feasibility result via some other path. No fabricated or rounded
+  numbers were used to force a pass.
