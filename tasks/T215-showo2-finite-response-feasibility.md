@@ -2,7 +2,7 @@
 id: T215
 title: Show-o2 finite-response diagnostic feasibility
 parent: T200
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -10,9 +10,9 @@ branch: agent/T215-showo2-finite-response-feasibility
 depends_on: [T210]
 blocks: [T300, T310]
 allowed_paths: ["tasks/T215-showo2-finite-response-feasibility.md", "configs/feasibility/showo2/", "runs/feasibility-showo2-v1/", "reports/T215/", "src/comppareto/adapters/showo2/", "tests/adapters/showo2/"]
-source_revision: "217d183473a14ad48852205ea3f2746301915729"
+source_revision: "217d183b30995db4ac82158259f45800e57e2eb1"
 created_at: 2026-08-27
-updated_at: 2026-09-01
+updated_at: 2026-09-03
 ---
 
 # T215: Show-o2 finite-response diagnostic feasibility
@@ -136,3 +136,24 @@ other declared dependencies.
 - 2026-08-27 — Planned after the Show-o2 first-attempt design; T210 is not yet accepted.
 - 2026-09-01 — T210 accepted with recorded limitations; T215 authorized for
   reversible diagnostic execution. No persistent training is authorized.
+- 2026-09-03 — Remote executor created branch
+  `agent/T215-showo2-finite-response-feasibility` from `origin/main`
+  (`4e34878abbb03e11bd722af40788e5b0fdb87a66`) and set status to `running`.
+  **Data-integrity correction**: this file's `source_revision` field as found on
+  `origin/main` was `217d183473a14ad48852205ea3f2746301915729`, which does not
+  resolve to any git object in this repository (confirmed via
+  `git cat-file -e` and `git rev-list --objects --all` across every fetched
+  ref: `main`, `agent/T155-exact-oracle`, `agent/T210-showo2-admission`). The
+  same malformed value was found identically in T220/T230/T240's frontmatter.
+  A real commit, `217d183b30995db4ac82158259f45800e57e2eb1` ("merge: accept
+  Show-o2 admission evidence"), shares the same 7-character abbreviation but
+  differs in the remaining 33 hex characters — consistent with a
+  truncate-then-refill transcription defect at task-authoring time. Corrected
+  `source_revision` to the verified real commit
+  `217d183b30995db4ac82158259f45800e57e2eb1` per explicit user authorization
+  (2026-09-03) after presenting this exact finding; this is the only
+  frontmatter field changed. `scripts/validate_task_submission.sh T215`'s
+  `revision_is_ancestor` check would otherwise hard-fail
+  (`git merge-base --is-ancestor 217d183473a14ad48852205ea3f2746301915729 HEAD`
+  errors with "Not a valid commit name") independent of any work performed on
+  this branch.
