@@ -1,0 +1,259 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 648,
+      "actual_sha256": "8f74f7dff187b43ead918acff21bdd24ad02526ebdf74af1bedc41e83aad9025",
+      "artifact_id": "uniar-rl-bsq_encoder-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/bsq_encoder/config.json",
+      "expected_bytes": 648,
+      "expected_sha256": "8f74f7dff187b43ead918acff21bdd24ad02526ebdf74af1bedc41e83aad9025",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1312361072,
+      "actual_sha256": "a07a8018053621883d0a988c7ba7d974a1941922d1cb1fe27d76c6420664ad0a",
+      "artifact_id": "uniar-rl-bsq_encoder-model-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/bsq_encoder/model.safetensors",
+      "expected_bytes": 1312361072,
+      "expected_sha256": "a07a8018053621883d0a988c7ba7d974a1941922d1cb1fe27d76c6420664ad0a",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1647,
+      "actual_sha256": "60660b95e199817a3fa89bc60e334e118eeb97d66853863c287ef00234434bd0",
+      "artifact_id": "uniar-rl-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/config.json",
+      "expected_bytes": 1647,
+      "expected_sha256": "60660b95e199817a3fa89bc60e334e118eeb97d66853863c287ef00234434bd0",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4956280080,
+      "actual_sha256": "7bfc3ce6379861b9bd928ff49915a5b97187ef7c770303d140b69be1ad8a1535",
+      "artifact_id": "uniar-rl-model-00001-of-00004-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/model-00001-of-00004.safetensors",
+      "expected_bytes": 4956280080,
+      "expected_sha256": "7bfc3ce6379861b9bd928ff49915a5b97187ef7c770303d140b69be1ad8a1535",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4983070560,
+      "actual_sha256": "9cb214416ab4e233422b61cf4fc6380824861083354b04dad7eacaa935d2fc2b",
+      "artifact_id": "uniar-rl-model-00002-of-00004-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/model-00002-of-00004.safetensors",
+      "expected_bytes": 4983070560,
+      "expected_sha256": "9cb214416ab4e233422b61cf4fc6380824861083354b04dad7eacaa935d2fc2b",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4999848448,
+      "actual_sha256": "481e4f80640b2f84bf938366789fe10703a9218069b11d7d925352de964d8fc8",
+      "artifact_id": "uniar-rl-model-00003-of-00004-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/model-00003-of-00004.safetensors",
+      "expected_bytes": 4999848448,
+      "expected_sha256": "481e4f80640b2f84bf938366789fe10703a9218069b11d7d925352de964d8fc8",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4315053008,
+      "actual_sha256": "becf34aaabfc23e0af53f629f5bade2b18dd11a1327a98462145e2db3df3d070",
+      "artifact_id": "uniar-rl-model-00004-of-00004-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/model-00004-of-00004.safetensors",
+      "expected_bytes": 4315053008,
+      "expected_sha256": "becf34aaabfc23e0af53f629f5bade2b18dd11a1327a98462145e2db3df3d070",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 5107104286,
+      "actual_sha256": "11fe06e22364b823dfeedc275912336b932b32a293a0b2f35ffac071990cc4de",
+      "artifact_id": "uniar-rl-sd3_pipeline-sd3-5_medium-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/sd3.5_medium.safetensors",
+      "expected_bytes": 5107104286,
+      "expected_sha256": "11fe06e22364b823dfeedc275912336b932b32a293a0b2f35ffac071990cc4de",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 574,
+      "actual_sha256": "3ae637e6409ed10c125e13b935461060d629ee069eea7cb8c3e9eee26b01ff1a",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder/config.json",
+      "expected_bytes": 574,
+      "expected_sha256": "3ae637e6409ed10c125e13b935461060d629ee069eea7cb8c3e9eee26b01ff1a",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 247323896,
+      "actual_sha256": "71e183d11db0c6b6282a4d9e0abb74125edc8692393e89ed8ee5571005f35cb1",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder-model-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder/model.safetensors",
+      "expected_bytes": 247323896,
+      "expected_sha256": "71e183d11db0c6b6282a4d9e0abb74125edc8692393e89ed8ee5571005f35cb1",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 570,
+      "actual_sha256": "786ac791f8ae2168eca583978d89e97b704579e4873a2ca36e2d8b5af561f625",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder_2-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder_2/config.json",
+      "expected_bytes": 570,
+      "expected_sha256": "786ac791f8ae2168eca583978d89e97b704579e4873a2ca36e2d8b5af561f625",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1389382176,
+      "actual_sha256": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder_2-model-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder_2/model.safetensors",
+      "expected_bytes": 1389382176,
+      "expected_sha256": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 740,
+      "actual_sha256": "9035948b0904c536918a88b5d984a52cfca26a5c57efa9e90149790cf38c151e",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder_3-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder_3/config.json",
+      "expected_bytes": 740,
+      "expected_sha256": "9035948b0904c536918a88b5d984a52cfca26a5c57efa9e90149790cf38c151e",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4994582104,
+      "actual_sha256": "4f2751ceeb2a96edd693e539dc5d6bba0b8d3814f49a9b3798403a0cec4b2e3d",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder_3-model-00001-of-00002-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder_3/model-00001-of-00002.safetensors",
+      "expected_bytes": 4994582104,
+      "expected_sha256": "4f2751ceeb2a96edd693e539dc5d6bba0b8d3814f49a9b3798403a0cec4b2e3d",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4530066248,
+      "actual_sha256": "f63154532130422309532ff56f11945fbea8266c958e3133e8e5aef85c6293c7",
+      "artifact_id": "uniar-rl-sd3_pipeline-text_encoder_3-model-00002-of-00002-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/text_encoder_3/model-00002-of-00002.safetensors",
+      "expected_bytes": 4530066248,
+      "expected_sha256": "f63154532130422309532ff56f11945fbea8266c958e3133e8e5aef85c6293c7",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 524,
+      "actual_sha256": "b6ea8128277df286573ce1937c36ce42a5a84e976331091ffccb1d05893dc299",
+      "artifact_id": "uniar-rl-sd3_pipeline-transformer-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/transformer/config.json",
+      "expected_bytes": 524,
+      "expected_sha256": "b6ea8128277df286573ce1937c36ce42a5a84e976331091ffccb1d05893dc299",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4939433672,
+      "actual_sha256": "f81eb93a348be218af757dd095cbda45090380d9bbda91049442e0e40bb4cc95",
+      "artifact_id": "uniar-rl-sd3_pipeline-transformer-diffusion_pytorch_model-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/transformer/diffusion_pytorch_model.safetensors",
+      "expected_bytes": 4939433672,
+      "expected_sha256": "f81eb93a348be218af757dd095cbda45090380d9bbda91049442e0e40bb4cc95",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 809,
+      "actual_sha256": "58557f2439dfa867450caef425b5d11160be8aa9c34d60dbf23a94a6a94cb060",
+      "artifact_id": "uniar-rl-sd3_pipeline-vae-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/vae/config.json",
+      "expected_bytes": 809,
+      "expected_sha256": "58557f2439dfa867450caef425b5d11160be8aa9c34d60dbf23a94a6a94cb060",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 167666902,
+      "actual_sha256": "8f53304a79335b55e13ec50f63e5157fee4deb2f30d5fae0654e2b2653c109dc",
+      "artifact_id": "uniar-rl-sd3_pipeline-vae-diffusion_pytorch_model-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_pipeline/vae/diffusion_pytorch_model.safetensors",
+      "expected_bytes": 167666902,
+      "expected_sha256": "8f53304a79335b55e13ec50f63e5157fee4deb2f30d5fae0654e2b2653c109dc",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1163,
+      "actual_sha256": "b60086df0bd639bd11002c110d0bc7e94c451598d2d1c0715d10349917df18a6",
+      "artifact_id": "uniar-rl-sd3_transformer-config-json",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_transformer/config.json",
+      "expected_bytes": 1163,
+      "expected_sha256": "b60086df0bd639bd11002c110d0bc7e94c451598d2d1c0715d10349917df18a6",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4953589560,
+      "actual_sha256": "dfcd642a4f2c28bc450ea83f1955cb81fb002e2f17a8f11835d14ab7aff31b52",
+      "artifact_id": "uniar-rl-sd3_transformer-diffusion_pytorch_model-safetensors",
+      "canonical_uri": "/dockerdata/t240-uniar/assets/UniAR-RL/sd3_transformer/diffusion_pytorch_model.safetensors",
+      "expected_bytes": 4953589560,
+      "expected_sha256": "dfcd642a4f2c28bc450ea83f1955cb81fb002e2f17a8f11835d14ab7aff31b52",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 2254,
+      "actual_sha256": "6f47558ca2c73b5b6e069a6b4c027f07c65ea220b05530ca356eb5fe69b2c8bb",
+      "artifact_id": "checksums-log",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/t240_checksums.txt",
+      "expected_bytes": 2254,
+      "expected_sha256": "6f47558ca2c73b5b6e069a6b4c027f07c65ea220b05530ca356eb5fe69b2c8bb",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 659,
+      "actual_sha256": "7f11d1e9a621cdec6a6e728400d169838da28da3299191f450fbc2aeb1430665",
+      "artifact_id": "param-registry-toplevel-log",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/t240_param_registry_raw.json",
+      "expected_bytes": 659,
+      "expected_sha256": "7f11d1e9a621cdec6a6e728400d169838da28da3299191f450fbc2aeb1430665",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1482,
+      "actual_sha256": "41d7404c7e6d3a74f2da21264b31880c561362c682ba9e2e3b2fabaf47401ae4",
+      "artifact_id": "param-registry-level2-log",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/t240_param_registry_level2.json",
+      "expected_bytes": 1482,
+      "expected_sha256": "41d7404c7e6d3a74f2da21264b31880c561362c682ba9e2e3b2fabaf47401ae4",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1182,
+      "actual_sha256": "c3edac986c92ec6e7124f4e41ab27f86685c5ad8633f4758075e6379de8398c1",
+      "artifact_id": "pip-freeze-snapshot",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/uniar_pip_freeze.txt",
+      "expected_bytes": 1182,
+      "expected_sha256": "c3edac986c92ec6e7124f4e41ab27f86685c5ad8633f4758075e6379de8398c1",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 10240,
+      "actual_sha256": "f3237e19c1b36ad82a3ffbb683ecb2085dc49c88534860b79a7d0552315c0d37",
+      "artifact_id": "understanding-smoke-run-bundle",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/run_evidence/understanding_smoke.tar",
+      "expected_bytes": 10240,
+      "expected_sha256": "f3237e19c1b36ad82a3ffbb683ecb2085dc49c88534860b79a7d0552315c0d37",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1669120,
+      "actual_sha256": "69b4826c090ac942362ad43edf263fb3d2b34991966e52dd3b963591300b3718",
+      "artifact_id": "generation-smoke-run-bundle",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/run_evidence/generation_smoke.tar",
+      "expected_bytes": 1669120,
+      "expected_sha256": "69b4826c090ac942362ad43edf263fb3d2b34991966e52dd3b963591300b3718",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1629106,
+      "actual_sha256": "ec73a92e64e1b71fa3320e34908546b4f81dbfb5df884d8a91fee1cb2aedff43",
+      "artifact_id": "generation-output-image",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T240-uniar-admission/generated.png",
+      "expected_bytes": 1629106,
+      "expected_sha256": "ec73a92e64e1b71fa3320e34908546b4f81dbfb5df884d8a91fee1cb2aedff43",
+      "status": "pass"
+    }
+  ],
+  "checked": 28,
+  "failed": 0,
+  "passed": 28
+}
