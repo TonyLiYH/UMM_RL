@@ -1,0 +1,89 @@
+# SenseNova-U1-8B-MoT parameter-block registry
+#
+# Generated 2026-09-03 from `scripts/inspect_model_params.py --model_path
+# /dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT --dtype bfloat16
+# --show_groups all` (the official repository's own admitted inspection tool,
+# mirroring T210's approach of enumerating `named_parameters()` directly on
+# the loaded checkpoint), at pinned commit
+# f97964a6e54b0abf92aa2db849af4e942bb2ff08, checkpoint sha
+# bfa9b436503cb8aed4f2bc60e3236710cc77468d. See
+# reports/T230/parameter-block-registry.md for the full derivation and the
+# grouping-rule source citation (`src/sensenova_u1/utils/param_count.py`,
+# `DEFAULT_GROUPS`). This is an admission artifact only: no joint
+# post-training has been started or authorized, and no U1.5 asset was used.
+
+total_params: 17552340992
+trainable_params: 17552340992
+unassigned_trainable_params: 0
+
+blocks:
+  shared:
+    description: >
+      Token input embedding and text-token output projection of the Qwen3
+      language-model backbone. Every text token in both the understanding
+      and generation pathways is embedded through embed_tokens; lm_head is
+      also exercised by the generation pathway because t2i-reasoning
+      ("think") runs a text-emitting reasoning phase before image tokens are
+      produced. Confirmed shared (not private to either pathway) by the
+      upstream tool's own grouping-rule comment in
+      src/sensenova_u1/utils/param_count.py.
+    top_level_modules: [language_model.model.embed_tokens, language_model.lm_head]
+    param_count: 1245020160
+    fraction_of_total: 0.0709
+    example_param: language_model.model.embed_tokens.weight
+    member_count: 2
+
+  understanding_transformer:
+    description: >
+      Visual encoder (vision_model.*) plus every non-"_mot_gen"-suffixed
+      Qwen3 language-model transformer layer (self-attention, MLP, norms).
+      This is the understanding-pathway expert inside the MoT
+      language-model backbone, selected at inference time by the boolean
+      image_gen_indicators-style routing mask (see the routed-overlap audit
+      in runs/admission-sensenova-u1-v1/metrics.json for the full mechanism
+      description). Exercised by examples/vqa/inference.py.
+    top_level_modules: [vision_model, language_model (non "_mot_gen" layers)]
+    param_count: 8121000000
+    fraction_of_total: 0.4627
+    example_param: language_model.model.layers.0.self_attn.q_norm.weight
+    member_count: 551
+
+  generation_transformer:
+    description: >
+      Flow-matching / image-generation modules (fm_modules.*: visual
+      generation head, timestep/noise embedders, fm_head) plus every
+      "_mot_gen"-suffixed Qwen3 language-model transformer layer. This is
+      the generation-pathway expert inside the MoT language-model backbone
+      (duplicate weight set, selected by the same boolean routing mask as
+      above, mutually exclusive per-token with the understanding expert in
+      the released code). Exercised by examples/t2i/inference.py.
+    top_level_modules: [fm_modules, language_model (only "_mot_gen" layers)]
+    param_count: 8186000000
+    fraction_of_total: 0.4664
+    example_param: language_model.model.layers.0.mlp_mot_gen.gate_proj.weight
+    member_count: 563
+
+pathways:
+  understanding_pathway:
+    description: shared + understanding_transformer, summed once (shared counted in both pathways by design).
+    param_count: 9366020160
+    fraction_of_total: 0.5336
+  generation_pathway:
+    description: shared + generation_transformer, summed once (shared counted in both pathways by design).
+    param_count: 9431020160
+    fraction_of_total: 0.5373
+
+verification:
+  method: >
+    Directly enumerated model.named_parameters() on the loaded checkpoint
+    (deduplicated by Python object id to avoid double-counting any tied
+    weights) and classified every parameter name against the upstream
+    DEFAULT_GROUPS prefix/contains rules; any parameter name not matched by
+    a rule falls through to an "other"/"embedding_misc" catch-all group in
+    the tool's own infer_group() function. Independently reran this
+    classification programmatically (not just via the tool's printed
+    summary) to confirm the catch-all groups are empty.
+  total_params_matches_summary: true
+  unassigned_trainable_parameters: 0
+  catch_all_groups_present: false
+  three_groups_account_for_total: true

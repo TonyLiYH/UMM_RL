@@ -1,0 +1,75 @@
+{
+  "run_id": "admission-sensenova-u1-v1",
+  "smoke": {
+    "understanding": {
+      "exit_code": 0,
+      "runs": ["smoke_vqa"],
+      "script": "examples/vqa/inference.py",
+      "wallclock_seconds": 73,
+      "model_load_seconds": 5.551,
+      "generation_seconds": 63.551,
+      "load_peak_alloc_gib": 32.70,
+      "load_peak_reserved_gib": 33.02,
+      "generation_peak_alloc_gib": 32.98,
+      "generation_peak_reserved_gib": 33.22,
+      "load_peak_cpu_rss_gib": 5.52,
+      "exit_code_evidence": "direct: the smoke wrapper script (t230_smoke_vqa.sh) captures the literal subprocess exit status via `$?` immediately after the official examples/vqa/inference.py invocation and prints it as SMOKE_VQA_EXIT_CODE=0; the answer.txt output file was also produced and is non-empty (4573 bytes), corroborating a completed run."
+    },
+    "generation": {
+      "exit_code": 0,
+      "runs": ["smoke_t2i"],
+      "script": "examples/t2i/inference.py",
+      "wallclock_seconds": 86,
+      "model_load_seconds": 4.798,
+      "generation_seconds": 75.388,
+      "load_peak_alloc_gib": 32.70,
+      "load_peak_reserved_gib": 33.02,
+      "generation_peak_alloc_gib": 34.78,
+      "generation_peak_reserved_gib": 35.75,
+      "load_peak_cpu_rss_gib": 5.52,
+      "image_tokens_per_image": 4096,
+      "throughput_tok_per_second": 54.33,
+      "exit_code_evidence": "direct: the smoke wrapper script (t230_smoke_t2i.sh) captures the literal subprocess exit status via `$?` immediately after the official examples/t2i/inference.py invocation and prints it as SMOKE_T2I_EXIT_CODE=0; output.png was also produced and is non-empty (5232813 bytes), corroborating a completed run."
+    }
+  },
+  "block_registry": {
+    "total_params": 17552340992,
+    "trainable_params": 17552340992,
+    "unassigned_trainable_parameters": 0,
+    "source": "configs/admission/sensenova-u1/parameter-block-registry.yaml"
+  },
+  "routed_overlap": {
+    "static_assumption_violations_recorded": true,
+    "mechanism": "MoT (Mixture-of-Transformers): a boolean per-token routing mask (`image_gen_indicators`) selects between two disjoint, duplicate weight sets (understanding-path modules vs. `_mot_gen`-suffixed generation-path modules) inside the Qwen3 language-model backbone. This is a hard boolean split of duplicate weights, not a learned MoE gate over expert sub-networks (the out-of-scope A3B variant uses the latter; the two mechanisms are not interchangeable and are not conflated in this audit).",
+    "static_assumption_violation": {
+      "location": "src/sensenova_u1/models/neo_unify/modeling_qwen3.py, decoder-layer and attention forward() methods (e.g. lines ~751-772, ~1003-1004 at pinned commit f97964a6e54b0abf92aa2db849af4e942bb2ff08)",
+      "description": "The released code's forward() branches only cover the two pure cases (all-understanding tokens, or all-generation tokens, i.e. exist_non_image_gen_tokens XOR exist_image_gen_tokens). The mixed case (a single forward pass containing both understanding and generation tokens simultaneously) hits an explicit `raise NotImplementedError(\"The mixed und/gen forward path is not yet validated (issue #207): known issues are fixed, but it has no parity test and no production caller. Split the sequence at token-type boundaries and use forward_und / forward_gen.\")`. This is a static, code-visible assumption violation of \"the router can route arbitrary token mixes\": the released code assumes callers pre-split by token type, and explicitly refuses (rather than silently mis-computing) the mixed case.",
+      "trigger_condition": "exist_non_image_gen_tokens is True AND exist_image_gen_tokens is True within the same forward() call",
+      "is_runtime_failure_of_this_admission": false,
+      "note": "Both admission smokes (VQA-only understanding, T2I-only generation) each hit exactly one pure branch and completed with exit_code 0; neither smoke triggers the NotImplementedError. This is recorded as a documented upstream code-path limitation of the released repository, not a failure of this admission's required smokes."
+    },
+    "block_disjointness_check": {
+      "shared_block_double_counted_by_design": true,
+      "understanding_generation_blocks_disjoint": true,
+      "catch_all_groups_present": false,
+      "method": "Directly enumerated model.named_parameters() (deduplicated by Python object id) and classified every name against the upstream repository's own DEFAULT_GROUPS rules in src/sensenova_u1/utils/param_count.py; independently reran the classification programmatically to confirm no parameter falls into an unmatched catch-all group. See configs/admission/sensenova-u1/parameter-block-registry.yaml for the full per-block breakdown."
+    }
+  },
+  "resources": {
+    "gpu_model": "NVIDIA H20",
+    "gpus_used": 1,
+    "understanding_wallclock_seconds": 73,
+    "generation_wallclock_seconds": 86,
+    "param_inspection_wallclock_seconds": 3,
+    "total_gpu_wallclock_seconds": 162,
+    "total_gpu_hours": 0.045,
+    "gpu_hours": 0.045,
+    "checkpoint_download_bytes": 35104947297,
+    "durable_evidence_footprint_bytes": 5329360
+  },
+  "artifacts": {
+    "checked": 15,
+    "passed": 15,
+    "failed": 0
+  }
+}
