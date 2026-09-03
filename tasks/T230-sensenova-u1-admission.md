@@ -2,7 +2,7 @@
 id: T230
 title: SenseNova-U1 native pixel/MoT admission
 parent: T200
-status: running
+status: awaiting_review
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -105,3 +105,19 @@ Acceptance contributes to T500.
   real commit per the same user authorization (2026-09-03) covering all four
   tasks sharing this defect (T215/T220/T230/T240); this is the only
   frontmatter field changed.
+- 2026-09-03 — Remote executor completed the formal admission run
+  (`runs/admission-sensenova-u1-v1/`, `manifest.json` status `pass`, 15
+  artifacts / 15 passed / 0 failed) and both required deliverables sets
+  (`configs/admission/sensenova-u1/`, `reports/T230/`). Both task-path smokes
+  (`examples/vqa/inference.py`, `examples/t2i/inference.py`) exited 0 from
+  local SSD on H20-FoldUMM GPU0; parameter-block registry accounts for all
+  17,552,340,992 params with `unassigned_trainable_parameters: 0`; the
+  routed-overlap audit recorded one static assumption violation (upstream
+  `NotImplementedError` on the mixed understanding/generation forward path,
+  issue #207), explicitly distinguished from the out-of-scope A3B variant's
+  learned MoE-gate mechanism. Total measured GPU wall-clock 162s (~0.045
+  GPU-hours, well under the 12-hour cap). No U1.5 asset was downloaded or
+  exercised at any stage. `bash scripts/validate_task_submission.sh T230`
+  passes (task-tree, run-manifests, research-state, full test suite,
+  compileall all green) once status is set to `awaiting_review` below.
+  Setting status to `awaiting_review` for local review.
