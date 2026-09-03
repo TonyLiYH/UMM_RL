@@ -1,0 +1,51 @@
+# T215 diagnostic-v1 configuration (see reports/T215/first-report.md).
+#
+# Resolved/copied verbatim into runs/feasibility-showo2-v1/resolved-config.yaml
+# by run_feasibility.py (with a config_sha256 recorded in manifest.json).
+
+showo2:
+  repo_root: /apdcephfs_cq9/share_1447896/yihangli/workspace/showo2_admission/Show-o/show-o2
+  demo_config_rel: configs/showo2_1.5b_demo_432x432.yaml
+  device: cuda:0
+  weight_type: float32
+
+subspace:
+  shared_block_prefix: fusion_proj
+  und_private_block_prefix: und_trans.layers.0
+  gen_private_block_prefix: diffusion_head_a.0
+
+seeds:
+  adaptation: 1215
+  meta_eval: 2215
+  fd_rademacher: [42, 43, 44]
+  mmu_pseudo_caption: 1215
+  t2i_transport_sample: 1215
+
+mmu:
+  meta:
+    image_path: docs/mmu/pexels-jane-pham-727419-1571673.jpg
+    question: "Describe the image in detail."
+  adapt:
+    image_path: docs/mmu/pexels-mccutcheon-1148998.jpg
+    question: "Describe the image in detail."
+
+t2i:
+  meta:
+    prompt: "A red bicycle leaning against a brick wall, photorealistic, natural daylight."
+  adapt:
+    prompts_file: prompts/t2i_prompts.txt
+    prompt_line_index: 0
+  # No reference target image exists in the asset manifest for either T2I
+  # prompt; both batches reuse the MMU meta image (VAE-encoded, then
+  # transport-sampled) purely to exercise the flow-matching loss's numerics
+  # (see model_io.py's module docstring) -- not a claim of correspondence.
+  pseudo_target_image_path: docs/mmu/pexels-jane-pham-727419-1571673.jpg
+
+optimizer:
+  lr: 1.0e-4
+  k1: 1
+  k3: 3
+
+resources:
+  gpu_count_cap: 2
+  gpu_hours_cap: 8.0
