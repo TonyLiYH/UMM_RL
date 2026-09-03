@@ -1,0 +1,15 @@
+{
+  "capacity_bytes": 9895604649984,
+  "environment": {
+    "HF_HOME": "/dockerdata/t220-uniddt/hf_cache",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "errors": [],
+  "filesystem_class": "local",
+  "filesystem_type": "xfs",
+  "free_bytes": 9878435536896,
+  "minimum_free_bytes": 26000000000,
+  "path": "/dockerdata/t220-uniddt",
+  "status": "pass"
+}
