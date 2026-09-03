@@ -67,15 +67,27 @@ def scale_adaptive_eps(theta_s: torch.Tensor) -> float:
     return max(candidate, 1e-6)
 
 
-def rademacher_direction(shape: tuple[int, ...], seed: int, dtype: torch.dtype) -> torch.Tensor:
+def rademacher_direction(
+    shape: tuple[int, ...],
+    seed: int,
+    dtype: torch.dtype,
+    device: torch.device | str = "cpu",
+) -> torch.Tensor:
     """A fixed +-1 Rademacher direction, normalized to unit L2 norm, seeded
-    independently of the ambient RNG stream (uses a scratch ``Generator`` so
-    this does not perturb any other diagnostic RNG state).
+    independently of the ambient RNG stream (uses a scratch, CPU-only
+    ``Generator`` so this does not perturb any other diagnostic RNG state
+    and stays reproducible across CPU/CUDA-backed callers -- CUDA generators
+    are not used here since ``torch.Generator(device=...)`` seeds are not
+    guaranteed reproducible in the same way as the default CPU generator;
+    the resulting tensor is moved to ``device`` only after generation, via a
+    plain ``.to()`` device transfer, not a re-sample).
     """
 
-    gen = torch.Generator().manual_seed(seed)
+    gen = torch.Generator(device="cpu").manual_seed(seed)
     bits = torch.randint(0, 2, shape, generator=gen, dtype=torch.int64)
-    direction = torch.where(bits == 0, torch.tensor(-1.0), torch.tensor(1.0)).to(dtype)
+    direction = torch.where(bits == 0, torch.tensor(-1.0), torch.tensor(1.0)).to(
+        device=device, dtype=dtype
+    )
     norm = direction.norm()
     return direction / norm if float(norm) > 0 else direction
 
@@ -90,12 +102,23 @@ def natural_direction(raw_grad: torch.Tensor) -> torch.Tensor:
 
 
 def build_directions(theta_s: torch.Tensor, raw_grad: torch.Tensor) -> dict[str, torch.Tensor]:
-    """The 4 fixed FD directions: 3 Rademacher (seeds 42/43/44) + 1 natural."""
+    """The 4 fixed FD directions: 3 Rademacher (seeds 42/43/44) + 1 natural.
+
+    Rademacher directions are generated on ``theta_s``'s own device (see
+    :func:`rademacher_direction`) so ``theta_s + eps * direction`` in
+    :func:`run_finite_difference_check` never mixes a CPU direction tensor
+    with a CUDA ``theta_s`` -- this was the root cause of a
+    ``RuntimeError: Expected all tensors to be on the same device`` failure
+    on the first post-SDPA-fix real-checkpoint GPU run (2026-09-03); fixing
+    it changes only which device holds an already-fully-specified constant
+    direction tensor, not any protocol quantity, so it is a permitted
+    infrastructure retry.
+    """
 
     directions: dict[str, torch.Tensor] = {}
     for seed in RademacherSeeds:
         directions[f"rademacher_seed_{seed}"] = rademacher_direction(
-            tuple(theta_s.shape), seed, theta_s.dtype
+            tuple(theta_s.shape), seed, theta_s.dtype, device=theta_s.device
         )
     directions["natural_raw_grad"] = natural_direction(raw_grad)
     return directions
