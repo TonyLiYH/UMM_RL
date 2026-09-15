@@ -2,7 +2,7 @@
 id: T250
 title: Post-training starting-checkpoint selection audit
 parent: T200
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -122,4 +122,12 @@ bash scripts/validate_task_submission.sh T250
 ## Successor opening
 
 Accepted T250 selects the candidate for T270. It does not authorize training.
+
+## Review history
+
+- 2026-09-15 — Remote executor confirmed the existing worktree/branch
+  (`agent/T250-posttraining-startpoint-audit`, base `d260b5a`, clean tree),
+  verified `source_revision` as a real ancestor, set status to `running`, and
+  began the CPU/source documentation audit (no GPU work, no large downloads)
+  before publishing the first report.
 
