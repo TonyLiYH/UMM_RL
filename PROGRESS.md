@@ -21,7 +21,10 @@ Current authorized remote entries:
 - T216 Show-o2 compute-matched alternating-protocol diagnostic — ready;
 - T220 UniDDT admission — ready;
 - T230 SenseNova-U1 admission and routed-overlap audit — ready;
-- T240 UniAR boundary-control admission — ready.
+- T240 UniAR boundary-control admission — ready;
+- T250 post-training starting-checkpoint selection — ready;
+- T260 joint post-training dataset admission — ready;
+- T270 selected-model training-interface smoke — planned pending T250/T260.
 
 These tasks do not authorize joint post-training. T300 remains closed until
 T100, T170, T210, and T215 are accepted.
@@ -75,11 +78,16 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
    protocols. T216 does not depend on T215's failed full-rerun implementation.
 4. Execute T220, T230, and T240 independently under the common admission
    contract and local-SSD preflight.
-5. Open T140/T150 only after their declared prerequisites are accepted.
-6. Accept T100, T170, and at least one valid real-model response diagnostic
+5. Execute T250 and T260 in parallel. T250 selects an SFT-capable,
+   pre-preference/RL checkpoint; T260 freezes at least 100,000 usable
+   post-training records with paired, instruction, and generation roles.
+6. Open T270 only after T250 and T260 are locally accepted and its placeholder
+   contract is replaced with selected model/data-specific paths.
+7. Open T140/T150 only after their declared prerequisites are accepted.
+8. Accept T100, T170, and at least one valid real-model response diagnostic
    before changing T300 to `ready`.
-7. Complete the planned T160 finite-response posterior-certificate and T170
+9. Complete the planned T160 finite-response posterior-certificate and T170
    graph-localized robust-certificate contracts after their dependencies are
    accepted; neither task is authorized yet.
-8. Freeze data-source, capability, split, and decontamination manifests before
+10. Freeze data-source, capability, split, and decontamination manifests before
    D0; do not attribute a data-scheduling gain to update geometry.

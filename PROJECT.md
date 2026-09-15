@@ -33,6 +33,13 @@ private training gains are not attributed to the shared update.
 - Parameters: shared-backbone full-parameter updates are required in the main pilot; LoRA is an efficiency ablation, not the only setting.
 - Models: Show-o2 for the first executable pilot; UniDDT and SenseNova-U1 for cross-architecture validation; UniAR as a more homogeneous-objective boundary control.
 
+The formal post-training starting checkpoint is selected separately from
+inference admission. Prefer a checkpoint that already supports understanding
+and generation but precedes the target preference/RL stage; an SFT checkpoint
+is normally preferable to either an unusable raw base model or a final
+preference-optimized model. Show-o2 remains an engineering diagnostic until
+that selection and the post-training data admission are accepted.
+
 ## Out of scope until the core claim passes
 
 - Pretraining a unified model from scratch.
