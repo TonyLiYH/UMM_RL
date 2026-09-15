@@ -1,0 +1,138 @@
+# Post-training data admission (T260) -- source registry
+#
+# Every entry documents exactly what was fetched, under what license/terms,
+# and the admission decision. No entry's bytes are embedded in this repo;
+# manifests reference media by path/URL only. See
+# reports/T260/source-license-audit.md for the full narrative audit and
+# reports/T260/first-report.md for the pilot storage plan.
+
+schema_version: 1
+run_id: data-admission-posttraining-v1
+
+sources:
+  - name: coco_captions_2017
+    role: [D1_paired, D4_evaluation]
+    status: admitted
+    homepage: https://cocodataset.org/#download
+    terms_url: https://cocodataset.org/dataset/termsofuse.htm
+    license:
+      annotations: CC-BY-4.0
+      images: "mixed per-photo Flickr licenses; COCO Consortium disclaims copyright ownership of image pixels"
+    license_notes: >
+      COCO Consortium's own Terms of Use state the annotations (captions,
+      instance/keypoint labels) are released under CC BY 4.0 by the
+      Consortium. The images themselves were collected from Flickr under
+      each photo's original license (the Consortium is not the copyright
+      holder of image pixels). This manifest therefore treats
+      caption/annotation text as freely redistributable and only ever
+      references images by their official relative path
+      (`train2017/<file_name>` / `val2017/<file_name>`) rather than
+      embedding or redistributing image bytes.
+    fetched_artifact:
+      url: https://images.cocodataset.org/annotations/annotations_trainval2017.zip
+      local_path: /apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/coco/annotations/annotations_trainval2017.zip
+      declared_bytes: 252907541
+      sha256: PENDING_FILL_AFTER_DOWNLOAD_COMPLETES
+      members_used:
+        - annotations/captions_train2017.json
+        - annotations/captions_val2017.json
+      network_note: >
+        images.cocodataset.org presents a TLS certificate for
+        s3.amazonaws.com (a legacy S3-backed domain quirk, not a proxy
+        artifact); downloaded with `curl -sk` and verified by sha256
+        instead of relying on TLS trust.
+    media_note: >
+      Only annotation/caption JSON is bulk-downloaded. A small verification
+      sample of individual train2017/val2017 JPEGs is fetched separately
+      (see reports/T260/first-report.md) to confirm official file names
+      resolve to real images; the ~19GB train2017 + ~1GB val2017 image
+      archives are never bulk-downloaded by this task.
+    used_by_manifest_splits: [diagnostic, pilot_train, pilot_validation, pilot_meta, evaluation_only]
+
+  - name: llava_instruct_150k
+    role: [D2_understanding]
+    status: admitted
+    homepage: https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K
+    terms_url: https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K
+    license:
+      dataset_license: CC-BY-4.0
+    license_notes: >
+      Distributed by the LLaVA authors under CC BY 4.0. Conversations were
+      generated with GPT-4 from COCO metadata, so downstream use also
+      remains subject to OpenAI's Terms of Use for GPT-4-derived content
+      (non-competitive-use restriction); this manifest only stores a
+      bounded first-turn preview plus a reference to the frozen source
+      file, not a redistribution of the full generated corpus at scale.
+      Every referenced image is a COCO train2017 file, so image licensing
+      is identical to the coco_captions_2017 entry above.
+    fetched_artifact:
+      url: https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/llava_instruct_150k.json
+      local_path: /apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/llava_instruct_150k/llava_instruct_150k.json
+      declared_bytes: 228941895
+      sha256: 6b68bc5ca2bfd8a71119af0e8454929668ccda6a334955ccc95d114fc8d082fa
+    media_note: >
+      Text-only JSON download; no image bytes fetched for this source
+      (images are the coco_captions_2017 train2017 files already covered
+      above).
+    used_by_manifest_splits: [diagnostic, pilot_train, pilot_validation, pilot_meta]
+
+  - name: diffusiondb_2m
+    role: [D3_generation]
+    status: admitted
+    homepage: https://huggingface.co/datasets/poloclub/diffusiondb
+    terms_url: https://huggingface.co/datasets/poloclub/diffusiondb
+    license:
+      dataset_license: CC0-1.0
+    license_notes: >
+      CC0-1.0, fully unrestricted (no redistribution or commercial-use
+      limitation whatsoever) -- confirmed via the HF datasets API
+      (`gated: false`, `license: ["cc0-1.0"]`). Selected as the D3
+      fallback candidate after the originally-proposed JourneyDB was
+      determined inadmissible (see the journeydb entry below and
+      reports/T260/source-license-audit.md).
+    fetched_artifact:
+      url: https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/metadata-large.parquet
+      note: "actual fetched file is the smaller 2m-subset metadata.parquet, not metadata-large.parquet"
+      local_path: /apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/diffusiondb/metadata.parquet
+      declared_bytes: 194548652
+      sha256: eecd341187bc91c07f5994ad0660d40228ea025616fd57a509bef8323677c68f
+      derived_cache:
+        description: >
+          JSON-Lines conversion of the parquet file produced by
+          `python3 -m comppareto.data.prep_diffusiondb`; the tested
+          manifest builder (comppareto.data.diffusiondb) reads only this
+          cache, never the parquet file directly.
+        local_path: /apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/diffusiondb/metadata.jsonl
+    media_note: >
+      Only the 2,000,000-row metadata table is downloaded. Individual
+      generated images live inside `images/part-NNNNNN.zip` bundles on the
+      hub and are not individually fetchable without downloading a whole
+      part archive; this task materializes only a small range-fetch
+      verification sample of one part archive's local file header (see
+      reports/T260/first-report.md), never a bulk image download.
+    admission_subsampling: >
+      Deterministically keeps ~1/50 (2%) of rows by
+      group_bucket(image_name, num_buckets=50) < 1, applied after an NSFW
+      safety filter (image_nsfw < 0.2 and prompt_nsfw < 0.5, rows with a
+      missing score excluded). Both filters are pure functions of the
+      row's own recorded metadata, never of any model outcome.
+    used_by_manifest_splits: [diagnostic, pilot_train, pilot_validation, pilot_meta]
+
+  - name: journeydb
+    role: [D3_generation]
+    status: rejected
+    homepage: https://huggingface.co/datasets/JourneyDB/JourneyDB
+    terms_url: https://journeydb.github.io/assets/Terms_of_Usage.html
+    license_notes: >
+      REJECTED. Two independent, sufficient blockers: (1) the HF dataset
+      is gated ("gated": "auto") requiring an access request form that
+      collects a named individual's First/Last Name and Affiliation --
+      completing this as an automated agent would misrepresent identity
+      and is out of scope; (2) the dataset's own Terms of Usage explicitly
+      prohibit redistribution ("further copy, publish or distribute any
+      portion of the JourneyDB dataset") beyond a narrow internal,
+      single-organization copy, and restrict commercial use and derived
+      data exploitation, both incompatible with committing a derived
+      manifest to this repository. See
+      reports/T260/source-license-audit.md for the full evidence trail.
+    replacement: diffusiondb_2m
