@@ -2,7 +2,7 @@
 id: T260
 title: Joint post-training dataset admission and frozen manifests
 parent: T000
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -138,4 +138,8 @@ bash scripts/validate_task_submission.sh T260
 ## Successor opening
 
 Accepted T260 supplies frozen data inputs for T270 and later D0/E1 tasks.
+
+## Review history
+
+- 2026-09-15 — Remote executor created branch `agent/T260-posttraining-data-admission` from `origin/main` (`d260b5a`), confirmed `source_revision` `45c54ba` is an ancestor, and set status to `running`. No downloads beyond live HTTP HEAD/metadata-API probes have occurred yet; the first report will precede any bulk metadata download.
 
