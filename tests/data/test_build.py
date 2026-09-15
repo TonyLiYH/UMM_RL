@@ -126,4 +126,3 @@ def test_apply_pilot_train_cap_drops_only_overflow_pilot_train_buckets() -> None
     # Records outside pilot_train are never considered by the cap, even if
     # their own group_key would otherwise land above the ceiling.
     assert other_split_record in result
-
