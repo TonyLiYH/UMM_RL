@@ -46,7 +46,7 @@ def test_iter_records_group_key_matches_normalized_coco_image_id(tmp_path) -> No
     path = tmp_path / "llava_instruct_150k.json"
     _write_fixture(path)
     records = {r["source_native_id"]: r for r in llava.iter_records(path)}
-    assert records["000000033471"]["group_key"] == "33471"
+    assert records["000000033471:0"]["group_key"] == "33471"
 
 
 def test_iter_records_preview_strips_image_token_and_truncates(tmp_path) -> None:
@@ -67,3 +67,40 @@ def test_iter_records_shares_split_with_coco_group_key(tmp_path) -> None:
     _write_fixture(path)
     records = {r["group_key"]: r for r in llava.iter_records(path)}
     assert records["33471"]["split"] == assign_split("33471")
+
+
+def test_iter_records_disambiguates_duplicate_ids(tmp_path) -> None:
+    """Two distinct conversations sharing the same LLaVA ``id`` (a real,
+    measured condition in the released file -- see
+    ``reports/T260/failure-ledger.md``) must get distinct ``record_id`` and
+    ``source_native_id`` values, deterministically ordered by their position
+    in the frozen input file.
+    """
+    entries = [
+        {
+            "id": "000000099999",
+            "image": "000000099999.jpg",
+            "conversations": [
+                {"from": "human", "value": "<image>\nFirst question?"},
+                {"from": "gpt", "value": "First answer."},
+            ],
+        },
+        {
+            "id": "000000099999",
+            "image": "000000099999.jpg",
+            "conversations": [
+                {"from": "human", "value": "<image>\nSecond question?"},
+                {"from": "gpt", "value": "Second answer."},
+            ],
+        },
+    ]
+    path = tmp_path / "llava_instruct_150k.json"
+    path.write_text(json.dumps(entries), encoding="utf-8")
+    records = list(llava.iter_records(path))
+    assert [r["source_native_id"] for r in records] == [
+        "000000099999:0",
+        "000000099999:1",
+    ]
+    record_ids = [r["record_id"] for r in records]
+    assert len(record_ids) == len(set(record_ids))
+    assert records[0]["group_key"] == records[1]["group_key"] == "99999"

@@ -1,0 +1,39 @@
+{
+  "duplicate_record_ids": 0,
+  "paired_core": {
+    "bidirectional_mapping_verified": true,
+    "d1_record_count": 67893
+  },
+  "pilot": {
+    "total_task_records": 176787,
+    "usable_task_records": 150028
+  },
+  "provenance": {
+    "admitted_sources": [
+      "coco_captions_2017",
+      "llava_instruct_150k",
+      "diffusiondb_2m"
+    ],
+    "admitted_sources_without_terms": 0,
+    "rejected_sources": [
+      "journeydb"
+    ]
+  },
+  "resources": {
+    "gpu_hours": 0,
+    "model_inference_calls": 0,
+    "training_steps": 0
+  },
+  "run_id": "data-admission-posttraining-v1",
+  "splits": {
+    "counts": {
+      "diagnostic": 2037,
+      "evaluation_only": 5000,
+      "pilot_meta": 9242,
+      "pilot_train": 150028,
+      "pilot_validation": 15480
+    },
+    "cross_split_duplicate_groups": 0,
+    "evaluation_records_in_training": 0
+  }
+}

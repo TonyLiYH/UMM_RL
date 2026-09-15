@@ -20,11 +20,29 @@ from .ids import group_bucket
 
 #: Fraction of the training-pool bucket space assigned to each split.
 #: Order matters: boundaries are cumulative and evaluated in this order.
+#:
+#: ``diagnostic``'s fraction (0.0063, i.e. 63 of 10,000 buckets) is
+#: deliberately much smaller than the other splits' fractions: the task
+#: file (`tasks/T260-posttraining-data-admission.md`, "Frozen pilot
+#: manifests") requires `diagnostic` to contain "512--2,048 paired examples
+#: where available" -- an *absolute* record-count target, not a fraction of
+#: the (much larger) training pool. A flat 2% share was tried first and
+#: measured (against the real, complete downloaded sources) to produce
+#: 6,350 diagnostic records -- more than 3x over the 2,048 ceiling, because
+#: the training-pool group-key universe is large (D1/D2 share ~118k COCO
+#: image ids; D3 has its own ~31k-row group-key space after filtering).
+#: 63 buckets was chosen because it is the largest bucket count that keeps
+#: the real measured diagnostic record count (2,037) within the declared
+#: [512, 2048] range (64 buckets measures 2,068 -- just over the ceiling).
+#: See `reports/T260/failure-ledger.md` for the full measurement record.
+#: The buckets freed by shrinking diagnostic are absorbed by `pilot_train`
+#: (via the "absorb any rounding remainder" rule below), not silently
+#: dropped.
 SPLIT_FRACTIONS: tuple[tuple[str, float], ...] = (
-    ("diagnostic", 0.02),
+    ("diagnostic", 0.0063),
     ("pilot_validation", 0.05),
     ("pilot_meta", 0.03),
-    ("pilot_train", 0.90),
+    ("pilot_train", 0.9137),
 )
 
 NUM_BUCKETS = 10_000

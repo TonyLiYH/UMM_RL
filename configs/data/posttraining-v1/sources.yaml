@@ -32,7 +32,7 @@ sources:
       url: https://images.cocodataset.org/annotations/annotations_trainval2017.zip
       local_path: /apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/coco/annotations/annotations_trainval2017.zip
       declared_bytes: 252907541
-      sha256: PENDING_FILL_AFTER_DOWNLOAD_COMPLETES
+      sha256: 113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268
       members_used:
         - annotations/captions_train2017.json
         - annotations/captions_val2017.json
