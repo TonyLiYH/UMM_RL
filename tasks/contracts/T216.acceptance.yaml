@@ -1,0 +1,86 @@
+schema_version: 1
+task_id: T216
+base_ref: origin/main
+required_files:
+  - configs/alternating/showo2/storage-preflight.json
+  - configs/alternating/showo2/artifact-verification.json
+  - configs/alternating/showo2/resolved-config.yaml
+  - reports/T216/first-report.md
+  - reports/T216/result-summary.md
+  - reports/T216/claim-check.md
+  - reports/T216/failure-ledger.md
+  - runs/alternating-showo2-v1/manifest.json
+  - runs/alternating-showo2-v1/metrics.json
+  - runs/alternating-showo2-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: artifact-hashes
+    command: .venv/bin/python scripts/verify_manifest_artifacts.py --manifest runs/alternating-showo2-v1/manifest.json --output /tmp/T216-artifact-verification.json
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/alternating-showo2-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/alternating/showo2/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/alternating/showo2/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/alternating/showo2/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: protocols.simultaneous_measured
+    op: "=="
+    value: true
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: protocols.private_only_control_measured
+    op: "=="
+    value: true
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: protocols.shared_then_private_measured
+    op: "=="
+    value: true
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: protocols.private_then_shared_commit_measured
+    op: "=="
+    value: true
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: attribution.mandatory_rows_missing_control
+    op: "=="
+    value: 0
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: snapshot_restore.failed
+    op: "=="
+    value: 0
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: numerical.nonfinite_mandatory_rows
+    op: "=="
+    value: 0
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 8
+  - file: runs/alternating-showo2-v1/metrics.json
+    path: persistent_updates
+    op: "=="
+    value: 0
+forbidden_claims:
+  - file: reports/T216/result-summary.md
+    when:
+      file: runs/alternating-showo2-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, passes gate, faster convergence]
+

@@ -18,6 +18,7 @@ Current authorized remote entries:
 - T155 exact finite-response oracle benchmark — accepted 2026-09-01;
 - T210 Show-o2 admission audit and smoke — accepted with recorded limitations 2026-09-01;
 - T215 Show-o2 reversible finite-response diagnostics — ready;
+- T216 Show-o2 compute-matched alternating-protocol diagnostic — ready;
 - T220 UniDDT admission — ready;
 - T230 SenseNova-U1 admission and routed-overlap audit — ready;
 - T240 UniAR boundary-control admission — ready.
@@ -69,12 +70,16 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 1. Continue T110, T120, and T130 under their task contracts.
 2. Execute T215 on the accepted Show-o2 revision under the reversible,
    no-persistent-update protocol.
-3. Execute T220, T230, and T240 independently under the common admission
+3. Execute T216 independently from accepted `main` to compare simultaneous,
+   shared-then-private, private-only control, and private-then-shared commit
+   protocols. T216 does not depend on T215's failed full-rerun implementation.
+4. Execute T220, T230, and T240 independently under the common admission
    contract and local-SSD preflight.
-4. Open T140/T150 only after their declared prerequisites are accepted.
-5. Accept T100, T170, and T215 before changing T300 to `ready`.
-6. Complete the planned T160 finite-response posterior-certificate and T170
+5. Open T140/T150 only after their declared prerequisites are accepted.
+6. Accept T100, T170, and at least one valid real-model response diagnostic
+   before changing T300 to `ready`.
+7. Complete the planned T160 finite-response posterior-certificate and T170
    graph-localized robust-certificate contracts after their dependencies are
    accepted; neither task is authorized yet.
-7. Freeze data-source, capability, split, and decontamination manifests before
+8. Freeze data-source, capability, split, and decontamination manifests before
    D0; do not attribute a data-scheduling gain to update geometry.

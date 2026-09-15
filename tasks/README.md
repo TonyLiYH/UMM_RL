@@ -31,6 +31,7 @@ T000  CompPareto / UMM_RL research [root]  running
 ├── T200  Public-model admission programme  running
 │   ├── T210  Show-o2 admission  accepted
 │   ├── T215  Show-o2 finite-response diagnostic feasibility  ready
+│   ├── T216  Show-o2 compute-matched alternating-protocol diagnostic  ready
 │   ├── T220  UniDDT admission  ready
 │   ├── T230  SenseNova-U1 admission  ready
 │   └── T240  UniAR boundary-control admission  ready
@@ -56,6 +57,7 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T120](T120-independent-kkt-reference.md) | P0 | `agent/T120-independent-kkt-reference` | CPU independent reference solver |
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
 | [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
+| [T216](T216-showo2-alternating-protocol-diagnostic.md) | P0 | `agent/T216-showo2-alternating-protocol-diagnostic` | Compute-matched SP vs PS/commit reversible diagnostics |
 | [T220](T220-uniddt-admission.md) | P1 | `agent/T220-uniddt-admission` | UniDDT dual-path admission |
 | [T230](T230-sensenova-u1-admission.md) | P1 | `agent/T230-sensenova-u1-admission` | SenseNova-U1 admission and routed-overlap audit |
 | [T240](T240-uniar-admission.md) | P1 | `agent/T240-uniar-admission` | UniAR boundary-control admission |
@@ -77,6 +79,7 @@ accepted T100, T170, T210, and T215; T400 requires accepted T300.
 | T200 | T000 | running | P0 | local-research-agent | user |
 | T210 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
 | T215 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T216 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T220 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
 | T230 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
 | T240 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |

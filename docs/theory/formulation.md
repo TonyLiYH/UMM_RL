@@ -2,6 +2,11 @@
 
 This document separates exact best-response theory from finite-step training estimators. Symbols are coordinate-checked: task-local shared gradients live in the coordinates selected by \(P_i\); a single multiplication by \(P_i^\top\) lifts them into global coordinates.
 
+Detailed definitions, alternating-update protocols, and proof files are indexed
+in [`docs/math/README.md`](../math/README.md). This document remains the
+method-level overview; the proof directory distinguishes established results
+from proof obligations and empirical questions.
+
 ## 1. Partial-overlap parameter model
 
 Let the global shared state be \(\theta\in\mathbb R^p\). Task \(i\) reads the task-local shared coordinates

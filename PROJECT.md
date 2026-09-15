@@ -16,6 +16,15 @@ Optimizing a local model of each task *after private adaptation* yields shared u
 
 The decisive controlled question uses the same finite response \(A_i^K\) for every method: at equal compute, does retaining optimizer state and normalizing by attainable single-task gain improve prediction or joint optimization over general MOBLO/MGDA, normalized Chebyshev, and Nash negotiation? This prevents gains from being attributed merely to giving CompPareto extra inner updates.
 
+Before promoting a response-aware method, the project must test the simpler
+shared-then-private alternating baseline: select a shared direction from current
+gradients, apply it virtually, then freeze the new shared state and run the same
+finite private response granted to every method. A response-aware method is
+scientifically justified only if it improves controlled post-adaptation
+outcomes after matching private steps, samples, gradient evaluations, and wall
+clock. The compute-matched private-only branch is mandatory so that ordinary
+private training gains are not attributed to the shared update.
+
 ## Initial scope
 
 - Modalities: text and image.
@@ -39,6 +48,12 @@ The decisive controlled question uses the same finite response \(A_i^K\) for eve
 3. A conditionally loss-scale-invariant max-min retained-gain negotiation objective and a deterministic common-descent certificate when one exists.
 4. A diagnostic protocol testing whether the certificate predicts realized joint changes.
 5. Evidence across architectures with shallow, deep, and more homogeneous sharing.
+
+The optimizer contribution is staged: simultaneous raw training,
+shared-then-private alternating optimization, private-then-shared commit
+gradients, and only then explicit trajectory or reduced-space response models.
+The simplest stage that survives compute-matched controls is the preferred
+method.
 
 The first four mathematical ingredients overlap with multi-objective bilevel optimization and personalized-learning literature. Until a new overlap-specific complexity or approximation theorem is proved, the intended novelty is the optimizer-state-aware UMM method, diagnostic evidence, and compute-matched protocol—not the generic existence of a bilevel value function.
 
