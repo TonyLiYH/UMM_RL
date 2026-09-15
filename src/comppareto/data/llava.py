@@ -17,6 +17,7 @@ by hash in ``configs/data/posttraining-v1/sources.yaml``.
 
 from __future__ import annotations
 
+from collections import defaultdict
 import json
 from pathlib import Path
 from typing import Any, Iterator
@@ -48,13 +49,29 @@ def iter_records(json_path: Path) -> Iterator[dict[str, Any]]:
     ``configs/data/posttraining-v1/sources.yaml``'s recorded sha256) -- no
     additional shuffling or re-sorting is applied, so results are
     reproducible byte-for-byte given the same input file.
+
+    LLaVA-Instruct-150K's own ``id`` field identifies the *source COCO
+    image*, not the conversation record: the released file legitimately
+    contains multiple distinct conversation entries (e.g. a short
+    ``conversation``, a ``detailed_description``, and a ``complex_reasoning``
+    sample) sharing the same ``id`` for one image. Deriving ``record_id``
+    from ``id`` alone therefore collided for ~61.9k ids (measured against
+    the real 157,712-entry file; see
+    ``reports/T260/failure-ledger.md``). To disambiguate deterministically
+    without depending on any model outcome, this function appends each
+    entry's zero-based *occurrence index within its own id*, counted in the
+    frozen file's own fixed array order -- a pure function of the frozen
+    input file's content and order alone.
     """
     with json_path.open("r", encoding="utf-8") as handle:
         entries = json.load(handle)
+    occurrence_index: dict[str, int] = defaultdict(int)
     for entry in entries:
         image_id = str(int(entry["id"]))
         split = assign_split(image_id)
-        native_key = entry["id"]
+        index = occurrence_index[entry["id"]]
+        occurrence_index[entry["id"]] += 1
+        native_key = f"{entry['id']}:{index}"
         yield {
             "record_id": stable_id("d2-llava-instruct", native_key),
             "source": SOURCE_NAME,

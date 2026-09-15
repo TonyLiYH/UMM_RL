@@ -107,3 +107,23 @@ def test_llava_and_coco_share_image_lands_in_same_split(tmp_path) -> None:
             by_group.setdefault(record["group_key"], set()).add(record["split"])
     shared_groups = [g for g, splits in by_group.items() if len(splits) > 1]
     assert shared_groups == []
+
+
+def test_apply_pilot_train_cap_drops_only_overflow_pilot_train_buckets() -> None:
+    # group_key "0" hashes to bucket 2705 (< PILOT_TRAIN_BUCKET_CEILING=5727,
+    # so it is kept); group_key "1" hashes to bucket 8030 (>= 5727, so it is
+    # the deterministic, evidence-backed overflow this cap drops). Both
+    # buckets fall inside pilot_train's own [863, 10000) range, so this
+    # exercises the cap itself, not the pilot_train/other-split boundary.
+    kept_record = {"split": "pilot_train", "group_key": "0", "id": "kept"}
+    dropped_record = {"split": "pilot_train", "group_key": "1", "id": "dropped"}
+    other_split_record = {"split": "diagnostic", "group_key": "1", "id": "other-split"}
+
+    result = build._apply_pilot_train_cap([kept_record, dropped_record, other_split_record])
+
+    assert kept_record in result
+    assert dropped_record not in result
+    # Records outside pilot_train are never considered by the cap, even if
+    # their own group_key would otherwise land above the ceiling.
+    assert other_split_record in result
+
