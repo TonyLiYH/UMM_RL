@@ -1,0 +1,186 @@
+schema_version: 1
+task_id: T250
+candidates:
+  - id: sensenova-u1-8b-mot-sft
+    display_name: SenseNova-U1-8B-MoT-SFT
+    official_repository: https://github.com/OpenSenseNova/SenseNova-U1
+    model_card: https://huggingface.co/sensenova/SenseNova-U1-8B-MoT-SFT
+    paper: arXiv:2605.12500
+    source_revision_audited: main (README/docs/training-code fetched 2026-09-15; no pinned commit hash captured — see notes)
+    checkpoint_hash: not computed (no weights downloaded in this audit)
+    license:
+      status: pass
+      spdx: Apache-2.0
+      note: >-
+        Apache-2.0 for training code and released weights; files under
+        sensenovavl/model/sensenovavl_moe_chat/ derived from InternVL retain
+        original MIT license with attribution headers (compatible combination).
+    stage_label:
+      value: sft
+      confidence: high
+      evidence: reports/T250/checkpoint-stage-evidence.md#candidate-a-sensenova-u1-8b-mot-sft
+      precedes_preference_rl_stage: true
+    training_interfaces:
+      trainer: sensenovalm (InternEvo-derived), HybridZeroOptimizer (ZeRO-1), ISP
+      optimizer: HybridZeroOptimizer
+      resume_restores:
+        weights: true
+        optimizer_state: true
+        scheduler_state: true
+        counters: true
+        evidence: reports/T250/training-interface-audit.md#candidate-a-sensenova-u1-training-subtree-of-opensensenovasensenova-u1
+      configuration_interface: env-var-driven torchrun launchers (shell/train_u1/*.sh)
+      data_interface: meta JSON (mm_data_path) listing {root, annotation, repeat_time, task}
+    task_path_availability:
+      understanding: true
+      generation: true
+      evidence_type: static/documentation (task types mm_t2i, mm_it2i, mm_interleave_gen, mm_interleaved, multimodal); not GPU-verified in this audit
+    parameter_classification:
+      shared_params: 1245000000
+      shared_pct: 7.09
+      understanding_private_params: 8121000000
+      understanding_private_pct: 46.27
+      generation_private_params: 8186000000
+      generation_private_pct: 46.64
+      total_params: 17552000000
+      source: docs/parameter_breakdown.md (OpenSenseNova/SenseNova-U1)
+    gpu_memory:
+      minimum: "1 node x 8 GPUs x 80GB HBM (shipped 8B.sh default; wp=8,tp=1,pp=1)"
+      recommended: "as shipped; seq_len/num_imgs/wp_size independently reducible but not verified in this audit"
+    sequential_task_batch_support:
+      value: true
+      note: five type_id task categories with per-task loss bucketing in one training run
+    missing_dependencies:
+      - flash-attn build extra (use_flash_attn=True in shipped configs)
+      - "Apex / grouped_gemm / deeplink_ext accelerator kernels (configuration-specific, built separately)"
+    headroom_and_contamination_risks: >-
+      17.6B total params gives ample headroom for further supervised/preference
+      post-training. Default launcher topology (8x80GB) exceeds this audit's
+      2-GPU envelope for an eventual T270 run without config changes; not a
+      blocker for this audit since no training is executed here.
+
+  - id: showo2-1.5b
+    display_name: Show-o2-1.5B
+    official_repository: https://github.com/showlab/Show-o (show-o2/ subdir)
+    model_card: https://huggingface.co/showlab/show-o2-1.5B
+    paper: arXiv:2506.15564
+    source_revision_audited: "45a5a2de01d1ebd10cd5864d29310a76476cdf23 (T210-pinned commit, reused)"
+    checkpoint_hash: reused from configs/admission/showo2 (T210 accepted admission, 2026-09-01)
+    license:
+      status: pass
+      spdx: Apache-2.0
+      note: confirmed by T210's accepted admission
+    stage_label:
+      value: sft
+      confidence: moderate
+      evidence: reports/T250/checkpoint-stage-evidence.md#candidate-b-show-o2-15b-reusing-t210s-accepted-admission
+      precedes_preference_rl_stage: true
+      hedge: >-
+        Inferred from pipeline structure (only Stage-1/Stage-2 exist, no RL
+        stage anywhere in official code/docs) plus T210's functional GPU
+        smoke; no explicit model-card statement asserts this stage outright.
+    training_interfaces:
+      trainer: HuggingFace accelerate (DeepSpeed ZeRO-2 for downstream mixed-modality path)
+      optimizer: AdamW (fresh instance, not framework-managed state)
+      resume_restores:
+        weights: true
+        optimizer_state: false
+        scheduler_state: false
+        counters: "approximate (parsed from checkpoint-<step> directory name)"
+        evidence: reports/T250/training-interface-audit.md#candidate-b-show-o2-15b-showlabshow-o-show-o2-subdir
+      configuration_interface: YAML configs under configs/ + shell launchers (train_showo2_1.5b_stage{1,2}.sh)
+      data_interface: "Stage-1: jsonl {path, prompt}; Stage-2: LLaVA-OneVision/DenseFusion annotation convention"
+    task_path_availability:
+      understanding: true
+      generation: true
+      evidence_type: "GPU-verified by T210 (reports/T210/task-path-smoke.md): inference_mmu.py and inference_t2i.py both ran to completion with coherent output"
+    parameter_classification:
+      source: configs/admission/showo2/parameter-block-registry.yaml (reused from T210, not re-derived)
+    gpu_memory:
+      minimum: "single H20, ~14GB allocated for inference (T210 measured); training footprint not independently measured in this audit"
+      recommended: "1 node x 8 GPUs (shipped accelerate default, convenience not hard requirement for the 1.5B model)"
+    sequential_task_batch_support:
+      value: partial
+      note: >-
+        frozen_params config key allows manual submodule freezing
+        (image_embedder_und, und_trans, showo, position_embedding shown in
+        downstream example) but this is a manual allow-list, not an
+        automatically-derived task-bucketed registry like SenseNova-U1's.
+    missing_dependencies:
+      - "wandb==0.17.0 pin required (T210 finding, carried forward)"
+      - "CompVis/stable-diffusion-safety-checker: open license item, 'More information needed' (T210 finding, carried forward)"
+    headroom_and_contamination_risks: >-
+      1.5B params gives less headroom than SenseNova-U1 but remains workable;
+      smallest footprint and highest reproducibility certainty of the three
+      candidates (environment already pinned and fixed by T210).
+
+  - id: uniddt
+    display_name: UniDDT
+    official_repository: https://github.com/MCG-NJU/UniDDT
+    model_card: https://huggingface.co/MCG-NJU/UniDDT
+    paper: arXiv:2606.16255
+    source_revision_audited: main (README/main.py fetched 2026-09-15; no pinned commit hash captured — see notes)
+    checkpoint_hash: not computed (no weights downloaded in this audit)
+    license:
+      status: fail
+      spdx: null
+      note: >-
+        No LICENSE or LICENSE.md file exists in the GitHub repository root
+        (HTTP 404 confirmed for both filenames); Hugging Face Hub API response
+        for the model carries no license tag. This is a hard-gate failure
+        under the decision rule's licensing requirement, independent of and
+        prior to any capability scoring. See reports/T250/failure-ledger.md.
+    stage_label:
+      value: unknown
+      confidence: hedged
+      evidence: reports/T250/checkpoint-stage-evidence.md#candidate-c-uniddt
+      precedes_preference_rl_stage: true
+      hedge: >-
+        Ambiguous between "post-Joint-training" and "post-Duality-post-training"
+        (README and arXiv figure caption disagree on stage naming); in either
+        case NOT a preference/RL stage, since duality post-training is
+        caption-likelihood self-distillation on the diffusion decoder, not
+        reward-model-based RL.
+    training_interfaces:
+      trainer: PyTorch Lightning (lightning.pytorch.cli.LightningCLI)
+      optimizer: framework-managed via configure_optimizers() hook (not independently audited)
+      resume_restores:
+        weights: true
+        optimizer_state: "true (Lightning framework default via ckpt_path)"
+        scheduler_state: "true (Lightning framework default via ckpt_path)"
+        counters: "true (Lightning framework default via ckpt_path)"
+        evidence: reports/T250/training-interface-audit.md#candidate-c-uniddt-mcg-njuuniddt
+        caveat: >-
+          Framework-level guarantee only; UniDDT's own Trainer/LightningModule
+          subclasses were not fully read to rule out a project-specific
+          override (e.g. EMA-weight handling) that could narrow this guarantee.
+      configuration_interface: Lightning CLI YAML configs, per-stage
+      data_interface: not independently audited in this task (moot given license gate)
+    task_path_availability:
+      understanding: true
+      generation: true
+      evidence_type: architectural documentation only (shared Noisy-ViT + Qwen3-VL-4B LLM backbone vs private dit_decoder/jit_decoder); not GPU-verified
+    parameter_classification:
+      source: null
+      note: >-
+        Architecturally well-defined shared/private split but no published
+        exact parameter-count breakdown was found (unlike SenseNova-U1).
+    gpu_memory:
+      minimum: not published/determined in this audit
+      recommended: not published/determined in this audit
+    sequential_task_batch_support:
+      value: unknown
+      note: not independently audited (moot given license gate)
+    missing_dependencies:
+      - "LICENSE / license metadata (see license.status above)"
+    headroom_and_contamination_risks: >-
+      Not scored — excluded at the license hard gate before capability
+      scoring was needed (see reports/T250/decision-matrix.md).
+
+selection:
+  primary: sensenova-u1-8b-mot-sft
+  fallback: showo2-1.5b
+  excluded:
+    - id: uniddt
+      reason: missing_license
+  evidence: reports/T250/decision-matrix.md
