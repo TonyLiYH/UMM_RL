@@ -2,7 +2,7 @@
 id: T250
 title: Post-training starting-checkpoint selection audit
 parent: T200
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -130,4 +130,13 @@ Accepted T250 selects the candidate for T270. It does not authorize training.
   verified `source_revision` as a real ancestor, set status to `running`, and
   began the CPU/source documentation audit (no GPU work, no large downloads)
   before publishing the first report.
+- 2026-09-15 — Remote executor completed the CPU/source audit of all three
+  candidates (SenseNova-U1-8B-MoT-SFT, Show-o2-1.5B, UniDDT), published all
+  13 required deliverables, ran `pytest` (156 passed), `compileall`,
+  `comppareto.repo_state.cli` (pass), and
+  `scripts/verify_manifest_artifacts.py` (9/9 artifacts verified), committed
+  and pushed. Primary recommendation: SenseNova-U1-8B-MoT-SFT. Fallback:
+  Show-o2-1.5B. UniDDT excluded at the license hard gate (no LICENSE file,
+  no Hugging Face license tag found). 0 GPU-hours consumed (of 4 allowed).
+  Set status to `awaiting_review` for local review.
 
