@@ -338,7 +338,7 @@ class InternVLChatModel(PreTrainedModel):
         responses = tokenizer.batch_decode(generation_output, skip_special_tokens=True)
         responses = [response.split(template.sep.strip())[0].strip() for response in responses]
         return responses
-    
+
     def my_batch_chat(self, tokenizer, pixel_values, questions, generation_config, num_patches_list=None,
                    history=None, return_history=False, IMG_START_TOKEN='<img>', IMG_END_TOKEN='</img>',
                    IMG_CONTEXT_TOKEN='<IMG_CONTEXT>', verbose=False, image_counts=None):
@@ -385,9 +385,9 @@ class InternVLChatModel(PreTrainedModel):
             attention_mask=attention_mask,
             **generation_config
         )
-       
+
         return generation_output
-    
+
     def my_batch_chat2(self, tokenizer, pixel_values, questions, generation_config, num_patches_list=None,
                    history=None, return_history=False, IMG_START_TOKEN='<img>', IMG_END_TOKEN='</img>',
                    IMG_CONTEXT_TOKEN='<IMG_CONTEXT>', verbose=False, image_counts=None):
@@ -407,7 +407,7 @@ class InternVLChatModel(PreTrainedModel):
             print(f'dynamic ViT batch size: {image_bs}')
 
         queries = []
-        
+
         for idx in range(len(num_patches_list)//2):
             num_patches_1 = num_patches_list[idx*2]
             num_patches_2 = num_patches_list[idx*2+1]
@@ -437,7 +437,7 @@ class InternVLChatModel(PreTrainedModel):
             attention_mask=attention_mask,
             **generation_config
         )
-        
+
         return generation_output
 
     def chat(self, tokenizer, pixel_values, question, generation_config, history=None, return_history=False,
@@ -496,7 +496,7 @@ class InternVLChatModel(PreTrainedModel):
             if verbose:
                 print(query_to_print, response)
             return response
-    
+
     def mytrainchat(self, tokenizer, pixel_values, question, generation_config, history=None, return_history=False,
              num_patches_list=None, IMG_START_TOKEN='<img>', IMG_END_TOKEN='</img>', IMG_CONTEXT_TOKEN='<IMG_CONTEXT>',
              verbose=False):
