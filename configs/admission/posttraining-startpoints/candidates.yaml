@@ -6,8 +6,28 @@ candidates:
     official_repository: https://github.com/OpenSenseNova/SenseNova-U1
     model_card: https://huggingface.co/sensenova/SenseNova-U1-8B-MoT-SFT
     paper: arXiv:2605.12500
-    source_revision_audited: main (README/docs/training-code fetched 2026-09-15; no pinned commit hash captured — see notes)
-    checkpoint_hash: not computed (no weights downloaded in this audit)
+    source_revision_audited: >-
+      github.com/OpenSenseNova/SenseNova-U1@f97964a6e54b0abf92aa2db849af4e942bb2ff08
+      (2026-09-02 19:36:57 +0800; pinned commit of the editable-installed
+      sensenova_u1 package actually imported at runtime for the GPU smokes
+      below, not a separately-cloned read-only checkout; clean tree, remote
+      confirmed via `git remote -v`/`git log -1`). Supersedes the prior
+      unpinned "main" reference per 2026-09-16 local review item 6.
+    checkpoint_hash: >-
+      huggingface.co/sensenova/SenseNova-U1-8B-MoT-SFT@846ff1352e3a4e900d064740cddfc163b115646f
+      (pinned HF revision). Per-file sha256 + byte size for all 214 files of
+      the downloaded checkpoint (33GB/35,217,355,798 bytes total) recorded in
+      configs/admission/posttraining-startpoints/checkpoint-hashes.json.
+      Three of the 16 model.safetensors shards (model-00002/00003/00004-of-00016)
+      are exactly 16 bytes; cross-checked against model.safetensors.index.json's
+      weight_map and confirmed this is a benign upstream sharding artifact
+      (zero tensors are assigned to those three shard filenames — all
+      vision_model.embeddings.*/fm_modules.vision_model_mot_gen.embeddings.*
+      tensors live in shard 00001, all fm_modules.{timestep_embedder,fm_head,
+      noise_scale_embedder} tensors live in shard 00005), not download
+      corruption. Checkpoint was executed directly from container-local SSD
+      (/dockerdata, filesystem_class=local/xfs), matching
+      configs/admission/posttraining-startpoints/storage-preflight.json.
     license:
       status: pass
       spdx: Apache-2.0
@@ -31,10 +51,48 @@ candidates:
         evidence: reports/T250/training-interface-audit.md#candidate-a-sensenova-u1-training-subtree-of-opensensenovasensenova-u1
       configuration_interface: env-var-driven torchrun launchers (shell/train_u1/*.sh)
       data_interface: meta JSON (mm_data_path) listing {root, annotation, repeat_time, task}
+      constructed_and_verified_without_mutation: >-
+        On 2026-09-16, independently (re-)constructed on the loaded SFT
+        checkpoint (not merely read from source): three named
+        torch.optim.AdamW parameter groups (shared_backbone,
+        generation_private, vision_shared_understanding), a
+        torch.optim.lr_scheduler.CosineAnnealingLR wrapping that optimizer,
+        and a resume_metadata dict (global_step, epoch,
+        optimizer_state_dict_keys, scheduler_state_dict, rng_state_cpu_len,
+        rng_state_cuda_len). No .step() was called on the optimizer or
+        scheduler. Verified via a sha256 fingerprint over sampled parameter
+        tensors taken immediately before and after optimizer+scheduler
+        construction: fp_before_opt == fp_after_opt (both
+        79efdf9257c805710d0ccd92f4fed56512f6fd5e05db5cbba6965a4116b646b9),
+        proving construction alone does not mutate weights (AdamW lazily
+        allocates m/v state only on first .step(), which was never called).
+        Evidence: runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json
+        (weights_unmutated_by_optimizer_construction: true).
     task_path_availability:
       understanding: true
       generation: true
-      evidence_type: static/documentation (task types mm_t2i, mm_it2i, mm_interleave_gen, mm_interleaved, multimodal); not GPU-verified in this audit
+      evidence_type: >-
+        GPU-verified in this revision round (2026-09-16), directly on the
+        pinned SFT checkpoint loaded from local SSD, not merely static
+        documentation. One pure-understanding forward+backward smoke via
+        language_model(...) with indexes/attention_mask built exactly as
+        _build_t2i_text_inputs does (understanding_loss=9.830007553100586,
+        real cross-entropy loss, backward() succeeded, gradients landed only
+        on the shared_backbone group). One pure-generation forward+backward
+        smoke via patchify/extract_feature/_t2i_predict_v (the same officially
+        live helpers t2i_generate() calls) with a synthetic 64x64 latent
+        (generation_loss=5.4360198974609375, MSE against a random flow-matching
+        target, backward() succeeded, gradients landed only on the
+        generation_private group). Confirms clean architectural separation:
+        each smoke's gradients touched exactly the parameter group its path
+        owns, zero cross-contamination. NEOChatModel.forward() and
+        batch_chat() both raise NotImplementedError as their first line in
+        the pinned commit, and Qwen3Attention/Qwen3DecoderLayer.forward()
+        raise NotImplementedError("...issue #207...") for any batch mixing
+        und/gen tokens — so a pure-understanding-only or pure-generation-only
+        forward call (as smoked here) is the only implemented path in this
+        revision, not a simplification chosen by this audit. Evidence:
+        runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json.
     parameter_classification:
       shared_params: 1245000000
       shared_pct: 7.09
@@ -43,10 +101,63 @@ candidates:
       generation_private_params: 8186000000
       generation_private_pct: 46.64
       total_params: 17552000000
-      source: docs/parameter_breakdown.md (OpenSenseNova/SenseNova-U1)
+      source: docs/parameter_breakdown.md (OpenSenseNova/SenseNova-U1) — original docs-sourced figures, reconciled below
+      measured_reconciliation: >-
+        Independently re-derived on 2026-09-16 by constructing NEOChatModel
+        under torch.device("meta") from the pinned checkpoint's config (zero
+        real memory/compute cost) and summing numel per named-parameter
+        group: shared_backbone=9,348,413,952, generation_private=8,186,358,272,
+        vision_shared_understanding=17,568,768; total=17,552,340,992. This
+        audit's grouping folds the docs' separate "shared" (1.245B) and
+        "understanding_transformer" (8.121B) buckets into one
+        shared_backbone bucket (used only by forward_und) plus a small
+        vision_shared_understanding bucket, because the smokes above show
+        gradients flow through exactly those groups together on the
+        understanding path. Cross-check: 1,245,000,000 + 8,121,000,000 =
+        9,366,000,000 vs. measured 9,348,413,952 + 17,568,768 = 9,365,982,720
+        (matches to within rounding of the docs' published percentages, no
+        material discrepancy). generation_private matches the docs' 8.186B
+        exactly. total_params matches the docs' 17.552B exactly. Evidence:
+        /apdcephfs_cq9/share_1447896/yihangli/tmp/t250-param-count.py output,
+        reproduced in reports/T250/training-interface-audit.md.
     gpu_memory:
-      minimum: "1 node x 8 GPUs x 80GB HBM (shipped 8B.sh default; wp=8,tp=1,pp=1)"
-      recommended: "as shipped; seq_len/num_imgs/wp_size independently reducible but not verified in this audit"
+      minimum: >-
+        Measured directly on real H20 hardware (2026-09-16), not assumed from
+        the shipped launcher default. Full bf16 weights = 35,107,999,744
+        bytes (~35.1GB) resident after load on ONE H20 (96GB nominal /
+        102,010,781,696 bytes reported by torch). Peak allocation across both
+        forward+backward smokes (load -> optimizer/scheduler construction ->
+        understanding backward -> generation backward) = 59,478,750,720 bytes
+        max_allocated (~59.5GB), reserved 60,089,696,256 bytes (~60.1GB) — all
+        on a SINGLE H20, comfortably within its 96GB. This single-GPU smoke
+        footprint is real, measured evidence that the SFT checkpoint loads
+        and both task paths execute within this audit's <=2-GPU envelope; it
+        is NOT evidence for a full training run (no optimizer .step() was
+        taken, no gradient accumulation over a real batch/dataset, no
+        activation-memory scaling from longer sequences/larger images).
+        Evidence: runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json.
+      recommended: >-
+        For T270's most likely trainable subspace (generation_private only,
+        8,186,358,272 params, ~16.4GB bf16 weights, ~16.4GB bf16 grads):
+        AdamW fp32 optimizer state alone needs ~65.5GB (2x fp32 copies:
+        moments m+v at 4 bytes/param x 2 x 8.186B). Single-H20 total
+        (weights+grads+opt-state, before activations) = ~35.1GB (full model
+        weights must stay resident, since forward_und still needs
+        shared_backbone) + ~16.4GB grads + ~65.5GB opt-state = ~117GB,
+        exceeding one 96GB H20; plausibly fits on 2xH20 (192GB) with
+        optimizer-state sharding (ZeRO-1/2) or an 8-bit optimizer, still
+        leaving headroom for activations at modest batch/sequence sizes.
+        Full fine-tuning of BOTH shared_backbone+generation_private would
+        need ~140.3GB of AdamW state alone (74.8GB+65.5GB), which does NOT
+        fit in 2xH20 (192GB) once weights/grads/activations are added without
+        further sharding or offload. This replaces the previously-unverified
+        assumption that the shipped 8x80GB launcher default was the smallest
+        feasible topology; the measured/derived numbers above are specific to
+        this audit's actual smoke and to the generation_private-only subspace
+        T270 is expected to target, not to full-parameter fine-tuning at the
+        shipped launcher's scale. Derivation:
+        /apdcephfs_cq9/share_1447896/yihangli/tmp/t250-param-count.py,
+        reproduced in reports/T250/training-interface-audit.md.
     sequential_task_batch_support:
       value: true
       note: five type_id task categories with per-task loss bucketing in one training run
@@ -55,9 +166,17 @@ candidates:
       - "Apex / grouped_gemm / deeplink_ext accelerator kernels (configuration-specific, built separately)"
     headroom_and_contamination_risks: >-
       17.6B total params gives ample headroom for further supervised/preference
-      post-training. Default launcher topology (8x80GB) exceeds this audit's
-      2-GPU envelope for an eventual T270 run without config changes; not a
-      blocker for this audit since no training is executed here.
+      post-training. The shipped launcher's 8x80GB default is the documented
+      convenience default for full-parameter fine-tuning at the launcher's
+      shipped seq_len/num_imgs, not a measured lower bound; this audit's real
+      single-H20 smoke (peak ~59.5GB of 96GB) plus the per-group AdamW-state
+      derivation above show a generation_private-only T270 run plausibly fits
+      2xH20 with optimizer-state sharding, while full-parameter fine-tuning of
+      both shared_backbone+generation_private does not fit 2xH20 without
+      further sharding/offload. Zero contamination risk observed between the
+      understanding and generation gradient paths in the executed smokes
+      (each smoke's backward() populated gradients only in the parameter
+      group its own forward path owns).
 
   - id: showo2-1.5b
     display_name: Show-o2-1.5B
@@ -184,3 +303,14 @@ selection:
     - id: uniddt
       reason: missing_license
   evidence: reports/T250/decision-matrix.md
+  revision_2026_09_16_decision: >-
+    Per local-review item 7: SenseNova-U1-SFT remains primary because all six
+    prior revision items now pass with real, positive evidence (pinned
+    source+checkpoint revisions and hashes; SFT checkpoint loaded from
+    verified local SSD; one pure-understanding and one pure-generation
+    forward+backward smoke both executed successfully on the SFT checkpoint
+    itself; optimizer+scheduler+resume metadata constructed without mutating
+    weights; smallest-feasible-H20-topology measured and derived). No
+    limitation was found that requires promoting Show-o2-1.5B to primary;
+    Show-o2-1.5B remains fallback and UniDDT remains excluded
+    (missing_license), both unchanged from the prior submission.

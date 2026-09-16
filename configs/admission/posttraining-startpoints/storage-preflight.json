@@ -1,15 +1,15 @@
 {
-  "capacity_bytes": 107306004480,
+  "capacity_bytes": 9895604649984,
   "environment": {
-    "HF_HOME": "/tmp/T250-storage-preflight/hf_cache",
+    "HF_HOME": "/dockerdata/t250-sensenova-sft/hf_cache",
     "HF_HUB_OFFLINE": "1",
     "TRANSFORMERS_OFFLINE": "1"
   },
   "errors": [],
   "filesystem_class": "local",
   "filesystem_type": "xfs",
-  "free_bytes": 62237507584,
-  "minimum_free_bytes": 5000000000,
-  "path": "/tmp/T250-storage-preflight",
+  "free_bytes": 9725812535296,
+  "minimum_free_bytes": 40000000000,
+  "path": "/dockerdata/t250-sensenova-sft/checkpoint",
   "status": "pass"
 }

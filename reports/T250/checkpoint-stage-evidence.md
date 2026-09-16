@@ -44,6 +44,21 @@ out what OPD stands for. This does not change the stage label (OPD is named
 as occurring *after* SFT, same as RL, so it does not weaken the "-SFT precedes
 preference/RL" conclusion) — recorded as an open terminology gap only.
 
+**Revision addendum (2026-09-16):** this stage label applies to the exact
+checkpoint loaded and smoke-tested in this revision —
+`sensenova/SenseNova-U1-8B-MoT-SFT` @ HF revision
+`846ff1352e3a4e900d064740cddfc163b115646f`, downloaded to and executed from
+container-local SSD, 214 files hashed (sha256+size in
+`configs/admission/posttraining-startpoints/checkpoint-hashes.json`), loaded
+directly via `NEOChatModel.from_pretrained` and exercised with a real
+pure-understanding forward+backward pass
+(`understanding_loss=9.830007553100586`). The stage label above is therefore
+now backed by both the official README/paper statement (documentation
+evidence) and a real, successful load+forward+backward on the pinned
+checkpoint itself (execution evidence) — not documentation evidence alone.
+See `reports/T250/training-interface-audit.md`'s Revision addendum for full
+detail.
+
 ## Candidate B — Show-o2-1.5B (reusing T210's accepted admission)
 
 **Stage label: SFT-equivalent, consistent with completion of Stage-2
