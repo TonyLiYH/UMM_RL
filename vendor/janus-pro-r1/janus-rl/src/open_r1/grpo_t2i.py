@@ -103,7 +103,7 @@ def send_request(body, idx):
         try:
             curtime+=1
             r = requests.post(url=url, json=body, headers=headers)
-          
+
             res =  r.json()
             if res['success']:
                 score = res['resultMap']['scores']
@@ -115,7 +115,7 @@ def send_request(body, idx):
         except Exception as e:
             if curtime>=5:
                 print('error!')
-                
+
                 return (0.0, idx)
 
 def intern_reward(reward_model, images, prompts, apply_api=True):
@@ -135,7 +135,7 @@ def intern_reward(reward_model, images, prompts, apply_api=True):
                 "captions": {"shapes": [1], "stringValues": [prompt]}
             }}
             pts.append((i, curdata))
-    
+
         concurrent_requests = 16
         results = []
         scores  = [0.0] * len(prompts)
@@ -145,14 +145,14 @@ def intern_reward(reward_model, images, prompts, apply_api=True):
             for future in tqdm(as_completed(futures), total=len(pts), desc="Processing Requests"):
                 result = future.result()
                 results.append(result)
-        
+
         for res in results:
             scores[res[1]] = res[0]
         for ss in scores:
             assert ss>=0.0
-        
+
         return scores
-        
+
 class TxtLoggingCallback(TrainerCallback):
     def __init__(self, log_file):
         self.log_file = log_file
@@ -179,7 +179,7 @@ def main(script_args, training_args, model_args):
             logging.FileHandler(f"logs/{nickname}.log"),
             logging.StreamHandler()
         ]
-    ) 
+    )
     log_level = training_args.get_process_log_level()
     logger.setLevel(log_level)
     datasets.utils.logging.set_verbosity(log_level)

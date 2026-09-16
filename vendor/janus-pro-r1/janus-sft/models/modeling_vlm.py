@@ -218,7 +218,7 @@ class MultiModalityCausalLM(MultiModalityPreTrainedModel):
         language_config = config.language_config
         language_config._attn_implementation = 'flash_attention_2'
         self.language_model = LlamaForCausalLM(language_config)
-       
+
 
     def prepare_inputs_embeds(
         self,
@@ -279,7 +279,7 @@ class MultiModalityCausalLM(MultiModalityPreTrainedModel):
                 B, L = image_embeds.shape[0], image_embeds.shape[1]
             attention_mask = torch.cat((attention_mask, torch.ones((B, L)).long().to(attention_mask.device)), dim=1)
             label_len = labels.shape[-1]
-            last_hidden_state = self.language_model.model(inputs_embeds=input_embeds, 
+            last_hidden_state = self.language_model.model(inputs_embeds=input_embeds,
                                                     attention_mask=attention_mask).last_hidden_state
             image_logits = self.gen_head(last_hidden_state)
             visual_vocab_size = image_logits.shape[-1]
@@ -292,7 +292,7 @@ class MultiModalityCausalLM(MultiModalityPreTrainedModel):
             for i in range(input_embeds.shape[0]):
                 input_embeds[i][image_seq_mask[i]] = image_embeds[i]
             label_len = labels.shape[-1]
-            text_logits = self.language_model(inputs_embeds=input_embeds, 
+            text_logits = self.language_model(inputs_embeds=input_embeds,
                                               attention_mask=attention_mask).logits
             text_vocab_size = text_logits.shape[-1]
             shift_logits = text_logits[..., -label_len:-1, :].contiguous()
@@ -305,7 +305,7 @@ class MultiModalityCausalLM(MultiModalityPreTrainedModel):
             loss = alpha * loss_1 + (1-alpha) * loss_2
         else:
             raise NotImplementedError
-            
+
         return loss
 
     def prepare_embedding(

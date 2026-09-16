@@ -108,7 +108,7 @@ def send_request(body, idx):
         try:
             curtime+=1
             r = requests.post(url=url, json=body, headers=headers)
-          
+
             res =  r.json()
             if res['success']:
                 score = res['resultMap']['scores']
@@ -120,7 +120,7 @@ def send_request(body, idx):
         except Exception as e:
             if curtime>=5:
                 print('error!')
-                
+
                 return (0.0, idx)
 
 def following_reward(prompts, images, images2):
@@ -131,7 +131,7 @@ def following_reward(prompts, images, images2):
         input_image.save(input_bytes, format='PNG')
         output_image = images2[i]
         output_bytes = io.BytesIO()
-        output_image.save(output_bytes, format='PNG')    
+        output_image.save(output_bytes, format='PNG')
         instruction = prompts[i]
         prompt = f'Please evaluate the following image edit based on the provided instructions:\n\nImage-1: <image>\nImage-2: <image>\nThe first image is the original image and the second image is the edited image\nEditing Instructions: {instruction}\nDoes the edited image follow the editing instructions? Please directly respond with yes or no, then give the reason'
         cur = {
@@ -155,7 +155,7 @@ def following_reward(prompts, images, images2):
         scores[res[1]] = res[0]
     for ss in scores:
         assert ss>=0.0
-    
+
     return scores
 
 def preserving_reward(prompts, images, images2):
@@ -166,7 +166,7 @@ def preserving_reward(prompts, images, images2):
         input_image.save(input_bytes, format='PNG')
         output_image = images2[i]
         output_bytes = io.BytesIO()
-        output_image.save(output_bytes, format='PNG')    
+        output_image.save(output_bytes, format='PNG')
         instruction = prompts[i]
         prompt = f'Please evaluate the following image edit based on the provided instructions:\n\nImage-1: <image>\nImage-2: <image>\nThe first image is the original image and the second image is the edited image\nEditing Instructions: {instruction}\nDoes the area of the edited image that is unrelated to the editing instructions remain consistent with the original image? Please directly respond with yes or no, then give the reason'
         cur = {
@@ -190,7 +190,7 @@ def preserving_reward(prompts, images, images2):
         scores[res[1]] = res[0]
     for ss in scores:
         assert ss>=0.0
-    
+
     return scores
 
 class TxtLoggingCallback(TrainerCallback):
@@ -219,7 +219,7 @@ def main(script_args, training_args, model_args):
             logging.FileHandler(f"logs/{nickname}.log"),
             logging.StreamHandler()
         ]
-    ) 
+    )
     log_level = training_args.get_process_log_level()
     logger.setLevel(log_level)
     datasets.utils.logging.set_verbosity(log_level)

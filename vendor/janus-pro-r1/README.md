@@ -22,8 +22,8 @@
 </p>
 
 <div align="center">
-Kaihang Pan<sup>1*</sup>, Yang Wu<sup>2*</sup>, Wendong Bu<sup>1*</sup>, Kai Shen<sup>1&ddagger;</sup>, Juncheng Li<sup>1&dagger;</sup>, Yingting Wang<sup>2</sup>, 
- 
+Kaihang Pan<sup>1*</sup>, Yang Wu<sup>2*</sup>, Wendong Bu<sup>1*</sup>, Kai Shen<sup>1&ddagger;</sup>, Juncheng Li<sup>1&dagger;</sup>, Yingting Wang<sup>2</sup>,
+
 Yunfei Li<sup>2</sup>, Siliang Tang<sup>1</sup>, Jun Xiao<sup>1</sup>, Fei Wu<sup>1</sup>, Hang Zhao<sup>2</sup>, Yueting Zhuang<sup>1</sup>
 
 <sup>1</sup>Zhejiang University, <sup>2</sup>Ant Group
@@ -50,13 +50,13 @@ Yunfei Li<sup>2</sup>, Siliang Tang<sup>1</sup>, Jun Xiao<sup>1</sup>, Fei Wu<su
 
 We propose a **two-stage training paradigm** to enable introspective text-to-image generation via genuine reasoning chains (CoT), unlocking what we call **Aha Moments** in visual generation:
 
-- **Stage 1 – Supervised Fine-Tuning (SFT):**  
+- **Stage 1 – Supervised Fine-Tuning (SFT):**
   The model learns structured visual reasoning through three subtasks:
   - Text-to-image generation
   - Image-text consistency self-evaluation
   - Image regeneration through reflection
 
-- **Stage 2 – Reinforcement Learning (RL):**  
+- **Stage 2 – Reinforcement Learning (RL):**
   The model is trained using a token-level Markov decision process with bi-level QA-based rewards to encourage spontaneous reasoning and correction, optimizing via GRPO.
 
 With self-reflective capabilities, this approach bridges the gap between text-to-image generation and image editing, enabling a unified and coherent visual reasoning process.
@@ -170,7 +170,7 @@ You can conduct the inference process using the following command. ``model_path`
       --parallel_size 4
   ```
 After completing the inference, the structure of the `results` directory will be as follows:
-  
+
   ```text
   results/
   ├── reason.jsonl

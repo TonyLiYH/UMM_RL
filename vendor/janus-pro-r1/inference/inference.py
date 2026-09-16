@@ -7,7 +7,7 @@ from typing import List
 from torchvision import transforms
 from transformers import AutoModelForCausalLM
 from models import MultiModalityCausalLM, VLChatProcessor
-from tqdm import tqdm 
+from tqdm import tqdm
 import math
 
 def center_crop_arr(pil_image, image_size):
@@ -63,9 +63,9 @@ def generate_with_refine(
                 else:
                     st = pad_list[-1].item()+2
                 tokens[i, st:-1] = vl_chat_processor.pad_id
-        inputs_embeds = mmgpt.language_model.get_input_embeddings()(tokens) 
+        inputs_embeds = mmgpt.language_model.get_input_embeddings()(tokens)
         embeds_1 = inputs_embeds
-        attention_mask_1 = torch.repeat_interleave(attention_mask, 2, dim=0) 
+        attention_mask_1 = torch.repeat_interleave(attention_mask, 2, dim=0)
         cur_atten_mask = attention_mask_1
         generated_tokens = torch.zeros((parallel_size, image_token_num_per_image), dtype=torch.int).cuda()
         for i in tqdm(range(image_token_num_per_image)):
@@ -105,15 +105,15 @@ def generate_with_refine(
             all_imgs_1.append(PIL.Image.fromarray(visual_img[i]))
 
     if 2 <= task_list[-1]:
-        inputs_embeds = embeds_1[::2,:,:] 
+        inputs_embeds = embeds_1[::2,:,:]
         under_embeds = torch.zeros((parallel_size, image_token_num_per_image, 4096), dtype=torch.bfloat16).cuda()
         for i in range(parallel_size):
             img_prompt = "<image_placeholder>"
             prepare_inputs = vl_chat_processor(
                 prompt=img_prompt, images=[all_imgs_1[i]], force_batchify=True
             ).to(input_ids.device)
-            img_embeds = mmgpt.prepare_inputs_embeds(**prepare_inputs) 
-            img_embeds = img_embeds[:,2:-1,:] 
+            img_embeds = mmgpt.prepare_inputs_embeds(**prepare_inputs)
+            img_embeds = img_embeds[:,2:-1,:]
             under_embeds[i,:,:] = img_embeds
         inputs_embeds = torch.cat((inputs_embeds, under_embeds), dim=1)
         selfcheck_ids = vl_chat_processor.tokenizer.encode(prompt[0])[1:]
@@ -158,14 +158,14 @@ def generate_with_refine(
                 next_token = torch.multinomial(probs_sort, num_samples=1)
                 next_token = torch.gather(probs_idx, -1, next_token)
             else:
-                next_token = torch.multinomial(probs, num_samples=1) 
+                next_token = torch.multinomial(probs, num_samples=1)
             if i >= 1:
                 add_padding = ((reflect_tokens[:, i-1] == eos_token) | (reflect_tokens[:, i-1] == padding_token)).unsqueeze(1).to(torch.int)
             next_token = add_padding*padding_token + (1-add_padding)*next_token
             if i == 0:
                 yes_list = (next_token == yes_token)
             reflect_tokens[:, i] = next_token.squeeze(dim=-1)
-            is_eos = (next_token == eos_token) 
+            is_eos = (next_token == eos_token)
             eos_list = eos_list | is_eos.to(torch.int)
             new_attn = 1-add_padding
             new_attn = new_attn & (~is_eos)
@@ -174,7 +174,7 @@ def generate_with_refine(
             reflect_len = i
             if eos_list.all():
                 break
-        reflect_tokens = reflect_tokens[:,:reflect_len+1]    
+        reflect_tokens = reflect_tokens[:,:reflect_len+1]
         max_relect_len = reflect_len+1
         output_text_ids = reflect_tokens
         attention_mask_txt = torch.ones_like(output_text_ids).cuda()
@@ -198,13 +198,13 @@ def generate_with_refine(
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
         ])
-        gen_embeds_list = []  
+        gen_embeds_list = []
         for i in range(len(all_imgs_1)):
-            img = gen_transform(all_imgs_1[i])  
-            img = img.unsqueeze(0).to(torch.bfloat16).cuda() 
+            img = gen_transform(all_imgs_1[i])
+            img = img.unsqueeze(0).to(torch.bfloat16).cuda()
             _, _, all_image_ids = mmgpt.gen_vision_model.encode(img)
             image_ids = all_image_ids[2]
-            embed = mmgpt.gen_aligner(mmgpt.gen_embed(image_ids)) 
+            embed = mmgpt.gen_aligner(mmgpt.gen_embed(image_ids))
             gen_embeds_list.append(embed)
             gen_embeds_list.append(embed)
         gen_embeds = torch.cat(gen_embeds_list, dim=0)
@@ -273,7 +273,7 @@ def generate_with_refine(
         new_visual_img[:, :, :] = new_dec
         for i in range(parallel_size):
             all_imgs_2.append(PIL.Image.fromarray(new_visual_img[i]))
-        
+
     return all_imgs_1, all_imgs_2, (output_text_ids.cpu(), selfcheck.squeeze().cpu())
 
 
@@ -297,9 +297,9 @@ if __name__ == "__main__":
     if args.ckpt_path is not None:
         state_dict = torch.load(f"{args.ckpt_path}", map_location="cpu")
         vl_gpt.load_state_dict(state_dict)
-        
+
     vl_gpt = vl_gpt.to(torch.bfloat16).cuda().eval()
-    
+
     # You can flexibly modify the code here to perform batched inference.
     allprompts = []
     # prompt = f'<|User|>: {args.caption}\n\n<|Assistant|>:<begin_of_image>'
@@ -317,7 +317,7 @@ if __name__ == "__main__":
     )
     prompt = sft_format + vl_chat_processor.image_start_tag
     allprompts.append(prompt)
-    
+
     tokenized_input = vl_chat_processor.tokenizer(
         allprompts,
         return_tensors="pt",
@@ -327,23 +327,23 @@ if __name__ == "__main__":
 
     prompt_ids = tokenized_input['input_ids']
     prompt_mask = tokenized_input['attention_mask']
-    
+
     images, regen_images, (output_text_ids, selfcheck) = generate_with_refine(
         vl_gpt,
         vl_chat_processor,
-        input_ids=prompt_ids, attention_mask=prompt_mask, 
+        input_ids=prompt_ids, attention_mask=prompt_mask,
         parallel_size = args.parallel_size,
-        cfg_weight = args.cfg, 
+        cfg_weight = args.cfg,
     )
     os.makedirs(args.gen_path, exist_ok=True)
     os.makedirs(args.reason_path, exist_ok=True)
     os.makedirs(args.regen_path, exist_ok=True)
-    
+
     for i in range(args.parallel_size):
         img_name = str(i).zfill(4)+".png"
         save_path = os.path.join(args.gen_path, img_name)
         images[i].save(save_path)
-    
+
     with open(args.reason_path, 'w') as f:
         for i in range(args.parallel_size):
             reason_data = {"prompt": args.caption}
@@ -353,8 +353,8 @@ if __name__ == "__main__":
             reason_data["reason"] = vl_chat_processor.tokenizer.decode(output_text_ids[i].cpu().tolist(), skip_special_tokens=True)
             reason_data = json.dumps(reason_data, ensure_ascii=False)
             f.write(reason_data+'\n')
-    
-    
+
+
     for i in range(args.parallel_size):
         img_name = str(i).zfill(4)+".png"
         save_path = os.path.join(args.regen_path, img_name)
@@ -362,4 +362,3 @@ if __name__ == "__main__":
             images[i].save(save_path)
         else:
             regen_images[i].save(save_path)
- 

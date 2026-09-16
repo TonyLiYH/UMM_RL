@@ -23,5 +23,3 @@ if __name__ == "__main__":
         if rank < ngpus_per_node - 1:
             cmd += " &"
         os.system(cmd)
-
-    

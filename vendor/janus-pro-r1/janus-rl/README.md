@@ -1,6 +1,6 @@
 ## Reinforcement Learning (Stage 2)
 
-First please clone our repo and prepare the python environment. We recommend using Python>=3.10. 
+First please clone our repo and prepare the python environment. We recommend using Python>=3.10.
 ```bash
 git clone https://github.com/wendell0218/Janus-Pro-R1.git
 cd Janus-Pro-R1
@@ -40,9 +40,9 @@ While for rewars models, there are two optinal ways to call them: online and off
 For models that are deployed on GPUs with larger memory, such as [InternVL2.5-26B](https://huggingface.co/OpenGVLab/InternVL2_5-26B), online deployment can be adopted, and a URL can be exposed as the calling interface.
 For models that are deployed on GPUs with relatively smaller memory, such as [InternVL2.5-8B](https://huggingface.co/OpenGVLab/InternVL2_5-8B), offline deployment can be used, where the model is directly deployed on the GPUs for training.
 This eliminates the need for network communication and provides greater training stability.
-Specifically, for the former, after model deployment is complete, the URL path needs to be modified in the corresponding configuration, e.g., [src/open_r1/grpo_t2i.py#L94](src/open_r1/grpo_t2i.py#L94). 
+Specifically, for the former, after model deployment is complete, the URL path needs to be modified in the corresponding configuration, e.g., [src/open_r1/grpo_t2i.py#L94](src/open_r1/grpo_t2i.py#L94).
 For the latter, the local weight path of the reward model should be filled in [src/open_r1/internvl_img.py#L98](src/open_r1/internvl_img.py#L98).
-Moreover, the hyperparameter ``internvl_tp`` in the [configuration file](recipes/t2i_generation/grpo.yml#L61) is used to control the parameter weights of the reward model. A value of ``26b`` corresponds to the reward model of InternVL2.5-26B, indicating an offline deployment; a value of ``8b`` corresponds to the reward model of InternVL2.5-8B, indicating an online deployment. 
+Moreover, the hyperparameter ``internvl_tp`` in the [configuration file](recipes/t2i_generation/grpo.yml#L61) is used to control the parameter weights of the reward model. A value of ``26b`` corresponds to the reward model of InternVL2.5-26B, indicating an offline deployment; a value of ``8b`` corresponds to the reward model of InternVL2.5-8B, indicating an online deployment.
 **The same applies to image editing.**
 Of course, **we strongly recommend using the 26B model as the reward model, especially for image-editing training.**
 

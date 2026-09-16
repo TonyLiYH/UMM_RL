@@ -27,7 +27,7 @@ def generate(
         tokens[i, :] = input_ids
         if i % 2 != 0:
             tokens[i, 1:-1] = vl_chat_processor.pad_id
-    inputs_embeds = mmgpt.language_model.get_input_embeddings()(tokens) 
+    inputs_embeds = mmgpt.language_model.get_input_embeddings()(tokens)
     generated_tokens = torch.zeros((parallel_size, image_token_num_per_image), dtype=torch.int).cuda()
     for i in range(image_token_num_per_image):
         outputs = mmgpt.language_model.model(inputs_embeds=inputs_embeds, use_cache=True, past_key_values=outputs.past_key_values if i != 0 else None)
@@ -65,7 +65,7 @@ def generate(
         images.append(PIL.Image.fromarray(visual_img[i]))
 
     return images
-  
+
 
 if __name__ == "__main__":
     import argparse
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         vl_chat_processor,
         prompt,
         parallel_size = args.parallel_size,
-        cfg_weight = args.cfg, 
+        cfg_weight = args.cfg,
     )
     if not os.path.exists(args.gen_path):
         os.makedirs(args.gen_path, exist_ok=True)
@@ -99,4 +99,3 @@ if __name__ == "__main__":
         img_name = str(i).zfill(4)+".png"
         save_path = os.path.join(args.gen_path, img_name)
         images[i].save(save_path)
-

@@ -3,7 +3,7 @@
 
 We illustrate the inference process of introspective text-to-image generation under the simplest scenario, where the model performs a one-time image self-evaluation and image regeneration after the initial text-to-image generation.
 
-First, the python environment for inference is the same as that for SFT. Specifically, please clone our repo and prepare the python environment. We recommend using Python>=3.10. 
+First, the python environment for inference is the same as that for SFT. Specifically, please clone our repo and prepare the python environment. We recommend using Python>=3.10.
 ```bash
 git clone https://github.com/wendell0218/Janus-Pro-R1.git
 cd Janus-Pro-R1
@@ -45,7 +45,7 @@ Additionally, we provide a script for inference scaling, trading longer inferenc
   ```
 
 After completing the inference, the structure of the `results` directory will be as follows:
-  
+
   ```text
   results/
   ├── reason.jsonl
@@ -66,7 +66,7 @@ Also, to facilitate the reader's understanding, we also split the inference logi
 
 - ### Text-to-Image Generation
 
-  You can generate images from text prompts using the following command. 
+  You can generate images from text prompts using the following command.
 
   ```bash
   python t2i.py \
@@ -111,5 +111,5 @@ Also, to facilitate the reader's understanding, we also split the inference logi
       --gen_path "results/samples" \
       --reason_path "results/reason.jsonl" \
       --regen_path "results/regen_samples" \
-      --cfg 5.0 
+      --cfg 5.0
   ```

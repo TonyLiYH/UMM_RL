@@ -49,7 +49,7 @@ def generate(
         tokens[i, :] = input_ids
         if i % 2 != 0:
             tokens[i, 1:-1] = vl_chat_processor.pad_id
-    inputs_embeds = mmgpt.language_model.get_input_embeddings()(tokens) 
+    inputs_embeds = mmgpt.language_model.get_input_embeddings()(tokens)
     embeds_1 = inputs_embeds
     gen_res = os.listdir(gen_path)
     gen_res = [os.path.join(gen_path, i) for i in gen_res]
@@ -61,19 +61,19 @@ def generate(
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
         ])
-        tr_img = gen_transform(img)  
-        tr_img = tr_img.unsqueeze(0).to(torch.bfloat16).cuda() 
+        tr_img = gen_transform(img)
+        tr_img = tr_img.unsqueeze(0).to(torch.bfloat16).cuda()
         _, _, all_image_ids = mmgpt.gen_vision_model.encode(tr_img)
         image_ids.append(all_image_ids[2])
-    inputs_embeds = embeds_1[::2,:,:] 
+    inputs_embeds = embeds_1[::2,:,:]
     under_embeds = torch.zeros((parallel_size, image_token_num_per_image, 4096), dtype=torch.bfloat16).cuda()
     for i in range(parallel_size):
         img_prompt = "<image_placeholder>"
         prepare_inputs = vl_chat_processor(
             prompt=img_prompt, images=[images[i]], force_batchify=True
         ).to(vl_gpt.device)
-        img_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs) 
-        img_embeds = img_embeds[:,2:-1,:] 
+        img_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs)
+        img_embeds = img_embeds[:,2:-1,:]
         under_embeds[i,:,:] = img_embeds
     inputs_embeds = torch.cat((inputs_embeds, under_embeds), dim=1)
     selfcheck_ids = vl_chat_processor.tokenizer.encode(prompt[1])[1:]
@@ -115,13 +115,13 @@ def generate(
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
     ])
-    gen_embeds_list = []  
+    gen_embeds_list = []
     for i in range(len(images)):
-        img = gen_transform(images[i])  
-        img = img.unsqueeze(0).to(torch.bfloat16).cuda() 
+        img = gen_transform(images[i])
+        img = img.unsqueeze(0).to(torch.bfloat16).cuda()
         _, _, all_image_ids = mmgpt.gen_vision_model.encode(img)
         image_ids = all_image_ids[2]
-        embed = mmgpt.gen_aligner(mmgpt.gen_embed(image_ids)) 
+        embed = mmgpt.gen_aligner(mmgpt.gen_embed(image_ids))
         gen_embeds_list.append(embed)
         gen_embeds_list.append(embed)
     gen_embeds = torch.stack(gen_embeds_list, dim=0)

@@ -113,22 +113,22 @@ class InternVLReward:
       num_patches_list = [pv.size(0) for pv in pixel_values]
       generation_config = dict(max_new_tokens=1024, do_sample=True)
       pixel_values = torch.cat(pixel_values, dim=0)
-      
+
       questions = ['<image>\n Does this image match the description "' + prompt + '", please directly respond with yes or no.' for prompt in prompts]
 
-      responses = self.model.my_batch_chat(self.tokenizer, 
+      responses = self.model.my_batch_chat(self.tokenizer,
                                            pixel_values,
                                            num_patches_list=num_patches_list,
                                            questions=questions,
                                            generation_config=generation_config)
-        
+
 
       logitsm = F.softmax(responses.scores[0], dim=-1).detach().cpu().squeeze(0)
-        
+
       yes_prob = (logitsm[:, self.vocab_dict['yes']] + logitsm[:, self.vocab_dict['Yes']] + logitsm[:, self.vocab_dict['YES']])
       no_prob = (logitsm[:, self.vocab_dict['no']] + logitsm[:, self.vocab_dict['No']] + logitsm[:, self.vocab_dict['NO']])
       prob_list = yes_prob / (yes_prob + no_prob)
       yes_prob_norm = [round(pp.item(), 4) for pp in prob_list]
       score = yes_prob_norm
-      
+
       return score

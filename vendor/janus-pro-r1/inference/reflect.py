@@ -58,19 +58,19 @@ def generate(
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
         ])
-        tr_img = gen_transform(img)  
-        tr_img = tr_img.unsqueeze(0).to(torch.bfloat16).cuda() 
+        tr_img = gen_transform(img)
+        tr_img = tr_img.unsqueeze(0).to(torch.bfloat16).cuda()
         _, _, all_image_ids = mmgpt.gen_vision_model.encode(tr_img)
         image_ids.append(all_image_ids[2])
-    inputs_embeds = embeds_1[::2,:,:] 
+    inputs_embeds = embeds_1[::2,:,:]
     under_embeds = torch.zeros((parallel_size, image_token_num_per_image, 4096), dtype=torch.bfloat16).cuda()
     for i in range(parallel_size):
         img_prompt = "<image_placeholder>"
         prepare_inputs = vl_chat_processor(
             prompt=img_prompt, images=[images[i]], force_batchify=True
         ).to(vl_gpt.device)
-        img_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs) 
-        img_embeds = img_embeds[:,2:-1,:] 
+        img_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs)
+        img_embeds = img_embeds[:,2:-1,:]
         under_embeds[i,:,:] = img_embeds
     inputs_embeds = torch.cat((inputs_embeds, under_embeds), dim=1)
     selfcheck_ids = vl_chat_processor.tokenizer.encode(prompt[1])[1:]
@@ -93,7 +93,7 @@ def generate(
     for i in range(max_reflect_len):
         outputs = mmgpt.language_model(inputs_embeds=inputs_embeds, attention_mask=attn_mask, use_cache=True, past_key_values=outputs.past_key_values if i != 0 else None)
         logits = outputs.logits
-        logits = logits[:,-1,:] 
+        logits = logits[:,-1,:]
         if i == 0:
             allowed_tokens = [yes_token, no_token]
             allowed_tokens_logits = logits[:,allowed_tokens]
@@ -121,16 +121,16 @@ def generate(
         if i == 0:
             yes_list = (next_token == yes_token)
         reflect_tokens[:, i] = next_token.squeeze(dim=-1)
-        is_eos = (next_token == eos_token) 
+        is_eos = (next_token == eos_token)
         eos_list = eos_list | is_eos.to(torch.int)
         new_attn = 1-add_padding
         new_attn = new_attn & (~is_eos)
         attn_mask = torch.cat((attn_mask, new_attn), dim=1)
-        inputs_embeds = mmgpt.language_model.get_input_embeddings()(next_token) 
+        inputs_embeds = mmgpt.language_model.get_input_embeddings()(next_token)
         reflect_len = i
         if eos_list.all():
             break
-    reflect_tokens = reflect_tokens[:,:reflect_len+1]    
+    reflect_tokens = reflect_tokens[:,:reflect_len+1]
     output_text_ids = reflect_tokens
     attention_mask_txt = torch.ones_like(output_text_ids).cuda()
     attention_mask_txt[output_text_ids == padding_token] = 0

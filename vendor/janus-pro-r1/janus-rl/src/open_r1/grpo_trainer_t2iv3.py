@@ -84,11 +84,11 @@ def lr_linear_early_drop_with_warm_up(x, *, warm_up_steps=45, convert_steps=500,
     else:
         k = (min_factor - convert_factor) / (total_steps - convert_steps)
         lr = k * x - k * convert_steps + convert_factor
-    
+
     return lr
 
 class GRPOTrainer(Trainer):
-    
+
     _tag_names = ["trl", "grpo"]
 
     def __init__(
@@ -115,7 +115,7 @@ class GRPOTrainer(Trainer):
             model_name = model if isinstance(model, str) else model.config._name_or_path
             model_name = model_name.split("/")[-1]
             args = GRPOConfig(f"{model_name}-GRPO")
-        
+
         # Models
         # Trained model
         # from llama import MyLLamaModel
@@ -167,7 +167,7 @@ class GRPOTrainer(Trainer):
         parameter_names = [n for n, _ in self.ref_model.named_parameters()]
         for param_name in parameter_names:
             param = self.ref_model.get_parameter(param_name)
-            param.requires_grad = False 
+            param.requires_grad = False
         self.ref_model.eval()
 
         # Processing class
@@ -324,7 +324,7 @@ class GRPOTrainer(Trainer):
         for i, reward_func in enumerate(self.reward_funcs):
             if isinstance(reward_func, PreTrainedModel):
                 self.reward_funcs[i] = self.accelerator.prepare_model(reward_func, evaluation_mode=True)
-        
+
         self.set_special_tokens()
         self.set_model()
 
@@ -337,7 +337,7 @@ class GRPOTrainer(Trainer):
         self.guidance_scale = self.args.guidance_scale
         self.generate_with_cfg = self.args.generate_with_cfg
         self.set_epsilon = self.args.set_epsilon
-        
+
     def set_model(self):
         if '8' in self.args.internvl_tp:
             from internvl_img import InternVLReward
@@ -358,7 +358,7 @@ class GRPOTrainer(Trainer):
     def _get_per_token_logps(self, model, input_embeds, output_ids, attention_mask, logits_to_keep=0, addcfg=True, visual=True):
         if visual:
             if output_ids.shape[0] < input_embeds.shape[0]:
-                new_img_ids = torch.repeat_interleave(output_ids, 2, dim=0) 
+                new_img_ids = torch.repeat_interleave(output_ids, 2, dim=0)
             else:
                 new_img_ids = output_ids
             output_embeds = model.gen_aligner(model.gen_embed(new_img_ids))
@@ -378,7 +378,7 @@ class GRPOTrainer(Trainer):
                 logits = model.language_model(inputs_embeds=inputs_embeds, attention_mask=attention_mask).logits
                 logits = logits[:, -1-logits_to_keep:-1, :]
             input_ids = output_ids.long()  # (B, L-1), exclude the first input ID since we don't have logits for it
-        
+
         else:
             outputs = model.language_model.model(inputs_embeds=inputs_embeds, attention_mask=attention_mask)  # (B, L, V)
             hidden_states = outputs.last_hidden_state
@@ -399,7 +399,7 @@ class GRPOTrainer(Trainer):
 
     def _prepare_inputs(self, inputs: dict[str, Union[torch.Tensor, Any]]) -> dict[str, Union[torch.Tensor, Any]]:
         device = self.accelerator.device
-        
+
         ins_prompts = [inp['text'] for inp in inputs]
         prompts = ins_prompts
 
@@ -419,7 +419,7 @@ class GRPOTrainer(Trainer):
             )
             prompt = sft_format + self.vl_chat_processor.image_start_tag
             allprompts.append(prompt)
-        
+
         instruction = self.tokenizer(
             allprompts,
             return_tensors="pt",
@@ -436,8 +436,8 @@ class GRPOTrainer(Trainer):
         if self.args.use_vllm:
             raise NotImplementedError
         else:
-            prompt_ids = torch.repeat_interleave(prompt_ids, self.num_generations, dim=0) 
-            prompt_mask = torch.repeat_interleave(prompt_mask, self.num_generations, dim=0) 
+            prompt_ids = torch.repeat_interleave(prompt_ids, self.num_generations, dim=0)
+            prompt_mask = torch.repeat_interleave(prompt_mask, self.num_generations, dim=0)
             if self.guidance_scale is not None and self.generate_with_cfg:
                 set_cfg = True
                 my_guidance_scale = self.guidance_scale
@@ -450,33 +450,33 @@ class GRPOTrainer(Trainer):
                 (img_ids_1, all_imgs_1), (img_ids_2, all_imgs_2), (output_text_ids, selfcheck, attention_mask_txt), (embeds_1, attention_mask_1), (embeds_2, attention_mask_2), (embeds_3, attention_mask_3) = \
                     unwrapped_model.generate_with_refine(
                         vl_chat_processor=self.vl_chat_processor,
-                        input_ids=prompt_ids, attention_mask=prompt_mask, 
+                        input_ids=prompt_ids, attention_mask=prompt_mask,
                         cfg_weight=my_guidance_scale,
                         cur_step=self.state.global_step,
                     )
 
                 imgs_1 = all_imgs_1
                 imgs_2 = all_imgs_2
-                        
+
             self.model.train()
 
         # Mask everything after the first EOS token
         completion_mask_1 = torch.ones((img_ids_1.size(0), img_ids_1.size(1)), dtype=torch.long, device=device)
-        completion_mask_1_cfg = torch.repeat_interleave(completion_mask_1, 2, dim=0) 
+        completion_mask_1_cfg = torch.repeat_interleave(completion_mask_1, 2, dim=0)
         completion_mask_2 = attention_mask_txt
         completion_mask_3 = torch.ones((img_ids_2.size(0), img_ids_2.size(1)), dtype=torch.long, device=device)
-        completion_mask_3_cfg = torch.repeat_interleave(completion_mask_3, 2, dim=0) 
-       
+        completion_mask_3_cfg = torch.repeat_interleave(completion_mask_3, 2, dim=0)
+
         # Concatenate prompt_mask with completion_mask for logit computation
         attention_mask_1 = torch.cat((attention_mask_1, completion_mask_1_cfg), dim=1)
         attention_mask_2 = torch.cat((attention_mask_2, completion_mask_2), dim=1)
         attention_mask_3 = torch.cat((attention_mask_3, completion_mask_3_cfg), dim=1)
-        
+
 
         logits_to_keep_1 = img_ids_1.size(1)
         logits_to_keep_2 = output_text_ids.size(1)
         logits_to_keep_3 = img_ids_2.size(1)
-        
+
         with torch.inference_mode():
             if self.ref_model is not None:
                 ref_per_token_logps_1 = self._get_per_token_logps(
@@ -484,25 +484,25 @@ class GRPOTrainer(Trainer):
                 )
             else:
                 raise NotImplementedError
-            
+
             if self.ref_model is not None:
                 ref_per_token_logps_2 = self._get_per_token_logps(
                     self.ref_model, input_embeds=embeds_2, output_ids=output_text_ids, attention_mask=attention_mask_2, logits_to_keep=logits_to_keep_2, addcfg=False, visual=False
                 )
             else:
                 raise NotImplementedError
-            
+
             if self.ref_model is not None:
                 ref_per_token_logps_3 = self._get_per_token_logps(
                     self.ref_model, input_embeds=embeds_3, output_ids=img_ids_2, attention_mask=attention_mask_3, logits_to_keep=logits_to_keep_3, addcfg=True, visual=True
                 )
             else:
                 raise NotImplementedError
-          
+
         comp_reward_len = len(imgs_1)
         all_imgs = imgs_1 + imgs_2
         all_prompts = prompts + prompts
-        
+
         with torch.no_grad():
             rewards_per_func = torch.zeros(len(prompts)*2, 1, device=device)
             if self.apply_api:
@@ -520,7 +520,7 @@ class GRPOTrainer(Trainer):
                 )
                 score1 = score1[process_slice]
                 rewards_per_func[:, 0] = torch.tensor(score1, dtype=torch.float32, device=device)
-        
+
         allrewards = rewards_per_func.sum(dim=1)
 
         all_self_check = self.accelerator.gather_for_metrics(selfcheck.float()).mean().item()
@@ -593,7 +593,7 @@ class GRPOTrainer(Trainer):
         # Compute the per-token log probabilities for the model
         loss_sum = 0.0
         for j, curinputs in enumerate(inputs):
-           
+
             prompt_embeds, prompt_mask = curinputs["prompt_embeds"], curinputs["prompt_mask"]
             completion_ids, completion_mask = curinputs["completion_ids"], curinputs['completion_mask']
 
@@ -609,7 +609,7 @@ class GRPOTrainer(Trainer):
             per_token_logps = self._get_per_token_logps(
                 model, input_embeds=prompt_embeds, output_ids=completion_ids, attention_mask=prompt_mask, logits_to_keep=logits_to_keep, addcfg=addcfg, visual=visual
             )
-            
+
             # Compute the KL divergence between the model and the reference model
             ref_per_token_logps = curinputs["ref_per_token_logps"]
             per_token_kl = torch.exp(ref_per_token_logps - per_token_logps) - (ref_per_token_logps - per_token_logps) - 1
@@ -637,7 +637,7 @@ class GRPOTrainer(Trainer):
 
             mean_kl = ((per_token_kl * completion_mask).sum(dim=1) / completion_mask.sum(dim=1)).mean()
             self._metrics[f"kl_{j}"].append(self.accelerator.gather_for_metrics(mean_kl).mean().item())
-        
+
             loss_sum += loss
         loss_sum = loss_sum / len(inputs)
 
@@ -724,7 +724,7 @@ class GRPOTrainer(Trainer):
         )
 
         model_card.save(os.path.join(self.args.output_dir, "README.md"))
-    
+
     def create_scheduler(self, num_training_steps: int, optimizer: torch.optim.Optimizer = None):
         """
         Setup the scheduler. The optimizer of the trainer must have been set up either before this method is called or
@@ -745,9 +745,8 @@ class GRPOTrainer(Trainer):
                                 convert_lr=self.args.convert_lr,
                                 min_lr=self.args.min_lr
                                 )
-            self.lr_scheduler = optim.lr_scheduler.LambdaLR(self.optimizer if optimizer is None else optimizer, 
+            self.lr_scheduler = optim.lr_scheduler.LambdaLR(self.optimizer if optimizer is None else optimizer,
                                                             lr_lambda
                                                             )
             self._created_lr_scheduler = True
         return self.lr_scheduler
-

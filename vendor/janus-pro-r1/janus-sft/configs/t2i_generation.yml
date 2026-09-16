@@ -42,5 +42,3 @@ dataloader:
         task3:
           batch_size: 4
           sample_ratio: 15
-
-        

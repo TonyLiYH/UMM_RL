@@ -80,8 +80,8 @@ def generate(
                     transforms.ToTensor(),
                     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
                 ])
-                tr_img = gen_transform(img)  
-                tr_img = tr_img.unsqueeze(0).to(torch.bfloat16).cuda() 
+                tr_img = gen_transform(img)
+                tr_img = tr_img.unsqueeze(0).to(torch.bfloat16).cuda()
                 _, _, all_image_ids = mmgpt.gen_vision_model.encode(tr_img)
         else:
             generated_tokens = torch.zeros((parallel_size, image_token_num_per_image), dtype=torch.int).cuda()
@@ -121,15 +121,15 @@ def generate(
                 all_imgs_1.append(PIL.Image.fromarray(visual_img[i]))
 
     if 2 <= task_list[-1]:
-        inputs_embeds = embeds_1[::2,:,:] 
+        inputs_embeds = embeds_1[::2,:,:]
         under_embeds = torch.zeros((parallel_size, image_token_num_per_image, 4096), dtype=torch.bfloat16).cuda()
         for i in range(parallel_size):
             img_prompt = "<image_placeholder>"
             prepare_inputs = vl_chat_processor(
                 prompt=img_prompt, images=[all_imgs_1[i]], force_batchify=True
             ).to(vl_gpt.device)
-            img_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs) 
-            img_embeds = img_embeds[:,2:-1,:] 
+            img_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs)
+            img_embeds = img_embeds[:,2:-1,:]
             under_embeds[i,:,:] = img_embeds
         inputs_embeds = torch.cat((inputs_embeds, under_embeds), dim=1)
         selfcheck_ids = vl_chat_processor.tokenizer.encode(prompt[1])[1:]
@@ -173,7 +173,7 @@ def generate(
             output_text_ids = torch.stack(output_text_ids, dim=0).to(dtype=torch.long).cuda()
             attention_mask_txt = torch.ones_like(output_text_ids).cuda()
             attention_mask_txt[output_text_ids == padding_token] = 0
-        else: 
+        else:
             yes_list = torch.zeros((parallel_size), dtype=torch.int).cuda()
             for i in range(max_reflect_len):
                 outputs = mmgpt.language_model(inputs_embeds=inputs_embeds, attention_mask=attn_mask, use_cache=True, past_key_values=outputs.past_key_values if i != 0 else None)
@@ -220,7 +220,7 @@ def generate(
                 if i == 0:
                     yes_list = torch.tensor([i in yes_token for i in next_token]).view((parallel_size, 1))
                 reflect_tokens[:, i] = next_token.squeeze(dim=-1)
-                is_eos = (next_token == eos_token) 
+                is_eos = (next_token == eos_token)
                 eos_list = eos_list | is_eos.to(torch.int)
                 new_attn = 1-add_padding
                 new_attn = new_attn & (~is_eos)
@@ -229,7 +229,7 @@ def generate(
                 reflect_len = i
                 if eos_list.all():
                     break
-            reflect_tokens = reflect_tokens[:,:reflect_len+1]    
+            reflect_tokens = reflect_tokens[:,:reflect_len+1]
             max_relect_len = reflect_len+1
             output_text_ids = reflect_tokens
             attention_mask_txt = torch.ones_like(output_text_ids).cuda()
@@ -237,7 +237,7 @@ def generate(
             attention_mask_txt[output_text_ids == eos_token] = 0
             selfcheck = yes_list.cpu().tolist()
             selfcheck = [int(item[0]) for item in selfcheck]
-    
+
     if 3 <= task_list[-1]:
         input_ids = vl_chat_processor.tokenizer.encode(prompt[0])
         input_ids = torch.LongTensor(input_ids)
@@ -252,13 +252,13 @@ def generate(
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
         ])
-        gen_embeds_list = []  
+        gen_embeds_list = []
         for i in range(len(all_imgs_1)):
-            img = gen_transform(all_imgs_1[i])  
+            img = gen_transform(all_imgs_1[i])
             img = img.unsqueeze(0).to(torch.bfloat16).cuda()
             _, _, all_image_ids = mmgpt.gen_vision_model.encode(img)
             image_ids = all_image_ids[2]
-            embed = mmgpt.gen_aligner(mmgpt.gen_embed(image_ids)) 
+            embed = mmgpt.gen_aligner(mmgpt.gen_embed(image_ids))
             gen_embeds_list.append(embed)
             gen_embeds_list.append(embed)
         gen_embeds = torch.stack(gen_embeds_list, dim=0).squeeze(1)
@@ -328,7 +328,7 @@ def generate(
             all_imgs_2.append(PIL.Image.fromarray(new_visual_img[i]))
 
     return yes_scores, all_imgs_1, all_imgs_2, output_text_ids, selfcheck
-  
+
 
 if __name__ == "__main__":
     import argparse
@@ -375,7 +375,7 @@ if __name__ == "__main__":
             txt_top_p = 1.0,
             temperature = 1.0,
             yes_threshold = 0.57,
-            cfg_weight = args.cfg, 
+            cfg_weight = args.cfg,
             task1_res = task1_res,
             task_list = task_list,
         )

@@ -2,7 +2,7 @@
 
 **0. Environment Preparation**
 
-First please clone our repo and prepare the python environment. We recommend using Python>=3.10. 
+First please clone our repo and prepare the python environment. We recommend using Python>=3.10.
 ```bash
 git clone https://github.com/wendell0218/Janus-Pro-R1.git
 cd Janus-Pro-R1
@@ -14,7 +14,7 @@ pip install -r requirements-sft.txt
 
 **1. Training Configuration**
 
-Before starting the training, you need to prepare a configuration file in advance. We provide an example for reference: `configs/t2i_generation.yml`. This YAML configuration file defines the training settings for SFT. It includes sections for general training setup, optimization strategies, model paths, and data loading. 
+Before starting the training, you need to prepare a configuration file in advance. We provide an example for reference: `configs/t2i_generation.yml`. This YAML configuration file defines the training settings for SFT. It includes sections for general training setup, optimization strategies, model paths, and data loading.
 
 To run the training code, you need to specify the following four parameters:
 

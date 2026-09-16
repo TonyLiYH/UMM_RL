@@ -42,7 +42,7 @@ def train_setup(model: MultiModalityCausalLM):
     for n, p in model.gen_vision_model.named_parameters():
         p.requires_grad = False
     model.gen_vision_model.eval()
-    
+
 class TextToImageTrainer(TrainerBase):
     def __init__(self, cfg):
         super().__init__()
@@ -53,7 +53,7 @@ class TextToImageTrainer(TrainerBase):
         self.totals = EasyDict()
         self.totals.epochs = self.cfg.optimize.max_epochs
         self.totals.iter_per_epoch = len(self.data_loader[0]) // self.prob[0]
-        self.totals.total_iters = self.cfg.optimize.max_epochs * self.totals.iter_per_epoch 
+        self.totals.total_iters = self.cfg.optimize.max_epochs * self.totals.iter_per_epoch
         self.dist = EasyDict()
         self.dist.rank = dist.get_rank()
         self.dist.world_size = dist.get_world_size()
@@ -63,7 +63,7 @@ class TextToImageTrainer(TrainerBase):
 
         self.model_before_ddp = MultiModalityCausalLM.from_pretrained(cfg.model.model_path, trust_remote_code=True).to(torch.bfloat16).cuda()
         train_setup(self.model_before_ddp)
-        
+
         if self.pretrain_model is not None:
             state_dict = torch.load(self.pretrain_model, "cpu")
             if "ema" in state_dict:
@@ -92,7 +92,7 @@ class TextToImageTrainer(TrainerBase):
         )
         from torch.distributed.fsdp.fully_sharded_data_parallel import BackwardPrefetch
         from torch.distributed.fsdp.wrap import transformer_auto_wrap_policy
-        from transformers.models.llama.modeling_llama  import LlamaDecoderLayer 
+        from transformers.models.llama.modeling_llama  import LlamaDecoderLayer
         my_auto_wrap_policy = functools.partial(
             transformer_auto_wrap_policy,
             transformer_layer_cls={LlamaDecoderLayer},
@@ -150,9 +150,9 @@ class TextToImageTrainer(TrainerBase):
                 input_ids = input_data[k]['input_ids']
                 seq_len = len(input_ids)
                 batched_attention_mask[k, -seq_len:] = 1
-                batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)  
+                batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)
             return {'input_ids': batched_input_ids.cuda(), 'attention_mask': batched_attention_mask.cuda(), 'image1':image1.cuda(), 'task_type': 0}, idx
-        
+
         if idx == 1:
             batched_input_ids = torch.full(
                 (batch_size, input_token_max_len), self.vl_chat_processor.pad_id
@@ -166,8 +166,8 @@ class TextToImageTrainer(TrainerBase):
                 labels = input_data[k]['labels']
                 seq_len = len(input_ids)
                 batched_attention_mask[k, -seq_len:] = 1
-                batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)  
-                batched_labels[k, -seq_len:] = torch.LongTensor(labels)   
+                batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)
+                batched_labels[k, -seq_len:] = torch.LongTensor(labels)
                 batched_images_seq_mask[k, -seq_len:] = input_ids == self.vl_chat_processor.image_id
             return {'input_ids': batched_input_ids.cuda(), 'attention_mask': batched_attention_mask.cuda(), 'image1':image1.cuda(), 'labels':batched_labels.cuda(), 'image_seq_mask': batched_images_seq_mask.cuda(), 'task_type': 1}, idx
 
@@ -183,7 +183,7 @@ class TextToImageTrainer(TrainerBase):
                 input_ids = input_data[k]['input_ids']
                 seq_len = len(input_ids)
                 batched_attention_mask[k, -seq_len:] = 1
-                batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)  
+                batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)
                 batched_images_seq_mask[k, -seq_len:] = input_ids == self.vl_chat_processor.image_id
             return {'input_ids': batched_input_ids.cuda(), 'attention_mask': batched_attention_mask.cuda(), 'image1':image1.cuda(), 'image2':image2.cuda(), 'image_seq_mask': batched_images_seq_mask.cuda(), 'task_type': 2}, idx
 

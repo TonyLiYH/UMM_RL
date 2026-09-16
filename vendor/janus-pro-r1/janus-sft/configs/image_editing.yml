@@ -1,7 +1,7 @@
 common:
     output_path: path/to/output
     log_path: path/to/logs
-    save_per_iters: 4000 
+    save_per_iters: 4000
     use_bf16: 1
     use_fp16: 0
     use_fsdp: 1

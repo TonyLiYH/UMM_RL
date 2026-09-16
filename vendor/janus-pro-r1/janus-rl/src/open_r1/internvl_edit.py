@@ -137,7 +137,7 @@ class InternVLReward(InternVLChatModel):
         yes_prob_norm = [round(pp.item(), 4) for pp in prob_list]
         score1 = yes_prob_norm
 
-        
+
         questions = [f'Please evaluate the following image edit based on the provided instructions:\n\nImage-1: <image>\nImage-2: <image>\nThe first image is the original image and the second image is the edited image\nEditing Instructions: {prompt}\nDoes the area of the edited image that is unrelated to the editing instructions remain consistent with the original image? Please directly respond with yes or no.' for prompt in prompts]
         with torch.no_grad():
             responses = self.my_batch_chat2(self.tokenizer, pixel_values,
@@ -145,7 +145,7 @@ class InternVLReward(InternVLChatModel):
                                             questions=questions,
                                             generation_config=generation_config)
 
-        
+
 
         logitsm = F.softmax(responses.scores[0], dim=-1).detach().cpu().squeeze(0)
 
@@ -157,5 +157,3 @@ class InternVLReward(InternVLChatModel):
 
 
         return score1, score2
-
-        

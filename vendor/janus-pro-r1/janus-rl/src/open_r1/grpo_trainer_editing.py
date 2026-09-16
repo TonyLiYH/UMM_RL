@@ -65,7 +65,7 @@ import numpy as np
 def center_crop_arr(pil_image, image_size):
     """
     Center cropping implementation from ADM.
-    https://github.com/openai/guided-diffusion/blob/8fb3ad9197f16bbc40620447b2742e13458d2831/guided_diffusion/image_datasets.py#L126  
+    https://github.com/openai/guided-diffusion/blob/8fb3ad9197f16bbc40620447b2742e13458d2831/guided_diffusion/image_datasets.py#L126
     """
     while min(*pil_image.size) >= 2 * image_size:
         pil_image = pil_image.resize(
@@ -93,7 +93,7 @@ def setup_llama_oneversion(model_name="llava_qwen", pretrained="lmms-lab/llava-o
 
     overwrite_config = {"image_aspect_ratio": "pad"}
     llava_model_args["overwrite_config"] = overwrite_config
-    
+
     tokenizer, model, image_processor, _ = load_pretrained_model(
         pretrained, None, model_name, device_map=device_map, **llava_model_args
     )
@@ -120,12 +120,12 @@ def lr_linear_early_drop_with_warm_up(x, *, warm_up_steps=45, convert_steps=500,
     else:
         k = (min_factor - convert_factor) / (total_steps - convert_steps)
         lr = k * x - k * convert_steps + convert_factor
-    
+
     return lr
 
 
 class GRPOTrainer(Trainer):
-    
+
     _tag_names = ["trl", "grpo"]
 
     def __init__(
@@ -148,7 +148,7 @@ class GRPOTrainer(Trainer):
             model_name = model if isinstance(model, str) else model.config._name_or_path
             model_name = model_name.split("/")[-1]
             args = GRPOConfig(f"{model_name}-GRPO")
-        
+
         # Models
         # Trained model
         model_init_kwargs = args.model_init_kwargs or {}
@@ -200,7 +200,7 @@ class GRPOTrainer(Trainer):
         parameter_names = [n for n, _ in self.ref_model.named_parameters()]
         for param_name in parameter_names:
             param = self.ref_model.get_parameter(param_name)
-            param.requires_grad = False 
+            param.requires_grad = False
         self.ref_model.eval()
         # Processing class
         if processing_class is None:
@@ -259,7 +259,7 @@ class GRPOTrainer(Trainer):
 
         # Initialize the metrics
         self._metrics = defaultdict(list)
-        
+
         super().__init__(
             model=model,
             args=args,
@@ -356,7 +356,7 @@ class GRPOTrainer(Trainer):
         for i, reward_func in enumerate(self.reward_funcs):
             if isinstance(reward_func, PreTrainedModel):
                 self.reward_funcs[i] = self.accelerator.prepare_model(reward_func, evaluation_mode=True)
-        
+
         self.set_special_tokens()
 
     def set_special_tokens(self, task_type='t2i'):
@@ -364,7 +364,7 @@ class GRPOTrainer(Trainer):
         self.vl_chat_processor: VLChatProcessor = VLChatProcessor.from_pretrained(model_path)
         self.tokenizer = self.vl_chat_processor.tokenizer
         self.tokenizer.padding_side = 'left'
-             
+
         self.guidance_scale = self.args.guidance_scale
         self.generate_with_cfg = self.args.generate_with_cfg
         self.set_epsilon = self.args.set_epsilon
@@ -398,25 +398,25 @@ class GRPOTrainer(Trainer):
         text_inputs_ids[text_inputs_ids < 0] = 0
         inputs_embeds = model.language_model.get_input_embeddings()(text_inputs_ids)
         if image_embeds.shape[0] < inputs_embeds.shape[0]:
-            image_embeds = torch.repeat_interleave(image_embeds, 2, dim=0) 
+            image_embeds = torch.repeat_interleave(image_embeds, 2, dim=0)
         for i in range(len(inputs_embeds)):
             inputs_embeds[i][img_seq_mask[i]] = image_embeds[i]
 
         if img_ids.shape[0] < text_inputs_ids.shape[0]:
-            new_img_ids = torch.repeat_interleave(img_ids, 2, dim=0) 
+            new_img_ids = torch.repeat_interleave(img_ids, 2, dim=0)
         else:
             new_img_ids = img_ids
-        
+
         visual_embeds = model.gen_aligner(model.gen_embed(new_img_ids))
         inputs_embeds = torch.cat([inputs_embeds, visual_embeds], dim=1)
-        
+
         if addcfg == False:
             outputs = model.language_model.model(inputs_embeds=inputs_embeds, attention_mask=attention_mask)  # (B, L, V)
             hidden_states = outputs.last_hidden_state
             logits = model.gen_head(hidden_states)
             logits = logits[:, -1-logits_to_keep:-1, :]  # (B, L-1, V), exclude the last logit: it corresponds to the next token pred
             input_ids = img_ids.long()  # (B, L-1), exclude the first input ID since we don't have logits for it
-        
+
         else:
             outputs = model.language_model.model(inputs_embeds=inputs_embeds, attention_mask=attention_mask)  # (B, L, V)
             hidden_states = outputs.last_hidden_state
@@ -465,28 +465,28 @@ class GRPOTrainer(Trainer):
             curcfgids = torch.cat((self.input_ids1, cfgids, self.input_ids2), dim=0)
             allids.append(curids)
             allids.append(curcfgids)
-        
+
         input_token_max_len = self.input_ids1.shape[-1] + max_len + self.input_ids2.shape[-1]
-        
+
         prompt_ids = torch.full(
             (len(allids), input_token_max_len), self.vl_chat_processor.pad_id
         ).long().cuda()  # FIXME
-        
+
         prompt_mask = torch.zeros((len(allids), input_token_max_len)).long()
         images_seq_mask = torch.zeros((len(allids), input_token_max_len)).bool()
-        
+
         image1 = torch.stack(image1, dim=0).cuda()
 
         batch_size = len(allids)
-        
+
         for k in range(batch_size):
             input_ids = allids[k]
             seq_len = len(input_ids)
 
             prompt_mask[k, -seq_len:] = 1
-            prompt_ids[k, -seq_len:] = torch.LongTensor(input_ids)  
+            prompt_ids[k, -seq_len:] = torch.LongTensor(input_ids)
             images_seq_mask[k, -seq_len:] = input_ids == self.vl_chat_processor.image_id
-        
+
         prompt_mask = prompt_mask.reshape(len(allids)//2, 2, -1).cuda()
         images_seq_mask = images_seq_mask.reshape(len(allids)//2, 2, -1).cuda()
         prompt_ids = prompt_ids.reshape(len(allids)//2, 2, -1).cuda()
@@ -495,20 +495,20 @@ class GRPOTrainer(Trainer):
         # Generate completions using either vLLM or regular generation
         image1_open = [ii for ii in image1_open for _ in range(self.num_generations)]
         image1_open_new = [ii for ii in image1_open_new for _ in range(self.num_generations)]
-        
+
         prompts = [prompt for prompt in ins_prompts for _ in range(self.num_generations)]
         if self.args.use_vllm:
             raise NotImplementedError
         else:
-            prompt_ids = torch.repeat_interleave(prompt_ids, self.num_generations, dim=0) 
-            prompt_mask = torch.repeat_interleave(prompt_mask, self.num_generations, dim=0) 
-            images_seq_mask = torch.repeat_interleave(images_seq_mask, self.num_generations, dim=0) 
+            prompt_ids = torch.repeat_interleave(prompt_ids, self.num_generations, dim=0)
+            prompt_mask = torch.repeat_interleave(prompt_mask, self.num_generations, dim=0)
+            images_seq_mask = torch.repeat_interleave(images_seq_mask, self.num_generations, dim=0)
             image1 = torch.repeat_interleave(image1, self.num_generations*2, dim=0).to(torch.bfloat16)
 
             prompt_ids = prompt_ids.reshape(len(allids) * self.num_generations, -1)
             prompt_mask = prompt_mask.reshape(len(allids) * self.num_generations, -1)
             images_seq_mask  = images_seq_mask.reshape(len(allids) * self.num_generations, -1)
-            
+
             if self.guidance_scale is not None and self.generate_with_cfg:
                 set_cfg = True
                 my_guidance_scale = self.guidance_scale
@@ -516,19 +516,19 @@ class GRPOTrainer(Trainer):
                 set_cfg = False
                 my_guidance_scale = None
             self.model.eval()
-            
+
             with unwrap_model_for_generation(self.model, self.accelerator) as fsdp_model:
 
                 img_ids, outputimgs, (text_ids, all_attention_mask) = fsdp_model.edit_image(
                     vl_chat_processor=self.vl_chat_processor,
-                    input_ids=prompt_ids, attention_mask=prompt_mask, 
+                    input_ids=prompt_ids, attention_mask=prompt_mask,
                     image1=image1,
                     image_seq_mask=images_seq_mask,
                     cur_step=self.state.global_step,
                     set_cfg=set_cfg, cfg_weight=my_guidance_scale,
                 )
             self.model.train()
-            
+
         # Mask everything after the first EOS token
         completion_mask = torch.ones((img_ids.size(0), img_ids.size(1)), dtype=torch.long, device=device)
 
@@ -559,7 +559,7 @@ class GRPOTrainer(Trainer):
             else:
                 score1 = [None] * len(allprompts)
                 score2 = [None] * len(allprompts)
-            
+
             score1 = broadcast_object_list(score1, from_process=0)
             score2 = broadcast_object_list(score2, from_process=0)
             process_slice = slice(
@@ -738,7 +738,7 @@ class GRPOTrainer(Trainer):
         )
 
         model_card.save(os.path.join(self.args.output_dir, "README.md"))
-    
+
     def create_scheduler(self, num_training_steps: int, optimizer: torch.optim.Optimizer = None):
         """
         Setup the scheduler. The optimizer of the trainer must have been set up either before this method is called or
@@ -759,9 +759,8 @@ class GRPOTrainer(Trainer):
                                 convert_lr=self.args.convert_lr,
                                 min_lr=self.args.min_lr
                                 )
-            self.lr_scheduler = optim.lr_scheduler.LambdaLR(self.optimizer if optimizer is None else optimizer, 
+            self.lr_scheduler = optim.lr_scheduler.LambdaLR(self.optimizer if optimizer is None else optimizer,
                                                             lr_lambda
                                                             )
             self._created_lr_scheduler = True
         return self.lr_scheduler
-
