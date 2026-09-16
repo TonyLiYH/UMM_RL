@@ -204,7 +204,8 @@ entries:
       updated by GRPO, even though gen_head sits directly in the T2I
       generation forward/backward path (gradients must flow through it to
       reach language_model, even though its own weights don't update).
-    verdict: match (paper doesn't contradict this; consistent with
+    verdict: >
+      match (paper doesn't contradict this; consistent with
       "Foundation-then-Specialization" via a shared LLM backbone), but this
       is the authoritative source for mandatory checks #1 and #2's expected
       outcome, and for the smoke's unauthorized_parameter_changes==0 check
@@ -331,6 +332,63 @@ entries:
       verified OK end-to-end under this pin set (ALL_IMPORTS_OK marker,
       2026-09-16 21:49 CST run, exit=0). Resolved final pins recorded in
       configs/corl/admission/source-lock.yaml.
+
+  - id: D14
+    topic: "Batched MC/OE reward dispatch (mandatory check #4): qa_type is
+      passed to common_qa_accuracy_reward as a per-batch LIST, not a
+      per-example scalar, in the trainer's real call path."
+    paper: "N/A — implementation-level dispatch defect, not a paper claim."
+    code: >
+      grpo_trainer_unified.py:588-594 builds
+      reward_kwargs = {key: [example[key] for example in inputs for _ in
+      range(num_generations)] for key in inputs[0].keys() if key in
+      ["qa_problem","qa_solution","qa_type"]} then calls
+      reward_func(completions=mm2t_completions, **reward_kwargs) — so
+      qa_type arrives as a Python list (one entry per completion in the
+      batch), e.g. ["MC","MC","OE","OE"]. common_qa_accuracy_reward
+      (r_base.py line ~51) reads `if kwargs['qa_type'] == 'MC':` — comparing
+      the WHOLE LIST object to the string 'MC'. This is always False
+      regardless of batch content, so the MCQAnswerExtractor-based MC branch
+      is structurally unreachable from the trainer's real (batched) call
+      path; every completion, including true MC questions, is scored by the
+      OE branch (exact-string-match else soft_jaccard fractional credit).
+      D7 already recorded that the dispatch exists and that OE is not
+      strictly binary; this entry adds the stronger, directly-verified fact
+      that the dispatch never actually executes its MC arm in production
+      usage, upgrading the severity from "default differs from paper
+      description" to "the described mechanism does not run at all".
+    verdict: defect
+    evidence: >
+      Directly executed common_qa_accuracy_reward(completions=[...,
+      "<answer>The correct choice is A</answer>"], qa_solution=["<answer>A
+      </answer>"], qa_type=["MC"]) in the pinned CoRL venv
+      (/root/venvs/corl on H20-FoldUMM, transformers==4.50.0 pin from D13):
+      returned reward 0.2 (soft_jaccard partial credit under the
+      wrongly-taken OE branch), whereas
+      MCQAnswerExtractor().extract_answer(...) on the same completion
+      correctly extracts "A" (reward would be 1.0 under the intended MC
+      dispatch). A second probe with 4 examples (2 MC exact single-letter, 2
+      OE) showed kwargs['qa_type'] == 'MC' evaluates to False (confirmed via
+      direct print of the boolean) even though qa_type == ["MC","MC","OE",
+      "OE"] was passed; those two MC examples happened to still score
+      correctly (1.0/0.0) only because their answers were single bare
+      letters, which coincidentally exact-string-match under the OE branch
+      too — masking the defect unless a verbose MC completion is tested.
+      Raw probe outputs recorded in runs/corl-admission-v1/metrics.json
+      (checks.reward_dispatch_recorded) and reports/T710/claim-check.md.
+    corrected_candidate_plan: >
+      Not corrected in either T710 smoke variant's actual training reward
+      pipeline (both upstream_exact and corrected_candidate use
+      common_qa_accuracy_reward completely unmodified, since D11 is the
+      only correctness switch T710 exercises via CLI args, not source
+      patches). This defect is recorded as a valid, confirmed check #4
+      outcome per the task's pass/fail gate ("a confirmed upstream defect
+      is a valid result"); a real fix (index qa_type per-example, i.e.
+      `qa_type[idx]` inside the loop instead of the outer `kwargs['qa_type']`)
+      is documented here for a future task rather than applied now, since
+      patching trainer reward-dispatch logic is out of T710's declared
+      scope (repair candidates are limited to switches/args, not rewriting
+      reward functions).
 
 open_items:
   - "token_level_max_match_similarity (r_utils.py) not yet re-derived

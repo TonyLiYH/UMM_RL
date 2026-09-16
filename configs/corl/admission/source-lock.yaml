@@ -122,10 +122,23 @@ resolved_environment_pins:
   open_clip_torch: "2.31.0"
   sentence_transformers: "3.0.1"
   flash_attn: "NOT_INSTALLED (wheel local-version-tag mismatch against pip's
-    exact-match spec; janus.models.modeling_vlm import succeeds without it,
-    so sdpa/eager attention fallback is used for the smoke; not yet
-    confirmed whether this affects numerical results, only that it does not
-    block import/forward)"
+    exact-match spec). CORRECTED NOTE (2026-09-16, after re-reading
+    grpo_trainer_unified.py.__init__ in full): flash_attn's absence is
+    architecturally irrelevant for this trainer's Janus model loading, not
+    merely a non-blocking fallback as first recorded. The trainer sets
+    model_init_kwargs['attn_implementation'] = attn_implementation
+    (constructor default 'flash_attention_2') at line 118, but the
+    'Janus' in model_id branch (lines 138-141) calls
+    AutoModelForCausalLM.from_pretrained(model, trust_remote_code=True,
+    torch_dtype=torch.bfloat16) with NO attn_implementation kwarg and NO
+    **model_init_kwargs spread at all — model_init_kwargs is silently
+    discarded for Janus models specifically (the non-Janus else-branch at
+    line 143 does pass **model_init_kwargs). So whatever attention
+    implementation Janus's own modeling_vlm.py defaults to internally is
+    what runs regardless of flash_attn's presence, install status, or the
+    attn_implementation argument's value; flash_attn was never going to be
+    used for Janus-Pro-1B in this trainer even if it had installed
+    successfully."
 
 gpu_container:
   name: H20-FoldUMM

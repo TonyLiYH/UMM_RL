@@ -23,7 +23,10 @@ RUN_OUTPUT_ROOT = _env_path(
     "T710_RUN_OUTPUT_ROOT", "/dockerdata/t710-corl/runs"
 )
 CORL_REPO_PATH = _env_path(
-    "T710_CORL_REPO_PATH", "/dockerdata/t710-corl/ULM-R1"
+    # The importable root: contains open_r1/ (rewards, trainer, grpo_janus_unify.py)
+    # and scripts/. Confirmed by live inspection of the materialized checkout under
+    # /dockerdata/t710-corl/ULM-R1/corl on the H20-FoldUMM container.
+    "T710_CORL_REPO_PATH", "/dockerdata/t710-corl/ULM-R1/corl"
 )
 
 # CQ7 durable outputs (survives container recycle; ceph-fuse, not local SSD --
