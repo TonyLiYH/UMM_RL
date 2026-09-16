@@ -2,7 +2,7 @@
 id: T720
 title: Janus-Pro-R1 reusable SFT and GRPO stack smoke
 parent: T700
-status: running
+status: awaiting_review
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: []
 allowed_paths: ["tasks/T720-janus-pro-r1-stack-smoke.md", "configs/janus-pro-r1/admission/", "runs/janus-pro-r1-stack-v1/", "reports/T720/", "src/comppareto/adapters/janus_pro_r1/", "tests/adapters/janus_pro_r1/", "vendor/janus-pro-r1/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-16
-updated_at: 2026-09-16
+updated_at: 2026-09-17
 ---
 
 # T720: Janus-Pro-R1 reusable SFT and GRPO stack smoke
@@ -78,3 +78,24 @@ bash scripts/validate_task_submission.sh T720
   @ `e9e4c0dc1db56bfab10458671519b7fa3dd29463` run offline in-process per the upstream
   `InternVLReward.evaluate` path). Publishing the first report before any large download or
   GPU execution.
+- 2026-09-17 — Remote executor completed both required GPU smokes on H20 index 1
+  (H20-FoldUMM container; GPU0 concurrently running T710, not touched) and set status
+  to `awaiting_review`. SFT smoke: 4 optimizer steps against `Janus-Pro-7B`, losses
+  `6.5033, 6.0479, 5.3463, 6.0796` (all finite), 286 trainable / 649 frozen parameter
+  tensors, authorized probe parameter (`gen_aligner.layers.0.weight`) changed with
+  nonzero grad norm every step, `strict=True` checkpoint reload with 0
+  missing/unexpected keys and reloaded values matching trained values. GRPO smoke:
+  4 optimizer steps, full-parameter fine-tune (7,420,368,523 trainable elements),
+  reward model `InternVL2_5-8B` offline in-process, losses `9.1787, 8.8786, 0.8441,
+  5.9818` (all finite, numpy-vs-torch cross-check `<1.1e-05` every step), authorized
+  probe parameter changed with nonzero grad norm every step, checkpoint reload
+  passed identically. Both smokes satisfy the pass/fail gate. Artifact verification:
+  10/10 hash-checked artifacts passed, 0 failed. Resource accounting: 2.004 GPU-hours
+  used against the 12h budget, 1 GPU used throughout (envelope allowed up to 8).
+  Fixed 10 environment/code bugs along the way (see
+  `reports/T720/failure-ledger.md`) and normalized pre-existing trailing-whitespace/
+  CRLF issues across 76 vendored files so the required `git diff --check` gate
+  passes. Full local validation stack (repository-state, `pytest -q` [252 passed],
+  `compileall`, artifact-hashes [10/10 pass], whitespace check) all green. See
+  `reports/T720/result-summary.md`, `reports/T720/reuse-map.md`,
+  `reports/T720/claim-check.md` for full detail and open items (none blocking).
