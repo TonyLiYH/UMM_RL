@@ -29,16 +29,26 @@ private training gains are not attributed to the shared update.
 
 - Modalities: text and image.
 - Tasks: image understanding and text-to-image generation.
+- Main paper setting: joint understanding-generation GRPO on Janus-Pro-1B,
+  starting from the public CoRL training stack.
+- SFT is used for implementation/headroom diagnostics; DPO is a bounded
+  mechanism comparison; OPD is outside the main experimental scope.
 - Training: post-training only; pretrained tokenizers and generative autoencoders remain frozen unless a named ablation changes this.
 - Parameters: shared-backbone full-parameter updates are required in the main pilot; LoRA is an efficiency ablation, not the only setting.
 - Models: Show-o2 for the first executable pilot; UniDDT and SenseNova-U1 for cross-architecture validation; UniAR as a more homogeneous-objective boundary control.
 
-The formal post-training starting checkpoint is selected separately from
+The formal cross-architecture starting checkpoint is selected separately from
 inference admission. Prefer a checkpoint that already supports understanding
 and generation but precedes the target preference/RL stage; an SFT checkpoint
 is normally preferable to either an unusable raw base model or a final
-preference-optimized model. Show-o2 remains an engineering diagnostic until
-that selection and the post-training data admission are accepted.
+preference-optimized model. SenseNova-U1-SFT is the accepted transfer
+candidate; Show-o2 remains an engineering diagnostic.
+
+The first empirical route uses Janus-Pro-1B because CoRL provides a public
+successful Unified-GRPO baseline and paired data. The project first reproduces
+that path, establishes single-task oracles, and instruments per-task gradients
+and realized optimizer updates. Traditional negotiators and the response-aware
+method open only after those controls pass.
 
 ## Out of scope until the core claim passes
 

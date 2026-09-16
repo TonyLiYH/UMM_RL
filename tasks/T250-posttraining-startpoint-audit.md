@@ -2,7 +2,7 @@
 id: T250
 title: Post-training starting-checkpoint selection audit
 parent: T200
-status: awaiting_review
+status: accepted
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -193,3 +193,4 @@ No persistent training is authorized by this revision.
   occurred. Re-ran `pytest` (201 passed — the suite grew since the 2026-09-15 entry due to the
   `revision_needed` merge sync from `origin/main`), `compileall`, `comppareto.repo_state.cli` (pass), and
   `scripts/verify_manifest_artifacts.py` (11/11 pass) fresh after all edits. Set status to `awaiting_review`.
+- 2026-09-16 — Integrated local verification passed: pinned SFT checkpoint, real understanding/generation forward-backward smokes, parameter ownership, optimizer/scheduler construction without a step, local-SSD provenance, 11/11 artifact checks, repository validation, and 233 tests. Accepted by: local-research-agent.

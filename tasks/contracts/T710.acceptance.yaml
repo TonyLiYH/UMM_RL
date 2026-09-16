@@ -1,0 +1,97 @@
+schema_version: 1
+task_id: T710
+base_ref: origin/main
+required_files:
+  - configs/corl/admission/source-lock.yaml
+  - configs/corl/admission/environment-lock.md
+  - configs/corl/admission/storage-preflight.json
+  - configs/corl/admission/artifact-verification.json
+  - configs/corl/admission/micro-split.jsonl
+  - configs/corl/admission/discrepancy-lock.yaml
+  - reports/T710/first-report.md
+  - reports/T710/result-summary.md
+  - reports/T710/claim-check.md
+  - reports/T710/failure-ledger.md
+  - runs/corl-admission-v1/manifest.json
+  - runs/corl-admission-v1/metrics.json
+  - runs/corl-admission-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: artifact-hashes
+    command: .venv/bin/python scripts/verify_manifest_artifacts.py --manifest runs/corl-admission-v1/manifest.json --output /tmp/T710-artifact-verification.json
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/corl-admission-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/corl/admission/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/corl/admission/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/corl/admission/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/corl-admission-v1/metrics.json
+    path: assets.model_pinned
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: assets.dataset_pinned
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.image_token_alignment_recorded
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.reward_dispatch_recorded
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: smoke.understanding_rollout_finite
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: smoke.generation_rollout_finite
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: smoke.optimizer_steps
+    op: ">="
+    value: 1
+  - file: runs/corl-admission-v1/metrics.json
+    path: smoke.optimizer_steps
+    op: "<="
+    value: 8
+  - file: runs/corl-admission-v1/metrics.json
+    path: smoke.unauthorized_parameter_changes
+    op: "=="
+    value: 0
+  - file: runs/corl-admission-v1/metrics.json
+    path: smoke.checkpoint_reload_pass
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 16
+forbidden_claims:
+  - file: reports/T710/result-summary.md
+    when:
+      file: runs/corl-admission-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, reproduces CoRL, improves both tasks]
+
