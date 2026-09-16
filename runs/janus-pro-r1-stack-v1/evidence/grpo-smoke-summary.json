@@ -1,0 +1,119 @@
+{
+  "n_steps": 4,
+  "num_generations": 4,
+  "lr": 1e-06,
+  "guidance_scale": 5.0,
+  "image_token_num_per_image": 64,
+  "img_size": 128,
+  "n_trainable_params": 7420368523,
+  "checkpoint_path": "/dockerdata/t720-janus-pro-r1/models/Janus-Pro-7B",
+  "reward_checkpoint_path": "/dockerdata/t720-janus-pro-r1/models/InternVL2_5-8B",
+  "policy_load_seconds": 5.725042104721069,
+  "reward_load_seconds": 2.9836742877960205,
+  "train_seconds": 10.47828483581543,
+  "peak_memory_bytes": 80991276544,
+  "steps": [
+    {
+      "step": 0,
+      "prompt": "A busy intersection where several cars are waiting at a red light. the road is lined with white and yellow markings, and there are three traffic signs visible: a red stop sign, a yellow pedestrian crossing sign, and a green directional sign. on the corner, a streetlamp casts light onto the sidewalk, and a row of buildings with brick facades can be seen in the background.",
+      "rewards": [
+        0.0019,
+        0.0001,
+        0.0005,
+        0.0002
+      ],
+      "advantages": [
+        1.693370862897928,
+        -0.7948475478908641,
+        -0.2419101232711326,
+        -0.6566131917359314
+      ],
+      "loss": 9.178749084472656,
+      "loss_finite": true,
+      "grad_norm": 496.0,
+      "numpy_vs_torch_loss_abs_diff": 5.7836160323176955e-06
+    },
+    {
+      "step": 1,
+      "prompt": "A busy intersection where several cars are waiting at a red light. the road is lined with white and yellow markings, and there are three traffic signs visible: a red stop sign, a yellow pedestrian crossing sign, and a green directional sign. on the corner, a streetlamp casts light onto the sidewalk, and a row of buildings with brick facades can be seen in the background.",
+      "rewards": [
+        0.0474,
+        0.0005,
+        0.0002,
+        0.0001
+      ],
+      "advantages": [
+        1.7319209053433393,
+        -0.565875147290398,
+        -0.5805732030641746,
+        -0.5854725549887668
+      ],
+      "loss": 8.878616333007812,
+      "loss_finite": true,
+      "grad_norm": 510.0,
+      "numpy_vs_torch_loss_abs_diff": 1.0628004375234923e-05
+    },
+    {
+      "step": 2,
+      "prompt": "A busy intersection where several cars are waiting at a red light. the road is lined with white and yellow markings, and there are three traffic signs visible: a red stop sign, a yellow pedestrian crossing sign, and a green directional sign. on the corner, a streetlamp casts light onto the sidewalk, and a row of buildings with brick facades can be seen in the background.",
+      "rewards": [
+        0.0007,
+        0.0032,
+        0.0003,
+        0.0015
+      ],
+      "advantages": [
+        -0.6513055454380575,
+        1.5945756457276579,
+        -1.010646536024572,
+        0.06737643573497144
+      ],
+      "loss": 0.8440933227539062,
+      "loss_finite": true,
+      "grad_norm": 508.0,
+      "numpy_vs_torch_loss_abs_diff": 1.0821555838091967e-05
+    },
+    {
+      "step": 3,
+      "prompt": "A busy intersection where several cars are waiting at a red light. the road is lined with white and yellow markings, and there are three traffic signs visible: a red stop sign, a yellow pedestrian crossing sign, and a green directional sign. on the corner, a streetlamp casts light onto the sidewalk, and a row of buildings with brick facades can be seen in the background.",
+      "rewards": [
+        0.0001,
+        0.0534,
+        0.0046,
+        0.0001
+      ],
+      "advantages": [
+        -0.6420462709085994,
+        1.7261936072525317,
+        -0.4421010654353332,
+        -0.6420462709085994
+      ],
+      "loss": 5.98175048828125,
+      "loss_finite": true,
+      "grad_norm": 462.0,
+      "numpy_vs_torch_loss_abs_diff": 2.982560701525472e-06
+    }
+  ],
+  "all_losses_finite": true,
+  "authorized_param_change": {
+    "param_name": "gen_aligner.layers.0.weight",
+    "changed": true,
+    "probe_grad_norms_per_step": [
+      10.27291202545166,
+      11.126069068908691,
+      11.393465042114258,
+      7.916568279266357
+    ]
+  },
+  "checkpoint_roundtrip": {
+    "checkpoint_path": "/dockerdata/t720-janus-pro-r1/runs/grpo-smoke/grpo_smoke_state.pt",
+    "checkpoint_bytes": 14841283478,
+    "n_missing": 0,
+    "n_unexpected": 0,
+    "reload_ok": true,
+    "reload_matches_trained_values": true
+  },
+  "prompts_used": [
+    "A busy intersection where several cars are waiting at a red light. the road is lined with white and yellow markings, and there are three traffic signs visible: a red stop sign, a yellow pedestrian crossing sign, and a green directional sign. on the corner, a streetlamp casts light onto the sidewalk, and a row of buildings with brick facades can be seen in the background."
+  ]
+}

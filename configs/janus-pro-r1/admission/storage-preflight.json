@@ -1,0 +1,15 @@
+{
+  "capacity_bytes": 9895604649984,
+  "environment": {
+    "HF_HOME": "/dockerdata/t720-janus-pro-r1/hf_home",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "errors": [],
+  "filesystem_class": "local",
+  "filesystem_type": "xfs",
+  "free_bytes": 9634571710464,
+  "minimum_free_bytes": 5000000000,
+  "path": "/dockerdata/t720-janus-pro-r1",
+  "status": "pass"
+}

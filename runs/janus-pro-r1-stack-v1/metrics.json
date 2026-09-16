@@ -1,0 +1,150 @@
+{
+  "run_id": "janus-pro-r1-stack-v1",
+  "task_id": "T720",
+  "sft": {
+    "venv": "/dockerdata/t720-janus-pro-r1/venvs/sft (environment-sft-lock.md)",
+    "checkpoint_path": "/dockerdata/t720-janus-pro-r1/models/Janus-Pro-7B",
+    "optimizer_steps": 4,
+    "batch_size": 2,
+    "lr": 1e-05,
+    "loss_finite": true,
+    "all_losses_finite": true,
+    "steps": [
+      {"step": 0, "loss": 6.503299236297607, "loss_finite": true, "grad_norm": 3.375},
+      {"step": 1, "loss": 6.04794979095459, "loss_finite": true, "grad_norm": 2.84375},
+      {"step": 2, "loss": 5.346297264099121, "loss_finite": true, "grad_norm": 3.4375},
+      {"step": 3, "loss": 6.079559326171875, "loss_finite": true, "grad_norm": 3.390625}
+    ],
+    "param_inventory": {
+      "trainable": {"n_tensors": 286, "n_elements": 7032201216},
+      "frozen": {"n_tensors": 649, "n_elements": 388167307},
+      "total_elements": 7420368523,
+      "trainable_fraction": 0.9476889448553875,
+      "requires_grad_mismatches": []
+    },
+    "authorized_param_change": {
+      "trainable_param_name": "gen_aligner.layers.0.weight",
+      "trainable_changed": true,
+      "trainable_probe_grad_norms_per_step": [0.07562902569770813, 0.07431251555681229, 0.07156156748533249, 0.087058424949646],
+      "frozen_param_name": "vision_model.vision_tower.pos_embed",
+      "frozen_unchanged": true
+    },
+    "checkpoint_reload_pass": true,
+    "checkpoint_roundtrip": {
+      "checkpoint_path": "/dockerdata/t720-janus-pro-r1/runs/sft-smoke/sft_smoke_trainable_state.pt",
+      "checkpoint_bytes": 14064505098,
+      "n_missing_outside_trainable": 0,
+      "n_unexpected": 0,
+      "reload_ok": true,
+      "reload_matches_trained_values": true,
+      "note": "large disposable smoke checkpoint lives only on /dockerdata (container-local SSD); not re-hashable from the manifest-verification shell -- see run_manifest_build.py docstring and notes.md. reload_ok/reload_matches_trained_values above were produced by the smoke script itself, inside the container, immediately after save."
+    },
+    "load_seconds": 5.500750541687012,
+    "train_seconds": 4.532858848571777,
+    "peak_memory_bytes": 67653477376,
+    "examples_used": [
+      {"source_jsonl": "flux_0.7.jsonl", "candidate_id": 0},
+      {"source_jsonl": "flux_0.7.jsonl", "candidate_id": 1},
+      {"source_jsonl": "flux_0.7.jsonl", "candidate_id": 2},
+      {"source_jsonl": "flux_0.7.jsonl", "candidate_id": 3},
+      {"source_jsonl": "janus_0.7.jsonl", "candidate_id": 0},
+      {"source_jsonl": "janus_0.7.jsonl", "candidate_id": 1},
+      {"source_jsonl": "janus_0.7.jsonl", "candidate_id": 2},
+      {"source_jsonl": "janus_0.7.jsonl", "candidate_id": 3}
+    ]
+  },
+  "grpo": {
+    "venv": "/dockerdata/t720-janus-pro-r1/venvs/rl (environment-rl-lock.md)",
+    "checkpoint_path": "/dockerdata/t720-janus-pro-r1/models/Janus-Pro-7B",
+    "reward_checkpoint_path": "/dockerdata/t720-janus-pro-r1/models/InternVL2_5-8B",
+    "optimizer_steps": 4,
+    "num_generations": 4,
+    "lr": 1e-06,
+    "guidance_scale": 5.0,
+    "image_token_num_per_image": 64,
+    "img_size": 128,
+    "n_trainable_params": 7420368523,
+    "loss_finite": true,
+    "all_losses_finite": true,
+    "steps": [
+      {
+        "step": 0,
+        "rewards": [0.0019, 0.0001, 0.0005, 0.0002],
+        "advantages": [1.693370862897928, -0.7948475478908641, -0.2419101232711326, -0.6566131917359314],
+        "loss": 9.178749084472656,
+        "loss_finite": true,
+        "grad_norm": 496.0,
+        "numpy_vs_torch_loss_abs_diff": 5.7836160323176955e-06
+      },
+      {
+        "step": 1,
+        "rewards": [0.0474, 0.0005, 0.0002, 0.0001],
+        "advantages": [1.7319209053433393, -0.565875147290398, -0.5805732030641746, -0.5854725549887668],
+        "loss": 8.878616333007812,
+        "loss_finite": true,
+        "grad_norm": 510.0,
+        "numpy_vs_torch_loss_abs_diff": 1.0628004375234923e-05
+      },
+      {
+        "step": 2,
+        "rewards": [0.0007, 0.0032, 0.0003, 0.0015],
+        "advantages": [-0.6513055454380575, 1.5945756457276579, -1.010646536024572, 0.06737643573497144],
+        "loss": 0.8440933227539062,
+        "loss_finite": true,
+        "grad_norm": 508.0,
+        "numpy_vs_torch_loss_abs_diff": 1.0821555838091967e-05
+      },
+      {
+        "step": 3,
+        "rewards": [0.0001, 0.0534, 0.0046, 0.0001],
+        "advantages": [-0.6420462709085994, 1.7261936072525317, -0.4421010654353332, -0.6420462709085994],
+        "loss": 5.98175048828125,
+        "loss_finite": true,
+        "grad_norm": 462.0,
+        "numpy_vs_torch_loss_abs_diff": 2.982560701525472e-06
+      }
+    ],
+    "authorized_param_change": {
+      "param_name": "gen_aligner.layers.0.weight",
+      "changed": true,
+      "probe_grad_norms_per_step": [10.27291202545166, 11.126069068908691, 11.393465042114258, 7.916568279266357]
+    },
+    "checkpoint_reload_pass": true,
+    "checkpoint_roundtrip": {
+      "checkpoint_path": "/dockerdata/t720-janus-pro-r1/runs/grpo-smoke/grpo_smoke_state.pt",
+      "checkpoint_bytes": 14841283478,
+      "n_missing": 0,
+      "n_unexpected": 0,
+      "reload_ok": true,
+      "reload_matches_trained_values": true,
+      "note": "large disposable smoke checkpoint (full-parameter GRPO fine-tune, ~14.8GB) lives only on /dockerdata; not re-hashable from the manifest-verification shell -- see run_manifest_build.py docstring and notes.md. reload_ok/reload_matches_trained_values above were produced by the smoke script itself, inside the container, immediately after save."
+    },
+    "policy_load_seconds": 5.725042104721069,
+    "reward_load_seconds": 2.9836742877960205,
+    "train_seconds": 10.47828483581543,
+    "peak_memory_bytes": 80991276544,
+    "prompts_used": [
+      "A busy intersection where several cars are waiting at a red light. the road is lined with white and yellow markings, and there are three traffic signs visible: a red stop sign, a yellow pedestrian crossing sign, and a green directional sign. on the corner, a streetlamp casts light onto the sidewalk, and a row of buildings with brick facades can be seen in the background."
+    ]
+  },
+  "resources": {
+    "gpu_hours": 2.004,
+    "gpu_wallclock_seconds": 7212,
+    "gpu_index_used": 1,
+    "gpu_count_used": 1,
+    "gpu_model": "NVIDIA H20",
+    "container": "H20-FoldUMM",
+    "budget_gpu_hours": 12,
+    "accounting_method": "reconstructed from cjob.sh START/END log timestamps across every t720-*.log on the container: earliest START (sft/rl venv builds) Wed Sep 16 22:02:39/40 CST 2026, latest END (storage-preflight, the final container-attached step) Thu Sep 17 00:02:51 CST 2026 -- full span 7212s = 2.004h. This is a conservative upper bound on actual GPU-attached wall-clock: it includes venv builds, InternVL2.5-8B + data-shard downloads, both smokes' load/train/checkpoint time, and the storage-preflight run, all serialized on GPU index 1 of the H20-FoldUMM container.",
+    "sft_measured_seconds": 10.033609390258789,
+    "grpo_measured_seconds": 19.187001466369629,
+    "note": "sft_measured_seconds/grpo_measured_seconds are the sum of each smoke script's own load_seconds+train_seconds (compute-attached time only, excludes env/download/checkpoint-io overhead already folded into gpu_wallclock_seconds above)."
+  },
+  "environment": {
+    "sft_venv": "/dockerdata/t720-janus-pro-r1/venvs/sft",
+    "rl_venv": "/dockerdata/t720-janus-pro-r1/venvs/rl",
+    "hf_home": "/dockerdata/t720-janus-pro-r1/hf_home",
+    "hf_hub_offline": true,
+    "transformers_offline": true
+  }
+}
