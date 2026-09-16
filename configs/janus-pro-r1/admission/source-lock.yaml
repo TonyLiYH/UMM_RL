@@ -1,0 +1,107 @@
+schema_version: 1
+task_id: T720
+pinned_at: "2026-09-16"
+
+code:
+  repo: wendell0218/Janus-Pro-R1
+  url: https://github.com/wendell0218/Janus-Pro-R1
+  revision: 0e40b3aa291cb15770f69affc956602c217490af
+  revision_verified_by: "git ls-remote https://github.com/wendell0218/Janus-Pro-R1.git HEAD main (both refs -> same sha)"
+  paper: "arXiv:2506.01480 (Pan et al., Unlocking Aha Moments via Reinforcement Learning)"
+  license: "NO LICENSE FILE in the pinned commit (checked LICENSE/LICENSE.md/LICENSE.txt at repo root and under janus-sft/, janus-rl/ -> all 404). Default all-rights-reserved per GitHub ToS. Open item, see reports/T720/claim-check.md."
+  vendored_at: vendor/janus-pro-r1/
+  vendored_scope: "janus-sft/, janus-rl/, inference/ in full (134 files, 3.3MB); top-level assets/ (51MB banner images, unused by any code path) excluded"
+  acknowledged_upstream:
+    - name: "Janus-Series (deepseek-ai/Janus)"
+      url: https://github.com/deepseek-ai/Janus
+      role: "base architecture this repo's models/*.py is derived from"
+    - name: "Open-R1 (huggingface/open-r1)"
+      url: https://github.com/huggingface/open-r1
+      role: "GRPO trainer scaffolding this repo's janus-rl/src/open_r1 is derived from"
+
+base_checkpoint:
+  repo: deepseek-ai/Janus-Pro-7B
+  url: https://huggingface.co/deepseek-ai/Janus-Pro-7B
+  revision: 5c3eb3fb2a3b61094328465ba61fcd4272090d67
+  license: "MIT (code) + DeepSeek Model License (weights) -- both declared on the HF model card"
+  format: "pytorch_model-{00001,00002}-of-00002.bin (14.84GB total, fp32/bf16 mixed per index), custom multi_modality architecture (SigLIP-L vision tower + LlamaGen VQ-16 image tokenizer + 30-layer 4096-dim LLaMA decoder, vocab 102400)"
+  artifacts:
+    - path: pytorch_model-00001-of-00002.bin
+      bytes: 9988183802
+      sha256: 4c90acffa3b3eeea5dff0451f4752d2cddca14a50f906ba1eaa7591895c197ec
+      sha256_matches_hf_x_linked_etag: true
+    - path: pytorch_model-00002-of-00002.bin
+      bytes: 4853013705
+      sha256: 1cb7c7d12c16933f519f4959cbc8514bb50561f2945069f6d3b5827aadaac800
+      sha256_matches_hf_x_linked_etag: true
+  provenance_note: "H20-FoldUMM already had this exact checkpoint cached at /root/local_cache/models/Janus-Pro-7B/ from prior unrelated work (SERVER_STATUS.md, 2026-08-26 inventory). Both LFS blob sha256 hashes were recomputed in-container on 2026-09-16 and match the sha256 reported by HF's resolve-endpoint X-Linked-ETag header for deepseek-ai/Janus-Pro-7B@main byte-for-byte -- no re-download was necessary or performed."
+
+released_checkpoint_reference_only:
+  repo: midbee/Janus-Pro-R1-7B
+  url: https://huggingface.co/midbee/Janus-Pro-R1-7B
+  revision: ed62b8093c6babbd0a773d27dc4f1234bb0652fa
+  license: apache-2.0
+  note: "The already-trained Janus-Pro-R1-7B checkpoint (post SFT+RL). NOT downloaded/used: T720 trains from the deepseek-ai/Janus-Pro-7B base per the frozen protocol (produce our own disposable SFT/GRPO smoke checkpoints), not from this end-state release. Recorded here only because the task asks to pin the released checkpoint as part of the asset inventory."
+
+data:
+  primary_bounded_sample:
+    source: "in-repo released example data, vendored verbatim"
+    path: vendor/janus-pro-r1/janus-sft/data/t2i_examples/
+    files:
+      - janus-sft/data/t2i_examples/labels/flux_0.7.jsonl
+      - janus-sft/data/t2i_examples/labels/janus_0.7.jsonl
+      - "janus-sft/data/t2i_examples/images/{flux,janus}/15_{0,1,2,3}.png (8 images)"
+    format: "one JSON object per line: {promptid, prompt, data:[{id,img_path,reason,prob,state}, ...]}; state 0-4 is InternVL2.5-26B's text-image consistency level, prob is InternVL2.5-26B's yes-probability"
+    n_prompts: 1
+    n_images: 8
+    license: "same repository default (no LICENSE file); images are model-generated (Flux / Janus-Pro-7B), not third-party copyrighted photographs"
+  released_hf_dataset_for_admission_verification:
+    repo: midbee/Janus-Pro-R1-Data
+    url: https://huggingface.co/datasets/midbee/Janus-Pro-R1-Data
+    revision: dc4c00a8a175820e4d917b5cf540fc8fc96dc4e1
+    license: "no license tag on the HF dataset card (open item, see reports/T720/claim-check.md)"
+    full_dataset_size_bytes_all_shards: 344369538709
+    n_shards: 524
+    downloaded_deterministic_subset:
+      path: train-0000-of-0524.parquet
+      bytes: 875432539
+      sha256: 941a38bb445b67bbdca905aeb51ecb87c30cef7330c78db7ca16a747ffb66c11
+      note: "downloaded and hash-verified for the admission audit's data-loader check only; the GPU SFT smoke itself trains on the smaller in-repo t2i_examples above to stay inside the resource envelope. promptid 15 (the in-repo example) is present in the full dataset, confirming the in-repo examples are a genuine bounded sample of this same released dataset, not a separate synthetic fixture."
+  rl_prompt_source:
+    source: "in-repo released example data, vendored verbatim"
+    path: vendor/janus-pro-r1/janus-rl/data/t2i_examples.txt
+    format: "one free-text prompt per line (consumed by MyT2IDataset)"
+
+reward_model:
+  choice: OpenGVLab/InternVL2_5-8B
+  url: https://huggingface.co/OpenGVLab/InternVL2_5-8B
+  revision: e9e4c0dc1db56bfab10458671519b7fa3dd29463
+  license: "MIT (project) + Apache-2.0 (internlm2_5-7b-chat language backbone it merges), both declared on the HF model card"
+  total_bytes: 16155492897
+  rationale: >
+    Upstream's own janus-rl/src/open_r1/internvl_img.py:InternVLReward offers exactly
+    two officially supported reward configurations: InternVL2.5-26B (recommended for
+    quality, ~52GB, upstream's README frames this as the "online"/URL-served option
+    for larger-memory GPUs in one paragraph but "offline"/local-weight option in
+    another -- upstream's own README is internally inconsistent on this point, noted
+    as a discrepancy in reports/T720/result-summary.md) and InternVL2.5-8B (~16GB,
+    the smaller of the two officially supported choices). InternVL2.5-8B is the
+    smallest usable reward setup that still uses upstream's own InternVLReward class
+    and prompt template unmodified, run fully offline/in-process (no network
+    dependency, no service endpoint), directly satisfying the frozen protocol's
+    "pinned official offline configuration" requirement.
+  deployment: "offline, in-process, same GPU as the policy model (apply_api=False path of upstream's intern_reward())"
+  prompt_template: '<image>\n Does this image match the description "{prompt}", please directly respond with yes or no.'
+  scoring: "score = P(yes-token) / (P(yes-token) + P(no-token)) from the first generated token's softmax, case-insensitive yes/no variants summed, per upstream InternVLReward.evaluate"
+
+licenses_summary_table:
+  - asset: Janus-Pro-R1 code (wendell0218/Janus-Pro-R1)
+    license: "none declared (open item)"
+  - asset: Janus-Pro-7B checkpoint (deepseek-ai)
+    license: "MIT (code) + DeepSeek Model License (weights)"
+  - asset: Janus-Pro-R1-7B checkpoint (midbee, reference only, not used)
+    license: apache-2.0
+  - asset: Janus-Pro-R1-Data (midbee)
+    license: "none declared (open item)"
+  - asset: InternVL2_5-8B (OpenGVLab)
+    license: "MIT + Apache-2.0 (backbone)"
