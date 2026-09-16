@@ -30,14 +30,25 @@ from .ids import group_bucket
 #: measured (against the real, complete downloaded sources) to produce
 #: 6,350 diagnostic records -- more than 3x over the 2,048 ceiling, because
 #: the training-pool group-key universe is large (D1/D2 share ~118k COCO
-#: image ids; D3 has its own ~31k-row group-key space after filtering).
-#: 63 buckets was chosen because it is the largest bucket count that keeps
-#: the real measured diagnostic record count (2,037) within the declared
-#: [512, 2048] range (64 buckets measures 2,068 -- just over the ceiling).
-#: See `reports/T260/failure-ledger.md` for the full measurement record.
-#: The buckets freed by shrinking diagnostic are absorbed by `pilot_train`
-#: (via the "absorb any rounding remainder" rule below), not silently
-#: dropped.
+#: image ids; D3 had its own ~31k-row group-key space after filtering,
+#: under the prior row-level-only subsample design). 63 buckets was chosen
+#: because, at that time, it was the largest bucket count that kept the
+#: real measured diagnostic record count (2,037) within the declared
+#: [512, 2048] range (64 buckets measured 2,068 -- just over the ceiling).
+#: See `reports/T260/failure-ledger.md` for the full original measurement
+#: record. The buckets freed by shrinking diagnostic are absorbed by
+#: `pilot_train` (via the "absorb any rounding remainder" rule below), not
+#: silently dropped.
+#:
+#: **Re-measured 2026-09-16** after DiffusionDB's archive-fan-out redesign
+#: (`src/comppareto/data/diffusiondb.py`) shrank D3's training-pool row
+#: count from 31,485 to 19,842: the *same* 63-bucket share, unchanged,
+#: now measures `diagnostic = 1,828` real records (737 COCO + 980 LLaVA +
+#: 111 DiffusionDB) against the real, complete rebuilt sources -- still
+#: comfortably inside [512, 2048], so no further re-tuning of
+#: `SPLIT_FRACTIONS` was needed this round. See
+#: `reports/T260/mixture-and-accounting.md` Sec. 2 for the full updated
+#: table.
 SPLIT_FRACTIONS: tuple[tuple[str, float], ...] = (
     ("diagnostic", 0.0063),
     ("pilot_validation", 0.05),

@@ -81,12 +81,22 @@ def main(argv: list[str] | None = None) -> int:
     manifest_files = {
         "sources-yaml": (args.configs_dir / "sources.yaml", "config"),
         "diagnostic-manifest": (args.configs_dir / "diagnostic.jsonl", "manifest"),
-        "pilot-train-manifest": (args.configs_dir / "pilot_train.jsonl", "manifest"),
         "pilot-validation-manifest": (args.configs_dir / "pilot_validation.jsonl", "manifest"),
         "pilot-meta-manifest": (args.configs_dir / "pilot_meta.jsonl", "manifest"),
         "evaluation-only-manifest": (args.configs_dir / "evaluation_only.yaml", "manifest"),
         "metrics-json": (args.metrics_json, "metrics"),
     }
+    # Local review item 5: `pilot_train` is written as a hash-addressed
+    # shard set (`comppareto.data.build._write_pilot_train_shards`), not a
+    # single monolithic file. Discover the exact shard files that were
+    # actually written this run from their own index, rather than assuming
+    # a fixed count/name -- the index itself is also hashed as an artifact.
+    shards_index_path = args.configs_dir / "pilot_train.shards.json"
+    manifest_files["pilot-train-shards-index"] = (shards_index_path, "manifest")
+    shards_index = json.loads(shards_index_path.read_text(encoding="utf-8"))
+    for shard in shards_index["shards"]:
+        artifact_id = f"pilot-train-manifest-shard{shard['index']}"
+        manifest_files[artifact_id] = (args.configs_dir / shard["path"], "manifest")
 
     artifacts: list[dict[str, Any]] = []
     hashed_paths: list[Path] = []
@@ -109,7 +119,8 @@ def main(argv: list[str] | None = None) -> int:
     result_files = [
         "configs/data/posttraining-v1/sources.yaml",
         "configs/data/posttraining-v1/diagnostic.jsonl",
-        "configs/data/posttraining-v1/pilot_train.jsonl",
+        *(f"configs/data/posttraining-v1/{shard['path']}" for shard in shards_index["shards"]),
+        "configs/data/posttraining-v1/pilot_train.shards.json",
         "configs/data/posttraining-v1/pilot_validation.jsonl",
         "configs/data/posttraining-v1/pilot_meta.jsonl",
         "configs/data/posttraining-v1/evaluation_only.yaml",
@@ -117,6 +128,7 @@ def main(argv: list[str] | None = None) -> int:
         "reports/T260/source-license-audit.md",
         "reports/T260/split-and-decontamination.md",
         "reports/T260/mixture-and-accounting.md",
+        "reports/T260/media-materialization-plan.md",
         "reports/T260/result-summary.md",
         "reports/T260/claim-check.md",
         "reports/T260/failure-ledger.md",

@@ -27,6 +27,7 @@ from typing import Any, Iterator
 import zipfile
 
 from .ids import stable_id
+from .records import UNRESTRICTED_TRAINING_CONSTRAINTS
 from .split import assign_split
 
 TRAIN_ANNOTATION_MEMBER = "annotations/captions_train2017.json"
@@ -78,8 +79,14 @@ def iter_train_records(
                 "image": {
                     "source_dataset": "coco_train2017",
                     "source_relative_path": f"train2017/{filenames[image_id]}",
+                    "metadata_admitted": True,
+                    "media_materialized": False,
+                    "media_verified_available": None,
+                    "media_sha256": None,
+                    "media_bytes": None,
                 },
                 "text": {"caption": caption_text, "annotation_id": caption_id},
+                "training_constraints": dict(UNRESTRICTED_TRAINING_CONSTRAINTS),
             }
 
 
@@ -107,6 +114,12 @@ def iter_evaluation_records(
                 "image": {
                     "source_dataset": "coco_val2017",
                     "source_relative_path": f"val2017/{filenames[image_id]}",
+                    "metadata_admitted": True,
+                    "media_materialized": False,
+                    "media_verified_available": None,
+                    "media_sha256": None,
+                    "media_bytes": None,
                 },
                 "text": {"caption": caption_text, "annotation_id": caption_id},
+                "training_constraints": dict(UNRESTRICTED_TRAINING_CONSTRAINTS),
             }

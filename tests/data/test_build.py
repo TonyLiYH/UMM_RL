@@ -5,7 +5,7 @@ import zipfile
 
 import yaml
 
-from comppareto.data import build, coco
+from comppareto.data import build, coco, diffusiondb
 
 
 def _make_repo(tmp_path):
@@ -42,13 +42,14 @@ def _make_repo(tmp_path):
     ]
     llava_json.write_text(json.dumps(llava_entries), encoding="utf-8")
 
+    kept_part_id = diffusiondb.kept_part_ids()[0]
     diffusiondb_cache = tmp_path / "metadata.jsonl"
     with diffusiondb_cache.open("w", encoding="utf-8") as handle:
         for i in range(200):
             row = {
                 "image_name": f"ddb-{i:06d}.png",
                 "prompt": f"prompt {i}",
-                "part_id": 1,
+                "part_id": kept_part_id,
                 "seed": i,
                 "cfg": 7.0,
                 "sampler": 8,
@@ -76,6 +77,12 @@ def test_end_to_end_build_produces_disjoint_valid_splits(tmp_path) -> None:
     assert metrics["paired_core"]["bidirectional_mapping_verified"] is True
     assert metrics["resources"]["gpu_hours"] == 0
     assert metrics["duplicate_record_ids"] == 0
+    assert (
+        metrics["paired_core"]["diagnostic_d1_paired_record_count"]
+        <= metrics["paired_core"]["diagnostic_total_record_count"]
+    )
+    assert metrics["media"]["metadata_admitted_records"] == len(all_records)
+    assert metrics["near_duplicates"]["scoped_splits"] == list(("diagnostic", "pilot_validation", "pilot_meta"))
 
     for split_name in build.JSONL_SPLITS:
         path = output_dir / f"{split_name}.jsonl"
@@ -109,20 +116,65 @@ def test_llava_and_coco_share_image_lands_in_same_split(tmp_path) -> None:
     assert shared_groups == []
 
 
-def test_apply_pilot_train_cap_drops_only_overflow_pilot_train_buckets() -> None:
-    # group_key "0" hashes to bucket 2705 (< PILOT_TRAIN_BUCKET_CEILING=5727,
-    # so it is kept); group_key "1" hashes to bucket 8030 (>= 5727, so it is
-    # the deterministic, evidence-backed overflow this cap drops). Both
-    # buckets fall inside pilot_train's own [863, 10000) range, so this
-    # exercises the cap itself, not the pilot_train/other-split boundary.
-    kept_record = {"split": "pilot_train", "group_key": "0", "id": "kept"}
-    dropped_record = {"split": "pilot_train", "group_key": "1", "id": "dropped"}
-    other_split_record = {"split": "diagnostic", "group_key": "1", "id": "other-split"}
+def test_shard_rows_splits_at_the_declared_byte_ceiling() -> None:
+    rows = [{"record_id": f"r{i:05d}", "payload": "x" * 100} for i in range(1000)]
+    one_row_bytes = len(build._encode_row(rows[0]))
+    max_bytes = one_row_bytes * 10  # force several small shards deterministically
+    shards = build._shard_rows(rows, max_bytes=max_bytes)
+    assert sum(len(shard) for shard in shards) == len(rows)
+    assert [row for shard in shards for row in shard] == rows
+    for shard in shards[:-1]:
+        assert len(shard) <= 10
 
-    result = build._apply_pilot_train_cap([kept_record, dropped_record, other_split_record])
 
-    assert kept_record in result
-    assert dropped_record not in result
-    # Records outside pilot_train are never considered by the cap, even if
-    # their own group_key would otherwise land above the ceiling.
-    assert other_split_record in result
+def test_shard_rows_never_returns_empty_list_even_for_no_rows() -> None:
+    assert build._shard_rows([]) == [[]]
+
+
+def test_write_manifests_writes_pilot_train_shard_index(tmp_path) -> None:
+    inputs = _make_repo(tmp_path)
+    all_records = build.build_all_records(inputs)
+    by_split = build.split_records(all_records)
+    output_dir = tmp_path / "configs"
+    counts = build.write_manifests(by_split, output_dir)
+
+    index_path = output_dir / "pilot_train.shards.json"
+    assert index_path.exists()
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    assert index["total_records"] == counts["pilot_train"]
+    assert index["shards"][0]["path"] == "pilot_train.jsonl"
+    assert sum(shard["record_count"] for shard in index["shards"]) == counts["pilot_train"]
+
+    # pilot_train.jsonl (shard 0) must always exist at the literal path the
+    # acceptance contract requires, even when there is exactly one shard.
+    assert (output_dir / "pilot_train.jsonl").exists()
+    for shard in index["shards"]:
+        assert (output_dir / shard["path"]).exists()
+        actual_bytes = (output_dir / shard["path"]).read_bytes()
+        assert len(actual_bytes) == shard["bytes"]
+
+
+def test_run_media_availability_sample_patches_only_sampled_records(tmp_path) -> None:
+    inputs = _make_repo(tmp_path)
+    all_records = build.build_all_records(inputs)
+
+    def _fake_probe(_path: str) -> dict:
+        return {"available": True, "bytes": 123, "sha256": "deadbeef"}
+
+    fake_probes = {"coco_train2017": _fake_probe, "coco_val2017": _fake_probe, "diffusiondb_2m": _fake_probe}
+    patched, results = build.run_media_availability_sample(all_records, probes=fake_probes)
+
+    assert len(results) > 0
+    assert all(r["available"] for r in results)
+    materialized = [r for r in patched if r["image"]["media_materialized"]]
+    assert len(materialized) == len(results)
+    for record in materialized:
+        assert record["image"]["media_sha256"] == "deadbeef"
+        assert record["image"]["media_bytes"] == 123
+
+    by_split = build.split_records(patched)
+    counts = {name: len(rows) for name, rows in by_split.items()}
+    metrics = build.compute_metrics(patched, counts, media_probe_results=results)
+    assert metrics["media"]["media_materialized_records"] == len(results)
+    assert metrics["media"]["media_availability_sample_size"] == len(results)
+    assert metrics["media"]["media_availability_sample_confirmed_available"] == len(results)
