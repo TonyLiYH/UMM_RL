@@ -2,7 +2,7 @@
 id: T710
 title: CoRL assets, implementation audit, and GPU optimizer smoke
 parent: T700
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T730, T740]
 allowed_paths: ["tasks/T710-corl-admission-and-gpu-smoke.md", "configs/corl/admission/", "runs/corl-admission-v1/", "reports/T710/", "src/comppareto/adapters/corl/", "tests/adapters/corl/", "vendor/corl/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-16
-updated_at: 2026-09-16T13:15Z
+updated_at: 2026-09-17T01:00Z
 ---
 
 # T710: CoRL assets, implementation audit, and GPU optimizer smoke
@@ -108,3 +108,40 @@ bash scripts/validate_task_submission.sh T710
   read-only from a shallow clone at `/tmp/corl_audit` (not committed).
   Publishing the first report next, before any download/GPU execution, per
   the task's explicit gate.
+- 2026-09-17 — Completed asset pinning (model `960ab33191f61342a4c60ae74d8dc356a39fafcb`,
+  dataset `f52833ce01b5657294bed87f23f27d04b92838b9`, 32-record materialized
+  micro-split, all `qa_type=OE`) and ran the bounded GPU optimizer smoke on
+  H20-FoldUMM GPU0 via `src/comppareto/adapters/corl/run_smoke.py`, calling
+  `JanusProUnifiedGRPOTrainer` directly, unmodified. `corrected_candidate`
+  completed 4 optimizer steps on 8 unique records (`num_generations=4`),
+  checkpoint save/reload, and a `beta=0.1` reference-immutability probe, all
+  finite (`total_wallclock_seconds=106.42`, ~0.0296 GPU-hours,
+  `unauthorized_changed_param_count=0`, `checkpoint_reload_pass=true`,
+  `ref_model_immutable=true`). `upstream_exact` correctly reproduced the
+  predicted D11 `model_ckpt_dir` placeholder defect
+  (`HFValidationError`), isolated in its own key. All 8 mandatory checks
+  recorded in `runs/corl-admission-v1/metrics.json`, including two honestly
+  recorded defect/anomaly findings: check #3 image-token alignment measured
+  `alignment_confirmed=false` (confirmed via source re-read to reflect the
+  real trainer's genuine no-shift-for-t2i-tokens behavior, not a probe bug)
+  and check #4 batched MC/OE reward dispatch confirmed defect D14 (not
+  re-triggered by the real OE-only micro-split, so left unrepaired per the
+  "repair only locally-demonstrated defects" scope). Fixed two trl
+  `GRPOConfig` batch-size/`num_generations` divisibility bugs and a
+  `trainer.log()` metrics-clearing bug in the smoke driver along the way
+  (both pre-existing bugs in this task's own driver code, not upstream CoRL
+  bugs). `configs/corl/admission/artifact-verification.json`: 5/5 artifacts
+  pass. `configs/corl/admission/storage-preflight.json`: `status=pass`,
+  `filesystem_class=local`. Full local validation:
+  `comppareto.repo_state.cli` root=pass (40 tasks, 9 manifests), `pytest -q`
+  249 passed, `compileall` clean, `git diff --check origin/main...HEAD`
+  clean. `runs/corl-admission-v1/manifest.json`: `status=pass`,
+  `source_revision=448c5177c28f9222f4114b8016623e2e586d5e1b` (origin/main at
+  branch fork), `execution_revision=e64addb6f51e41496e00221d1a80ea64509ee381`
+  (commit containing the exact `run_smoke.py`/micro-split/storage-preflight
+  code state actually executed on GPU). Ran
+  `bash scripts/validate_task_submission.sh T710` fresh from a clean tree;
+  it failed only on the status-must-be-`awaiting_review` precondition (every
+  other check — task tree, run manifests, research state, full test suite,
+  artifact hashes — passed) — setting `status: awaiting_review` now and
+  re-running the same validator to confirm a clean pass before push.
