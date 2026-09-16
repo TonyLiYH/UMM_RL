@@ -10,7 +10,7 @@
 4. Bounded first-order private compensation weakly enlarges the jointly
    feasible shared-direction set.
 
-## Must be completed before a convergence-speed claim
+## Completed in the fixed quadratic scalarization
 
 ### O1. Alternating quadratic iteration matrices
 
@@ -21,7 +21,9 @@ Derive exact iteration matrices for:
 - private-then-shared commit-style updates;
 - exact reduced-space/Schur updates.
 
-Compare spectral radii under declared positive-definite quadratic families.
+The matrices, stability conditions, equal-spectrum result, strict-ordering
+family, and counterexamples are now in
+[`proofs/alternating-quadratic-convergence.md`](proofs/alternating-quadratic-convergence.md).
 
 ### O2. Strict speedup conditions
 
@@ -34,7 +36,9 @@ error under which
 \rho(T_{\mathrm{SP}}).
 \]
 
-The project must also retain counterexamples where SP is equal or better.
+The project retains cases where exact response ties SP and where stable
+overrelaxation makes SP faster than a fixed-step reduced method. Persistent SP
+and persistent PS are isospectral under matched fixed block maps.
 
 ### O3. Finite-step/native-optimizer gap
 
@@ -60,6 +64,19 @@ Separate:
 The same data, RNG protocol, and private-step budget must be used in control
 and treatment branches.
 
+The exact gain identity, commit-response bounds, common-random-number variance,
+and selection-bias boundary are in
+[`proofs/controlled-gain-and-commit-error.md`](proofs/controlled-gain-and-commit-error.md).
+
+## Remaining before a general speed claim
+
+1. Analyze virtual commit and commit-then-SP for nonquadratic losses.
+2. Extend from fixed scalarization to local Jacobians or switched systems for
+   MGDA, PCGrad, and CAGrad.
+3. Bound nonnormal finite-time amplification, not only spectral radius.
+4. Compare total compute through \(c/(-\log\rho)\) or a finite-budget analogue.
+5. Calibrate response sensitivity and stochastic error from data.
+
 ## Experiments that can proceed now
 
 The first experiments do not require O1--O4 to be fully solved. They test:
@@ -73,4 +90,3 @@ The first experiments do not require O1--O4 to be fully solved. They test:
 
 No persistent joint-training claim is authorized until the corresponding task
 Gate is opened.
-

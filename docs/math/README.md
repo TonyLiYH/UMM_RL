@@ -24,6 +24,10 @@ method-level overview.
 
 Detailed proofs live in [`proofs/`](proofs/).
 
+Current proof files include finite-response common descent, bounded private
+compensation, Schur reduction, alternating quadratic convergence, and
+controlled-gain/commit-error analysis.
+
 ## Current scientific boundary
 
 The repository has established local quadratic compensation and deterministic
@@ -37,4 +41,3 @@ The immediate controlled question is:
 > of the useful private compensation, or does choosing the shared direction
 > from post-adaptation/response-aware information provide additional
 > compute-matched benefit?
-
