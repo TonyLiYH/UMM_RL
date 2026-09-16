@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "run_id": "instrumentation-corl-v1",
+  "task_id": "T750",
+  "run_kind": "formal",
+  "source_revision": "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5",
+  "execution_revision": "09f185799c89489ad4fd978ad1b1c2f4440029f6",
+  "dirty": false,
+  "config_sha256": "128f870d22dab2d987d5df9e01196a39b315ed9c583cac8568a365c9c133466a",
+  "environment": {
+    "python_version": "3.11.6",
+    "numpy_version": "2.4.6",
+    "platform": "Linux-6.6.119-49.20.tl4.x86_64-x86_64-with-glibc2.38",
+    "executable": ".venv/bin/python",
+    "framework": "numpy",
+    "device": "cpu"
+  },
+  "status": "pass",
+  "result_files": [
+    "configs/instrumentation/corl/resolved-config.yaml",
+    "reports/T750/first-report.md",
+    "reports/T750/result-summary.md",
+    "reports/T750/claim-check.md",
+    "reports/T750/failure-ledger.md",
+    "runs/instrumentation-corl-v1/metrics.json",
+    "runs/instrumentation-corl-v1/notes.md"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "resolved-config",
+      "kind": "config",
+      "canonical_uri": "configs/instrumentation/corl/resolved-config.yaml",
+      "sha256": "128f870d22dab2d987d5df9e01196a39b315ed9c583cac8568a365c9c133466a",
+      "bytes": 3965
+    },
+    {
+      "artifact_id": "metrics",
+      "kind": "run-artifact",
+      "canonical_uri": "runs/instrumentation-corl-v1/metrics.json",
+      "sha256": "f9c10abd2410c8ac4971a89cfc106ecea36c8705911d000197dbec79bca265e5",
+      "bytes": 11846
+    },
+    {
+      "artifact_id": "notes",
+      "kind": "run-artifact",
+      "canonical_uri": "runs/instrumentation-corl-v1/notes.md",
+      "sha256": "daba6c89f46854a21f0f6838250be0480e1d7fdfa949c9879c903ae75fa8eb76",
+      "bytes": 8526
+    }
+  ],
+  "retry": null
+}
