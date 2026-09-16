@@ -1,6 +1,6 @@
 from .checkpoint import (
     set_seed,
-    SaveModel,    
+    SaveModel,
     print_model_param_num,
 )
 from .optimizer import build_optimizer

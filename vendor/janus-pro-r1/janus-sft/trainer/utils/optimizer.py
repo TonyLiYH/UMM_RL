@@ -9,7 +9,7 @@ def get_optimizer(cfg, parameters):
         optimize_cls = torch.optim.SGD
     else:
         raise NotImplementedError("Not Implement {} optimizer".format(cfg.optimize.optimizer))
-    
+
     return optimize_cls(
             parameters,
             lr=cfg.optimize.lr,

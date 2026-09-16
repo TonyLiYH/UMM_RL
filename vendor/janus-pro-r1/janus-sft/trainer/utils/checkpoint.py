@@ -91,7 +91,7 @@ class SaveModel(HookBase):
                 except Exception as e:
                     print(e)
                     logger.info("fail to dump run config!!")
-    
+
     def save_model(self, checkpoint, save_name):
         local_weights = os.path.join(self.save_path, save_name)
         import torch.distributed as dist

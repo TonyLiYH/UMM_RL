@@ -52,7 +52,7 @@ class ImageEditingTrainer(TrainerBase):
         self.totals = EasyDict()
         self.totals.epochs = self.cfg.optimize.max_epochs
         self.totals.iter_per_epoch = len(self.data_loader)
-        self.totals.total_iters = self.cfg.optimize.max_epochs * self.totals.iter_per_epoch 
+        self.totals.total_iters = self.cfg.optimize.max_epochs * self.totals.iter_per_epoch
         self.dist = EasyDict()
         self.dist.rank = dist.get_rank()
         self.dist.world_size = dist.get_world_size()
@@ -91,7 +91,7 @@ class ImageEditingTrainer(TrainerBase):
         )
         from torch.distributed.fsdp.fully_sharded_data_parallel import BackwardPrefetch
         from torch.distributed.fsdp.wrap import transformer_auto_wrap_policy
-        from transformers.models.llama.modeling_llama  import LlamaDecoderLayer 
+        from transformers.models.llama.modeling_llama  import LlamaDecoderLayer
         my_auto_wrap_policy = functools.partial(
             transformer_auto_wrap_policy,
             transformer_layer_cls={LlamaDecoderLayer},
@@ -144,7 +144,7 @@ class ImageEditingTrainer(TrainerBase):
             input_ids = input_data[k]['input_ids']
             seq_len = len(input_ids)
             batched_attention_mask[k, -seq_len:] = 1
-            batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)  
+            batched_input_ids[k, -seq_len:] = torch.LongTensor(input_ids)
             batched_images_seq_mask[k, -seq_len:] = input_ids == self.vl_chat_processor.image_id
         return {'input_ids': batched_input_ids.cuda(), 'attention_mask': batched_attention_mask.cuda(), 'image1':image1.cuda(), 'image2':image2.cuda(), 'image_seq_mask': batched_images_seq_mask.cuda(), 'task_type': 2}
 

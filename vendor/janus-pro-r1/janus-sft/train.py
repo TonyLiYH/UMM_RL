@@ -35,7 +35,7 @@ if __name__ == "__main__":
     torch.cuda.set_device(args.rank % num_gpus)
     now_time = torch.from_numpy(np.array(int(time.time()))).float().cuda()
     dist.all_reduce(now_time)
-    
+
     cfg.common.output_path = os.path.join(cfg.common.output_path, cfg.yml_path, str(now_time.cpu().numpy()))
     cfg.common.log_path = os.path.join(cfg.common.log_path, cfg.yml_path, str(now_time.cpu().numpy()))
 
