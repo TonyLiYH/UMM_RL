@@ -2,7 +2,7 @@
 id: T710
 title: CoRL assets, implementation audit, and GPU optimizer smoke
 parent: T700
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T730, T740]
 allowed_paths: ["tasks/T710-corl-admission-and-gpu-smoke.md", "configs/corl/admission/", "runs/corl-admission-v1/", "reports/T710/", "src/comppareto/adapters/corl/", "tests/adapters/corl/", "vendor/corl/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-16
-updated_at: 2026-09-16
+updated_at: 2026-09-16T13:15Z
 ---
 
 # T710: CoRL assets, implementation audit, and GPU optimizer smoke
@@ -89,3 +89,22 @@ T730 until a corrected protocol is locally frozen.
 ```bash
 bash scripts/validate_task_submission.sh T710
 ```
+
+## Review history
+
+- 2026-09-16 — Remote executor entered pre-created worktree/branch
+  `agent/T710-corl-admission-gpu-smoke` (HEAD `448c517`, already even with
+  `origin/main`, no merge needed) and set status to `running`. Starting the
+  CPU-side audit: identified the official upstream as GitHub `mm-vl/ULM-R1`
+  (paper "Co-Reinforcement Learning for Unified Multimodal Understanding and
+  Generation", arXiv:2505.17534; CoRL = Co-Reinforcement Learning), pinned
+  `HEAD` `0c92629f9b307a32bb286ae3562809e941d1bb0b` on `main`, Apache-2.0
+  licensed. Confirmed target assets resolve: `deepseek-ai/Janus-Pro-1B` (MIT,
+  HF sha `960ab33191f61342a4c60ae74d8dc356a39fafcb`) and
+  `mm-vl/x2x_rft_22k` (HF dataset sha `f52833ce01b5657294bed87f23f27d04b92838b9`,
+  22,479 rows, ~11GB parquet, ungated). Read the full `corl/open_r1/` training
+  stack (`grpo_janus_unify.py`, `trainer/grpo_trainer_unified.py`,
+  `rewards/r_base.py`, `rewards/r_t2i.py`) and `janus/models/modeling_vlm.py`
+  read-only from a shallow clone at `/tmp/corl_audit` (not committed).
+  Publishing the first report next, before any download/GPU execution, per
+  the task's explicit gate.
