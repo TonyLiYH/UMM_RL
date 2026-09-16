@@ -181,3 +181,82 @@ bash scripts/validate_task_submission.sh T250
    elsewhere in the README but is not named in the figure caption I could
    fetch) — recorded as a minor evidentiary inconsistency between the two
    official sources, not resolved by assuming either reading.
+
+## Revision addendum — 2026-09-16 (real GPU work actually performed)
+
+2026-09-16 local review found the static-only plan above insufficient for
+SenseNova-U1-8B-MoT-SFT specifically (see the task file's "Local review
+requirements") and required real GPU evidence. This section records exactly
+what was executed, superseding the "no GPU work is currently planned" framing
+above for this one candidate; Show-o2 and UniDDT's static audits are
+unaffected and unchanged.
+
+**Source pin.** `github.com/OpenSenseNova/SenseNova-U1@f97964a6e54b0abf92aa2db849af4e942bb2ff08`
+(2026-09-02 19:36:57 +0800) — the commit actually checked out for the
+editable-installed `sensenova_u1` package imported by the smoke script at
+runtime (not a separately-cloned read-only checkout), clean tree, remote
+confirmed.
+
+**Checkpoint download and hashing.** `sensenova/SenseNova-U1-8B-MoT-SFT` @ HF
+revision `846ff1352e3a4e900d064740cddfc163b115646f` downloaded to
+container-local SSD (`/dockerdata/t250-sensenova-sft/checkpoint`,
+`filesystem_class=local`/`xfs`, confirmed by
+`configs/admission/posttraining-startpoints/storage-preflight.json`, run with
+`HF_HOME`/`HF_HUB_OFFLINE=1`/`TRANSFORMERS_OFFLINE=1` set). 214 files,
+35,217,355,798 bytes (~33GB) total. Every file's sha256 + byte size recorded
+in `configs/admission/posttraining-startpoints/checkpoint-hashes.json`. Three
+`model.safetensors` shards (00002/00003/00004 of 16) are exactly 16 bytes;
+cross-checked against `model.safetensors.index.json`'s `weight_map` and
+confirmed zero tensors are assigned to those three shard filenames — a
+benign upstream sharding artifact, not corruption.
+
+**GPU smoke (single H20, GPU0, via `cjob`).** Loaded
+`NEOChatModel.from_pretrained(CKPT, config=config, torch_dtype=torch.bfloat16)`
+directly from the local checkpoint path (`load_seconds=4.914`). Ran one
+pure-understanding forward+backward smoke
+(`understanding_loss=9.830007553100586`, gradients confined to the
+`shared_backbone` group) and one pure-generation forward+backward smoke
+(`generation_loss=5.4360198974609375`, gradients confined to the
+`generation_private` group), using only officially-implemented (non-stubbed)
+entry points — full detail and the architectural finding that motivated this
+exact split (`NotImplementedError` on the top-level `forward()` and on any
+mixed-token batch) are in `reports/T250/training-interface-audit.md`.
+Constructed a real `AdamW` optimizer (3 named parameter groups) +
+`CosineAnnealingLR` scheduler + resume-metadata dict without ever calling
+`.step()`; a sha256 fingerprint over sampled parameters was identical before
+and after construction, proving no weight mutation. Peak GPU memory across
+the whole session: `max_allocated=59,478,750,720` bytes (~59.5GB) on one
+96GB H20. Exact per-group parameter counts obtained via a zero-cost
+`torch.device("meta")` model construction. Full numeric evidence:
+`runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json`.
+
+**Wall-clock / GPU-hours.** cjob wall time for the smoke itself: 23 seconds
+(`17:38:36`-`17:38:59` CST, `[cjob] START`/`END` timestamps), of which the
+Python process measured `total_seconds=18.261597156524658` internally. No
+other GPU-attached step was run for this task (checkpoint download/hashing
+were CPU/network/disk-only). Reported conservatively as **0.01 GPU-hours**
+(rounding the measured wall time up), against the 4-GPU-hour cap — see
+`runs/admission-posttraining-startpoints-v1/metrics.json`.
+
+**Exact commands** (in addition to the ones already listed above):
+
+```bash
+# storage preflight against the real container-local SSD checkpoint path
+export PYTHONPATH=<worktree>/src
+export HF_HOME=/dockerdata/t250-sensenova-sft/hf_cache
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+.venv/bin/python scripts/model_storage_preflight.py \
+  --path /dockerdata/t250-sensenova-sft/checkpoint \
+  --minimum-free-bytes 40000000000 \
+  --output configs/admission/posttraining-startpoints/storage-preflight.json
+
+# checkpoint download (HF snapshot_download, star_proxy, offline env vars set)
+# checkpoint hashing (sha256 + size for all 214 files)
+# GPU smoke (see reports/T250/training-interface-audit.md for the script's
+# forward/backward/optimizer-construction logic), launched via:
+CUDA_VISIBLE_DEVICES=0 /dockerdata/t230-sensenova/venv/bin/python t250-smoke.py
+```
+
+No optimizer `.step()`, no persistent parameter update, and no dataset-scale
+run occurred at any point in this addendum.

@@ -16,19 +16,19 @@
   },
   "persistent_updates": 0,
   "resources": {
-    "gpu_hours": 0.0,
-    "gpu_count_used": 0,
-    "gpu_model": null,
+    "gpu_hours": 0.01,
+    "gpu_count_used": 1,
+    "gpu_model": "NVIDIA H20",
     "optimizer_steps": 0,
     "dataset_scale_runs": 0
   },
   "artifacts": {
-    "checked": 9,
-    "passed": 9,
+    "checked": 11,
+    "passed": 11,
     "failed": 0
   },
   "tests": {
-    "pytest_passed": 156,
+    "pytest_passed": 201,
     "pytest_failed": 0,
     "compile_status": "pass",
     "repo_state_status": "pass"

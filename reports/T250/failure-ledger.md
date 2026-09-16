@@ -105,17 +105,44 @@ starting point — both are satisfied (see `decision-matrix.md`).
   preference/RL" conclusion). Recorded as an open terminology gap only, not
   guessed at.
 
-## 7. No GPU smoke executed for this task
+## 7. No GPU smoke executed for this task — SUPERSEDED 2026-09-16
 
-- **What**: per execution stage 6 ("run minimal load/resume-interface smokes
-  only where static evidence is insufficient"), no GPU smoke was run for any
-  of the three candidates in this task. Static source-level evidence (direct
-  reads of `checkpoint_manager.py`, `train_stage_one.py`, and `main.py`) was
-  judged sufficient to resolve the resume-restoration-granularity dimension
-  for all three candidates, including the dimension that would most plausibly
-  have required a live run.
-- **Impact**: this is a deliberate, evidence-justified scope decision, not an
-  omission — GPU-hours consumed: 0 (well within the 4-hour cap). If local
-  review judges the static evidence insufficient for any dimension, a
-  minimal follow-up smoke (bounded to the 2-GPU / 4-GPU-hour envelope, local
-  SSD execution) can be requested as a revision.
+- **What (original, 2026-09-15)**: per execution stage 6 ("run minimal
+  load/resume-interface smokes only where static evidence is insufficient"),
+  no GPU smoke was run for any of the three candidates in this task. Static
+  source-level evidence was judged sufficient to resolve the
+  resume-restoration-granularity dimension for all three candidates.
+- **Superseded**: 2026-09-16 local review (see the task file's "Local review
+  requirements") judged static evidence insufficient specifically for
+  SenseNova-U1-8B-MoT-SFT and required a real GPU smoke on the SFT checkpoint
+  itself. That smoke was executed: one pure-understanding and one
+  pure-generation forward+backward pass on the pinned SFT checkpoint, loaded
+  from verified local SSD, plus an optimizer+scheduler+resume-metadata
+  construction verified not to mutate weights. Full detail in
+  `reports/T250/training-interface-audit.md`'s Revision addendum;
+  `runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json` has the
+  numeric evidence. GPU-hours consumed: ~0.01 of the 4-hour cap. Show-o2 and
+  UniDDT's static-only audits were judged sufficient by local review and are
+  unchanged.
+
+## 8. SenseNova-U1 — smallest-feasible-H20-topology for T270 is a derived projection, not a live 2-GPU run
+
+- **What**: local-review item 5 asked for the smallest feasible H20 topology
+  for T270's intended trainable subspace. This audit measured the real
+  single-H20 footprint of a load+forward+backward smoke (peak ~59.5GB) and
+  separately derived, via exact meta-device parameter counts and standard
+  bf16-weight/fp32-AdamW-state arithmetic, that a `generation_private`-only
+  subspace plausibly fits 2xH20 with optimizer-state sharding, while
+  full-parameter fine-tuning of both trainable groups does not fit 2xH20
+  without further sharding/offload.
+- **How verified**: the single-H20 measurement is real (executed). The
+  2xH20 projection is arithmetic (weights + grads + optimizer-state bytes
+  summed from exact measured parameter counts), not an actual 2-GPU
+  distributed run — this task's envelope permits but does not require
+  spending GPU-hours on a distributed-training-topology smoke for a
+  selection audit that does not itself authorize training.
+- **Impact**: recorded as "derived/hedged" in `reports/T250/claim-check.md`.
+  Does not block this task's pass/fail gate or the primary-candidate
+  decision; a follow-up 2-GPU sharded-optimizer smoke can be requested for
+  T270 specifically if the actual training run needs tighter confirmation
+  before committing to a resource request.

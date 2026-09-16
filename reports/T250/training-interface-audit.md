@@ -1,13 +1,143 @@
 # T250 — Training interface audit (static, source-level, no GPU)
 
 Per execution stage 4: official training/resume paths inspected statically
-from source. No GPU load/resume smoke was run for any candidate — static
-source evidence was judged sufficient for every required dimension, including
-resume-restoration granularity (the historically hardest dimension to resolve
-without a live run). See `first-report.md` for the rationale for skipping GPU
-smokes and `decision-matrix.md` for how each dimension below was weighted.
+from source. Static source evidence was judged sufficient for Show-o2 and
+UniDDT's resume-restoration granularity. For SenseNova-U1-8B-MoT-SFT
+specifically, 2026-09-16 local review (see the task file's "Local review
+requirements") required real GPU evidence rather than static/documentation
+evidence alone; that GPU work is now done and is reported inline in
+Candidate A's section below (superseding the original static-only framing for
+this candidate). See `first-report.md`'s revision addendum for the exact
+commands and `decision-matrix.md` for how each dimension is weighted.
 
 ## Candidate A — SenseNova-U1 (`training/` subtree of `OpenSenseNova/SenseNova-U1`)
+
+**Revision addendum (2026-09-16) — real GPU evidence, not static-only.**
+Source pinned to `github.com/OpenSenseNova/SenseNova-U1@f97964a6e54b0abf92aa2db849af4e942bb2ff08`
+(the commit actually checked out for the editable-installed `sensenova_u1`
+package imported at runtime, confirmed via `git log -1`/`git remote -v`,
+clean tree). The `-SFT` checkpoint itself (`sensenova/SenseNova-U1-8B-MoT-SFT`
+@ HF revision `846ff1352e3a4e900d064740cddfc163b115646f`) was downloaded to
+container-local SSD (`/dockerdata`, `filesystem_class=local`/`xfs`, confirmed
+by `configs/admission/posttraining-startpoints/storage-preflight.json`),
+hashed (214 files, sha256 + size, see
+`configs/admission/posttraining-startpoints/checkpoint-hashes.json`), and
+loaded directly via `NEOChatConfig.from_pretrained(CKPT)` +
+`NEOChatModel.from_pretrained(CKPT, config=config, torch_dtype=torch.bfloat16)`
+on a single H20 GPU (`load_seconds=4.914`). This is the SFT checkpoint itself,
+not T230's separately-audited final-MoT checkpoint.
+
+Reading `modeling_neo_chat.py` and `modeling_qwen3.py` in full revealed that
+`NEOChatModel.forward()` and `NEOChatModel.batch_chat()` both raise
+`NotImplementedError` as their literal first line in this pinned commit (the
+remainder of `forward()`'s body, a CE-loss/vision-splicing block, is
+unreachable dead code), and that `Qwen3Attention.forward()` /
+`Qwen3DecoderLayer.forward()` both raise
+`NotImplementedError("...see issue #207...")` whenever a batch mixes
+understanding and generation tokens — dispatching cleanly to a
+`forward_und`-only or `forward_gen`-only path otherwise. This means "one
+pure-understanding and one pure-generation forward/loss smoke" (as required
+by local-review item 3) is the *only* implemented path in this revision, not
+a simplification chosen by this audit; a genuinely mixed und/gen batch
+through the released top-level `forward()` is not currently executable at
+all. This also refines the "sequential-task-batch support at one frozen
+shared version" claim below: batches must be pure-understanding OR
+pure-generation per forward call, not interleaved within one call.
+
+Two smokes were executed on the loaded SFT checkpoint, using only
+officially-implemented, non-stubbed entry points (mirroring exactly the
+shapes/calling-conventions of the officially-live `_build_t2i_text_inputs`,
+`_build_t2i_image_indexes`, `_t2i_predict_v`, `patchify`, and `extract_feature`
+helpers that `t2i_generate()` itself calls):
+
+- **Pure-understanding**: built `input_ids`/`indexes`/`attention_mask` via
+  `model._build_t2i_text_inputs(tokenizer, query)`, called
+  `model.language_model(..., labels=input_ids, use_cache=False)`, and called
+  `.backward()` on the resulting cross-entropy loss.
+  `understanding_loss=9.830007553100586`. Gradients landed only on the
+  `shared_backbone` parameter group (`generation_private` and
+  `vision_shared_understanding` both had zero gradient), confirming the
+  understanding path touches exactly its owned parameters.
+- **Pure-generation**: built a synthetic 64x64 latent, patchified it,
+  extracted flow-matching image embeddings via `extract_feature(...,
+  gen_model=True)`, added timestep embeddings from
+  `fm_modules["timestep_embedder"]`, predicted velocity via
+  `model._t2i_predict_v(...)`, and took an MSE loss against a random target
+  before calling `.backward()`. `generation_loss=5.4360198974609375`.
+  Gradients landed only on the `generation_private` group (zero elsewhere),
+  confirming clean separation in the opposite direction.
+
+Both results, plus the optimizer/scheduler/resume-metadata construction
+described next, are recorded verbatim in
+`runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json`
+(`status: "pass"`, no exceptions on first attempt).
+
+**Optimizer/scheduler/resume construction without mutating weights
+(local-review item 4).** Three named parameter groups were built
+(`shared_backbone`, `generation_private`, `vision_shared_understanding`),
+wrapped in a real `torch.optim.AdamW(param_groups, lr=1e-5)` plus a
+`torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000)`, alongside
+a `resume_metadata` dict (`global_step`, `epoch`,
+`optimizer_state_dict_keys`, `scheduler_state_dict`, `rng_state_cpu_len`,
+`rng_state_cuda_len`). No `.step()` was ever called on either the optimizer
+or the scheduler. A sha256 fingerprint over six sampled parameter tensors
+(one per architectural region: shared embedding, a shared-backbone
+`self_attn.q_proj`, a generation-private `q_proj_mot_gen`, a
+generation-private `mlp_mot_gen.gate_proj`, and two vision-embedding tensors)
+was taken immediately before and after optimizer+scheduler construction:
+both fingerprints are identical
+(`79efdf9257c805710d0ccd92f4fed56512f6fd5e05db5cbba6965a4116b646b9`),
+proving construction alone did not mutate weights. This is expected —
+`torch.optim.AdamW` lazily allocates its `m`/`v` moment buffers only on the
+first `.step()` — but it is now verified empirically on this exact
+checkpoint's exact parameter tensors, not merely asserted from PyTorch's
+documented behavior.
+
+**Real measured GPU memory footprint (local-review item 5), replacing the
+unverified "8x80GB shipped default" as the basis for feasibility.** On one
+H20 (`gpu_total_memory_bytes=102010781696`, ~95GB usable of 96GB nominal):
+weights alone after load = `35,107,999,744` bytes allocated (~35.1GB, matches
+17.55B bf16 params x 2 bytes). After building the optimizer+scheduler:
+`max_allocated=37,597,319,168`. After the understanding backward:
+`max_allocated=53,877,337,600`. After the generation backward (the smoke's
+peak): `allocated=51,594,826,752`, **`max_allocated=59,478,750,720`**
+(~59.5GB), `reserved=60,089,696,256` (~60.1GB) — comfortably within a single
+96GB H20, and well within this audit's <=2-GPU envelope. This is real,
+measured evidence that the SFT checkpoint's two task paths execute on the
+declared hardware; it is not evidence of a training run (no `.step()`, no
+real dataset, no activation scaling from longer sequences/larger batches).
+
+Separately, exact per-group parameter counts were obtained at zero
+cost by constructing `NEOChatModel(config)` under `torch.device("meta")`
+(shapes only, no real weights/compute):
+`shared_backbone=9,348,413,952`, `generation_private=8,186,358,272`,
+`vision_shared_understanding=17,568,768`, `total=17,552,340,992`. This
+reconciles with the docs-sourced split
+(`docs/parameter_breakdown.md`: shared 1.245B + understanding_transformer
+8.121B = 9.366B vs. measured shared_backbone + vision_shared_understanding
+= 9.366B; generation_transformer 8.186B matches generation_private exactly;
+total 17.552B matches exactly). Using these exact counts: full bf16 weights
+= 35.1GB total (18.7GB shared_backbone + 16.4GB generation_private +
+0.035GB vision); AdamW fp32 optimizer state (2 copies x 4 bytes/param) for
+`generation_private` alone = ~65.5GB, for `shared_backbone` alone = ~74.8GB.
+For T270's most likely trainable subspace (`generation_private`-only, since
+that is the group the generation-only smoke shows can be updated without
+touching the understanding path): weights (35.1GB, all resident, since
+`forward_und` still needs `shared_backbone`) + grads (~16.4GB bf16) +
+AdamW state (~65.5GB) = ~117GB, which **exceeds one 96GB H20 but plausibly
+fits 2xH20 (192GB) with optimizer-state sharding (ZeRO-1/2) or an 8-bit
+optimizer**, leaving headroom for activations at modest batch/sequence
+sizes. Full-parameter fine-tuning of both `shared_backbone` +
+`generation_private` together would need ~140.3GB of AdamW state alone
+(74.8+65.5GB), which does **not** fit 2xH20 (192GB) once weights/grads/
+activations are added, without further sharding/offload — this is the
+smallest-feasible-H20-topology measurement/derivation local review
+requested, replacing the unverified assumption that the shipped 8x80GB
+launcher default was itself evidence of infeasibility on 2 GPUs for the
+narrower subspace T270 is actually expected to train.
+
+Exact commands executed for this addendum are recorded in
+`reports/T250/first-report.md`'s revision addendum.
 
 **Trainer/optimizer**: custom framework derived from InternEvo
 (`sensenovalm/core`), `HybridZeroOptimizer` (ZeRO-1) as the optimizer wrapper;
@@ -39,14 +169,28 @@ five `type_id` task categories (`mm_t2i`, `mm_it2i`, `mm_interleave_gen`,
 implemented** or logging — directly supports "sequential-task-batch support
 at one frozen shared version" as required by the audit dimensions, since
 understanding and generation batches can be mixed within one `mm_data_path`
-meta JSON and monitored independently.
+meta JSON and monitored independently. **Revision addendum (2026-09-16):**
+"mixed within one meta JSON" means alternating pure-understanding and
+pure-generation *batches* fed as separate forward calls, not a single batch
+whose tokens mix und/gen — the pinned commit's `Qwen3Attention.forward()`/
+`Qwen3DecoderLayer.forward()` raise `NotImplementedError` for a genuinely
+mixed-token batch (see the Revision addendum above), so "sequential" here is
+load-bearing: task batches must be sequenced, not co-mingled within one
+forward call.
 
 **Minimum/recommended GPU memory**: shipped `8B.sh` launcher requires 1 node
 × 8 GPUs × 80GB HBM minimum (`wp=8 × tp=1 × pp=1 = 8` ranks at
-`seq_len=28672`, `num_imgs=144`); reducible by lowering `seq_len`/`num_imgs`/
-`wp_size` but not reducible to fit this audit's 2-GPU envelope without config
-changes not yet attempted. This does not block the *audit* (no training is
-run here) but is a material planning fact for T270.
+`seq_len=28672`, `num_imgs=144`) for full-parameter fine-tuning at the
+launcher's shipped sequence/image scale — this remains the shipped
+*convenience* default, not this audit's own measured floor. Superseded by
+the real single-H20 measurement and per-group derivation in the "Revision
+addendum" above: this audit's own smoke peaked at ~59.5GB on ONE H20, and a
+`generation_private`-only T270 subspace is derived to plausibly fit 2xH20
+with optimizer-state sharding, while full-parameter fine-tuning of both
+groups together does not fit 2xH20 without further sharding/offload. This
+does not block the *audit* (no training is run here) but replaces the prior
+material planning fact for T270 with measured/derived numbers instead of the
+shipped default alone.
 
 **Shared/private/routed parameter classification**: `docs/parameter_breakdown.md`
 in the official repo publishes an exact, reproducible split for the MoT
