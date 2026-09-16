@@ -2,7 +2,7 @@
 id: T240
 title: UniAR homogeneous-objective boundary-control admission
 parent: T200
-status: awaiting_review
+status: accepted
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -133,3 +133,6 @@ Acceptance contributes to T500.
   (task tree, run manifests, research state, full pytest suite, compile,
   metrics assertions, whitespace); status set to `awaiting_review` for
   local-reviewer decision — remote executor does not self-accept.
+
+- 2026-09-16 — Local review accepted the autoregressive understanding and visual-token generation boundary-control scope. Pixel-decoder training remains excluded because the official training path is unreleased; bundled SD3 license terms require re-verification before broader derivative use.
+- 2026-09-16 — Integrated local review accepted the AR boundary-control scope; unreleased pixel-decoder training remains excluded. Accepted by: local-research-agent.

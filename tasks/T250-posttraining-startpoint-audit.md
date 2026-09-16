@@ -2,7 +2,7 @@
 id: T250
 title: Post-training starting-checkpoint selection audit
 parent: T200
-status: awaiting_review
+status: revision_needed
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -123,6 +123,20 @@ bash scripts/validate_task_submission.sh T250
 
 Accepted T250 selects the candidate for T270. It does not authorize training.
 
+## Local review requirements — 2026-09-16
+
+The static audit supports SenseNova-U1-SFT as a provisional candidate but does not yet establish a reproducible starting checkpoint. Revise before acceptance:
+
+1. Pin the exact SenseNova-U1 source and SFT checkpoint revisions; record checkpoint file hashes and measured size.
+2. Load `sensenova/SenseNova-U1-8B-MoT-SFT` itself from verified local SSD. T230's final-MoT checkpoint smoke is not evidence for the SFT checkpoint.
+3. Execute one pure-understanding and one pure-generation forward/loss smoke on the SFT checkpoint. No optimizer step is required.
+4. Construct the official model, selected trainable groups, optimizer, scheduler, and resume metadata without mutating weights.
+5. Measure the smallest feasible H20 topology for T270's intended trainable subspace. The published 8x80GB default is not evidence that the planned smoke fits the current envelope.
+6. Replace mutable `main` source references with pinned revisions. Use portable repository-relative paths for Git-tracked evidence; current absolute CQ9 worktree artifact paths cannot be independently verified elsewhere.
+7. Keep SenseNova-U1-SFT as primary only if these checks pass; otherwise promote Show-o2 as the executable fallback and state the limitation.
+
+No persistent training is authorized by this revision.
+
 ## Review history
 
 - 2026-09-15 — Remote executor confirmed the existing worktree/branch
@@ -139,4 +153,4 @@ Accepted T250 selects the candidate for T270. It does not authorize training.
   Show-o2-1.5B. UniDDT excluded at the license hard gate (no LICENSE file,
   no Hugging Face license tag found). 0 GPU-hours consumed (of 4 allowed).
   Set status to `awaiting_review` for local review.
-
+- 2026-09-16 — Local review set `revision_needed`: the recommendation is static-only, the SenseNova source is unpinned, the SFT checkpoint is neither hashed nor loaded, and hardware feasibility for T270 is unmeasured.

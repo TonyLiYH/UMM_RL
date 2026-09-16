@@ -2,7 +2,7 @@
 id: T220
 title: UniDDT deep-sharing admission
 parent: T200
-status: awaiting_review
+status: accepted
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -128,3 +128,6 @@ Acceptance contributes to T500.
   `bash scripts/validate_task_submission.sh T220` (repository-state,
   full-tests [156 passed], compile, whitespace all pass) and set status to
   `awaiting_review`.
+
+- 2026-09-16 — Local review accepted read-only architecture and inference evidence. Training, derivative-weight, and redistribution use remains excluded until the repository, checkpoint, and FLUX VAE license chain is resolved.
+- 2026-09-16 — Integrated local review accepted the read-only architecture/inference scope. Training, derivative-weight, and redistribution use remains excluded pending license resolution. Accepted by: local-research-agent.

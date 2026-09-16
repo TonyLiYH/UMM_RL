@@ -2,7 +2,7 @@
 id: T230
 title: SenseNova-U1 native pixel/MoT admission
 parent: T200
-status: awaiting_review
+status: accepted
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -121,3 +121,6 @@ Acceptance contributes to T500.
   passes (task-tree, run-manifests, research-state, full test suite,
   compileall all green) once status is set to `awaiting_review` below.
   Setting status to `awaiting_review` for local review.
+
+- 2026-09-16 — Local review accepted the pure understanding and pure generation paths and the routed-overlap audit. Mixed understanding and generation tokens in one forward remain unsupported upstream and outside the accepted scope.
+- 2026-09-16 — Integrated local review accepted pure understanding/generation admission and the routed-overlap audit; mixed-token forward remains excluded. Accepted by: local-research-agent.
