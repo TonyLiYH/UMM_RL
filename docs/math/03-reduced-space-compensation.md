@@ -33,13 +33,19 @@ Q_i(d,u_i)
 \end{aligned}
 \]
 
-Assume the damped private block
+If damping is used, augment the local model explicitly by
+
+\[
+\frac{\lambda_i}{2}\|u_i\|^2.
+\]
+
+Then the damped private block
 
 \[
 C_i=H_{\phi\phi}^{(i)}+\lambda_i I
 \]
 
-is positive definite. Then the conditional minimizer is
+is positive definite and the conditional minimizer of the damped model is
 
 \[
 u_i^*(d)
@@ -96,3 +102,8 @@ adaptation. SP instead chooses \(d\) from raw gradients and adapts privately
 afterward. Reduced-space modeling is worthwhile only if this look-ahead
 improves compute-matched outcomes.
 
+Exact elimination plus a shared gradient step is not automatically faster than
+a matched exact-response alternating method: they have the same asymptotic
+spectrum on the fixed strongly convex quadratic. One-step quadratic solution
+requires the stronger Schur--Newton choice \(S^{-1}\), whose cost must be
+counted.
