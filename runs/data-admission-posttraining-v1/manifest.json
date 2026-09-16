@@ -1,0 +1,114 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "coco-annotations-zip",
+      "bytes": 252907541,
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/coco/annotations/annotations_trainval2017.zip",
+      "kind": "raw_source",
+      "sha256": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268"
+    },
+    {
+      "artifact_id": "llava-instruct-150k-json",
+      "bytes": 228941895,
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/llava_instruct_150k/llava_instruct_150k.json",
+      "kind": "raw_source",
+      "sha256": "6b68bc5ca2bfd8a71119af0e8454929668ccda6a334955ccc95d114fc8d082fa"
+    },
+    {
+      "artifact_id": "diffusiondb-metadata-parquet",
+      "bytes": 194548652,
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/diffusiondb/metadata.parquet",
+      "kind": "raw_source",
+      "sha256": "eecd341187bc91c07f5994ad0660d40228ea025616fd57a509bef8323677c68f"
+    },
+    {
+      "artifact_id": "diffusiondb-metadata-jsonl-cache",
+      "bytes": 799203140,
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/diffusiondb/metadata.jsonl",
+      "kind": "derived_cache",
+      "sha256": "8723784619bd3caaafe71997c5bdbd4736df60c869554318a7b6df39be120f7b"
+    },
+    {
+      "artifact_id": "sources-yaml",
+      "bytes": 7494,
+      "canonical_uri": "configs/data/posttraining-v1/sources.yaml",
+      "kind": "config",
+      "sha256": "6fc0ef14ea726a034019615f3eda3cbe7d022bf6ef04d2f2ef08d35777b37672"
+    },
+    {
+      "artifact_id": "diagnostic-manifest",
+      "bytes": 1185847,
+      "canonical_uri": "configs/data/posttraining-v1/diagnostic.jsonl",
+      "kind": "manifest",
+      "sha256": "0aa9262f98b6fc2c3c561a5642f249987023102d133729d91d98b111da10e967"
+    },
+    {
+      "artifact_id": "pilot-train-manifest",
+      "bytes": 86150521,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.jsonl",
+      "kind": "manifest",
+      "sha256": "0e7fd0eea8466d7972eb7834585e1d96f629ba962e162db8dbe9bb669f29b6ce"
+    },
+    {
+      "artifact_id": "pilot-validation-manifest",
+      "bytes": 8942853,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_validation.jsonl",
+      "kind": "manifest",
+      "sha256": "419dd849b1e145c80221de00fd424998469981fa46879d6ef4a4606cbe6fed80"
+    },
+    {
+      "artifact_id": "pilot-meta-manifest",
+      "bytes": 5280483,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_meta.jsonl",
+      "kind": "manifest",
+      "sha256": "aa09c69cd4421d48acb3025d25eedd38328e2a2ba68fdd3805f8d4200cab07e9"
+    },
+    {
+      "artifact_id": "evaluation-only-manifest",
+      "bytes": 2179818,
+      "canonical_uri": "configs/data/posttraining-v1/evaluation_only.yaml",
+      "kind": "manifest",
+      "sha256": "7f6861249ef8b697cecb4d30328e8fce339778f185384d675c6780f522a8c400"
+    },
+    {
+      "artifact_id": "metrics-json",
+      "bytes": 850,
+      "canonical_uri": "runs/data-admission-posttraining-v1/metrics.json",
+      "kind": "metrics",
+      "sha256": "ab2389ac61f72913d1b0102dffc5332cc2361e89ca44c61bf531b8e6649515d6"
+    }
+  ],
+  "config_sha256": "366a1fde59755a5365d6ac1f89fcd2e5f4d58496950bc2d2fdf6446564eee155",
+  "dirty": false,
+  "environment": {
+    "gpu_hours": 0,
+    "python_implementation": "CPython",
+    "role": "data-admission-manifest-build"
+  },
+  "execution_revision": "2cd5f2b793604ac4c64a85ef04ae7427edceceec",
+  "result_files": [
+    "configs/data/posttraining-v1/sources.yaml",
+    "configs/data/posttraining-v1/diagnostic.jsonl",
+    "configs/data/posttraining-v1/pilot_train.jsonl",
+    "configs/data/posttraining-v1/pilot_validation.jsonl",
+    "configs/data/posttraining-v1/pilot_meta.jsonl",
+    "configs/data/posttraining-v1/evaluation_only.yaml",
+    "reports/T260/first-report.md",
+    "reports/T260/source-license-audit.md",
+    "reports/T260/split-and-decontamination.md",
+    "reports/T260/mixture-and-accounting.md",
+    "reports/T260/result-summary.md",
+    "reports/T260/claim-check.md",
+    "reports/T260/failure-ledger.md",
+    "runs/data-admission-posttraining-v1/manifest.json",
+    "runs/data-admission-posttraining-v1/metrics.json",
+    "runs/data-admission-posttraining-v1/notes.md"
+  ],
+  "retry": null,
+  "run_id": "data-admission-posttraining-v1",
+  "run_kind": "formal",
+  "schema_version": 1,
+  "source_revision": "45c54ba403a2b5c95985a49206243449436717c8",
+  "status": "pass",
+  "task_id": "T260"
+}

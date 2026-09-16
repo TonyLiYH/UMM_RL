@@ -1,0 +1,88 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 22636060254,
+      "actual_sha256": "46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "artifact_id": "uniddt-vlm-512-checkpoint",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--MCG-NJU--UniDDT/blobs/46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "expected_bytes": 22636060254,
+      "expected_sha256": "46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 22636060254,
+      "actual_sha256": "46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "artifact_id": "uniddt-vlm-512-checkpoint-ssd-execution",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--MCG-NJU--UniDDT/blobs/46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "expected_bytes": 22636060254,
+      "expected_sha256": "46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 167666902,
+      "actual_sha256": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "artifact_id": "flux1-vae-safetensors",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--diffusers--FLUX.1-vae/blobs/f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "expected_bytes": 167666902,
+      "expected_sha256": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 167666902,
+      "actual_sha256": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "artifact_id": "flux1-vae-safetensors-ssd-execution",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--diffusers--FLUX.1-vae/blobs/f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "expected_bytes": 167666902,
+      "expected_sha256": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 7032403,
+      "actual_sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+      "artifact_id": "qwen3-vl-4b-instruct-tokenizer-json",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/c6cc1014128b19d1fc46b1d30a23e3b1d35db421",
+      "expected_bytes": 7032403,
+      "expected_sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 7032403,
+      "actual_sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+      "artifact_id": "qwen3-vl-4b-instruct-tokenizer-json-ssd-execution",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/c6cc1014128b19d1fc46b1d30a23e3b1d35db421",
+      "expected_bytes": 7032403,
+      "expected_sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1505,
+      "actual_sha256": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+      "artifact_id": "qwen3-vl-4b-instruct-config-json",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/22be8bb79043d39840ca5e70d7a2dab80311602c",
+      "expected_bytes": 1505,
+      "expected_sha256": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1505,
+      "actual_sha256": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+      "artifact_id": "qwen3-vl-4b-instruct-config-json-ssd-execution",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/22be8bb79043d39840ca5e70d7a2dab80311602c",
+      "expected_bytes": 1505,
+      "expected_sha256": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 7588,
+      "actual_sha256": "bb7dda12a547d58642158fcba7b5caee23bfec65433169835afa4be649800c53",
+      "artifact_id": "uniddt-source-ddt2-py",
+      "canonical_uri": "/dockerdata/t220-uniddt/src-uniddt/src/models/transformer/uniddt/ddt2.py",
+      "expected_bytes": 7588,
+      "expected_sha256": "bb7dda12a547d58642158fcba7b5caee23bfec65433169835afa4be649800c53",
+      "status": "pass"
+    }
+  ],
+  "checked": 9,
+  "failed": 0,
+  "passed": 9
+}

@@ -1,0 +1,85 @@
+# UniDDT VLM-UniDDT-512 parameter-block registry (weight-level, verified)
+#
+# Generated 2026-09-03 from app_uniddt.py's own instantiate_class(denoiser_config)
+# + load_model(ckpt, denoiser).named_parameters(), config=
+# configs_uniddt/vlm_uniddt_512.yaml (source revision d04e037c0e1011a64703
+# ad97d7bc4993bb69eade), checkpoint vlm_uniddt_512.ckpt (sha256
+# 46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c). Loading
+# the released checkpoint's `ema_denoiser.*` weights into the instantiated
+# DDT2 module produced 0 "Failed to copy" warnings, i.e. every parameter name
+# in the module graph is present in the checkpoint and vice versa. See
+# reports/T220/result-summary.md for the forward-call evidence
+# (forward_gen/forward_und_prefill both call noisy_encoder then llm_backbone
+# with an identical signature before branching) that motivates the shared/
+# private split below. unassigned_trainable_parameters: 0 (see
+# unassigned_parameters: [] in the raw enumeration).
+
+total_params: 5653001792
+total_trainable_params: 1064238144
+unassigned_trainable_parameters: 0
+
+blocks:
+  shared:
+    description: >
+      Noisy ViT encoder (noisy_encoder, Qwen3VLVisionModel-derived, 24-layer/
+      1024-dim, timestep-conditioned via AdaLN-zero) and LLM backbone
+      (llm_backbone, Qwen3VLTextModel, 36-layer/2560-dim). DDT2.forward_gen
+      and DDT2.forward_und_prefill both call self.noisy_encoder(...) then
+      self.llm_backbone(...) with an identical call signature before
+      branching into the diffusion decoder (generation) or the lm_head
+      (understanding). Frozen in the released checkpoint
+      (freeze_noisy_encoder: true, freeze_llm_backbone: true in
+      configs_uniddt/vlm_uniddt_512.yaml), consistent with the README's
+      "duality post-training" description (freeze understanding, train only
+      the diffusion decoder).
+    top_level_modules: [noisy_encoder, llm_backbone]
+    param_count: 4199807488
+    trainable_param_count: 0
+    fraction_of_total: 0.7429340450490344
+    example_param: noisy_encoder.patch_embed.proj.weight
+
+  frozen_llm_io:
+    description: >
+      llm_backbone.embed_tokens (input token embedding) and
+      llm_backbone.lm_head (output projection to vocabulary logits).
+      DDT2.__init__ calls no_grad(...) on both of these submodules
+      unconditionally, independent of the freeze_llm_backbone flag, so they
+      are frozen even in configurations where the rest of the LLM backbone
+      is trainable. Kept as a distinct block from "shared" above because its
+      frozen state does not depend on the release config's freeze flags.
+      DDT2._fsdp_ignore_modules() also names exactly these two submodules,
+      confirming their special-cased treatment in the official source.
+    top_level_modules: [llm_backbone]
+    param_count: 388956160
+    trainable_param_count: 0
+    fraction_of_total: 0.06880524265009821
+    example_param: llm_backbone.embed_tokens.weight
+
+  generation_private:
+    description: >
+      Diffusion decoder (diffusion_decoder, FlattenDiT: 16-layer main + a
+      4-layer condition-refiner, 1536-dim). Called only from
+      DDT2.forward_gen / DDT2.forward_train's gen_step=True branch, never
+      from forward_und_prefill or forward_und_decoding. Conditioned only on
+      the LLM backbone's refined hidden states
+      (condition_hidden_states=llm_hidden_states). This is the only block
+      left trainable in the released checkpoint's config
+      (freeze_diffusion_decoder: false), matching all
+      1,064,238,144 trainable parameters found in the loaded module.
+    top_level_modules: [diffusion_decoder]
+    param_count: 1064238144
+    trainable_param_count: 1064238144
+    fraction_of_total: 0.18826071230086744
+    example_param: diffusion_decoder.patch_embed.proj.weight
+
+frozen_non_trainable:
+  flux1_vae:
+    description: >
+      FLUX.1 VAE (AutoencoderKL), loaded separately from the DDT2 denoiser
+      by src.models.autoencoder.latent.LatentAE, used only for encode/decode
+      of the shared visual latent space; not part of DDT2.named_parameters()
+      above and not trained. License unresolved between FLUX.1-dev
+      (non-commercial) and FLUX.1-schnell (apache-2.0) at the config level;
+      see reports/T220/first-report.md open item 3.
+    checkpoint: diffusion_pytorch_model.safetensors (diffusers/FLUX.1-vae, revision da548cfb003bdeebaff6da0211fc8fbc67cb563a)
+    sha256: "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3"

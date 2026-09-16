@@ -1,0 +1,138 @@
+# UniAR-RL AR-model parameter-block registry (draft, refined from loaded weights)
+#
+# Generated 2026-09-03 from
+#   uniar.UniARForConditionalGeneration.from_pretrained(
+#       "/dockerdata/t240-uniar/assets/UniAR-RL", torch_dtype="auto"
+#   ).named_parameters()
+# at pinned repo revision 92d8718d4cf282254ae63a4944b07edba0ce7abf, checkpoint
+# revision 6b02e4eee3d45b34f7f41e6218b6cc3c56332454 (ShareLab-SII/UniAR-RL).
+# See reports/T240/first-report.md ("Naming-collision note") for why
+# `visual_decoder` (this file) is NOT the same thing as `UniARVisualDecoder`
+# (the frozen SD3 pixel decoder, entirely outside this AR model's
+# named_parameters() and not enumerated here).
+#
+# This is a read-only enumeration of the *released, checkpoint-present* AR
+# model only. No training was started or authorized by producing this file.
+# `requires_grad_any` reflects the parameter tensor's `requires_grad` flag as
+# loaded (all True by default at load time); actual freezing during the
+# released RL recipe is applied explicitly in train/rl/train_grpo.py (cited
+# below) and is recorded here as the authoritative trainable/frozen status
+# for each block during that recipe -- not inferred from the loaded flag
+# alone.
+
+total_params: 9627074032
+
+blocks:
+  shared_llm_backbone:
+    description: >
+      Qwen3-VL-derived text transformer backbone (36 layers, hidden_size=4096)
+      plus its token embedding table and LM head. Processes the fused
+      text+visual token stream identically for the understanding path
+      (image_understanding / chat.py) and the generation path
+      (generate_visual visual-token rollout in generate.py); the natural
+      shared block for the boundary-control comparison, since both paths
+      route through the same autoregressive objective over this backbone.
+      Trainable and updated by the released GRPO RL recipe
+      (train/rl/train_grpo.py: model.requires_grad_(True) is applied to the
+      whole model before model.visual is selectively re-frozen -- see
+      understanding_private below).
+    top_level_modules: [model.language_model, lm_head]
+    param_count: 8190735360
+    fraction_of_total: 0.8508
+    example_param: model.language_model.embed_tokens.weight
+    trainable_in_released_rl_recipe: true
+
+  understanding_private:
+    description: >
+      BSQ/SigLIP-scale vision tower (`model.visual`; config reports
+      vision_config.hidden_size=1152, no explicit num_hidden_layers field
+      surfaced on the loaded config -- see first-report.md's "27 layers"
+      audit-time reading of the raw config.json, not contradicted by this
+      loaded-weights pass). Patchifies and encodes the input image for the
+      understanding path (chat.py) and for image-conditioned generation
+      (img2img/editing); feeds only into the shared backbone above.
+      Explicitly frozen during the released RL recipe:
+      train/rl/train_grpo.py lines 77-79 read
+      `model.requires_grad_(True); model.visual.eval();
+      model.visual.requires_grad_(False)` -- i.e. every other top-level
+      block is left trainable and only this vision tower is put back into
+      eval mode and re-frozen immediately after the blanket unfreeze.
+    top_level_modules: [model.visual]
+    param_count: 656160240
+    fraction_of_total: 0.0682
+    example_param: model.visual.patch_embed.proj.weight
+    trainable_in_released_rl_recipe: false
+
+  generation_private:
+    description: >
+      Visual-token generation head: a 4-layer `Qwen3VLTextDecoderLayer` stack
+      (`visual_decoder.0`..`visual_decoder.3`, gated by
+      `config.visual_transformer_decoder=True`) that refines the shared
+      backbone's hidden states immediately before the discrete-visual-token
+      prediction head (`output_layer_vistok`, a 2-entry ModuleList: a small
+      projection plus the BSQ-bit classifier). Used only during the
+      generation path's autoregressive visual-token rollout
+      (generate_visual in generate.py); absent from the pure-understanding
+      (chat.py, text-only response) forward path. Not explicitly re-frozen
+      by train/rl/train_grpo.py's selective-freeze block, so it remains
+      trainable under the released RL recipe's blanket
+      `model.requires_grad_(True)`.
+      IMPORTANT naming-collision note (see first-report.md for full
+      derivation): this `visual_decoder` is part of the AR model's
+      generation *head* and is entirely distinct from `UniARVisualDecoder`,
+      the separate, frozen, inference-only SD3-based pixel decoder wrapper
+      class (uniar/modeling_vision_decoder.py) that is not part of this AR
+      model's named_parameters() and is not enumerated in this file at all.
+    top_level_modules: [visual_decoder, output_layer_vistok]
+    param_count: 780178432
+    fraction_of_total: 0.0810
+    example_param: visual_decoder.0.self_attn.q_proj.weight
+    trainable_in_released_rl_recipe: true
+
+frozen_non_trainable_outside_ar_model:
+  bsq_encoder:
+    description: >
+      Standalone BSQ discrete visual tokenizer checkpoint component shipped
+      alongside the AR model in the same HF repo (`bsq_encoder/` sub-tree).
+      Not loaded by `UniARForConditionalGeneration.from_pretrained` and not
+      present in this file's `named_parameters()` enumeration above -- it is
+      a separate encode-time preprocessing module (converts pixels to
+      discrete visual-token indices ahead of the AR rollout), used read-only
+      by both inference entry points, not a candidate parameter block for
+      this admission's boundary-control comparison.
+    canonical_uri_component: bsq_encoder/model.safetensors
+    sha256: "a07a8018053621883d0a988c7ba7d974a1941922d1cb1fe27d76c6420664ad0a"
+
+  sd3_pixel_decoder:
+    description: >
+      Frozen, inference-only pixel decoder: `UniARVisualDecoder`
+      (uniar/modeling_vision_decoder.py), wrapping the checkpoint's
+      `sd3_transformer/` (custom SD3 DiT with SigLIP/BSQ-feature
+      conditioning) and `sd3_pipeline/` (third-party SD3.5-medium VAE + text
+      encoders) sub-trees. Every entry point on this class is decorated
+      `@torch.no_grad()`; it is instantiated and called read-only by
+      generate.py (and by train/rl/reward_server/decode/decoder.py purely to
+      render images for reward scoring, never backpropped through). No
+      training code for this component exists anywhere in the official
+      repository (README's sole open TODO item: "Release visual decoder
+      training code."). This is the exact component `scope.
+      unreleased_decoder_training_recorded=true` in
+      runs/admission-uniar-v1/metrics.json refers to.
+    canonical_uri_components:
+      - sd3_transformer/diffusion_pytorch_model.safetensors
+      - sd3_pipeline/sd3.5_medium.safetensors
+    sha256:
+      sd3_transformer: "dfcd642a4f2c28bc450ea83f1955cb81fb002e2f17a8f11835d14ab7aff31b52"
+      sd3_pipeline_sd3.5_medium: "11fe06e22364b823dfeedc275912336b932b32a293a0b2f35ffac071990cc4de"
+
+cross_check_against_first_report: >
+  The stage-1 (pre-download, config-only) draft in reports/T240/first-report.md
+  correctly anticipated all three trainable blocks' boundaries and the
+  frozen-vs-trainable split of `model.visual` under the released RL recipe;
+  this stage-4 pass, run against the actually-loaded checkpoint weights and a
+  direct grep of train/rl/train_grpo.py, confirms that reading with exact
+  parameter counts (total 9,627,074,032; shared_llm_backbone 8,190,735,360;
+  understanding_private 656,160,240; generation_private 780,178,432 -- these
+  three sum to the total exactly, confirming no parameter is left
+  unclassified) and identifies the precise two-line freeze code
+  (train/rl/train_grpo.py:78-79) that was only described qualitatively before.
