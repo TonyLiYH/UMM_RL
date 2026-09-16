@@ -61,7 +61,7 @@ L_i(P_i\theta_t,\pi_\phi s_{i,t}^{0,K}).
 This is the primary attribution quantity. Both branches consume the same
 private adaptation budget.
 
-## Definition: private-then-shared (PS/commit)
+## Definition: virtual private-then-shared / commit
 
 First form a virtual private response:
 
@@ -82,6 +82,18 @@ P_i^\top
 Negotiate and update the shared state from
 \(\{g_{i,t}^{commit}\}\). The virtual private transition is restored unless the
 protocol explicitly authorizes persistence.
+
+Three protocols must remain distinct:
+
+1. **persistent PS:** retain \(\bar s_{i,t}\), then update shared state;
+2. **virtual commit:** restore the private snapshot after the shared step;
+3. **commit-then-SP:** restore the snapshot, apply the commit-selected shared
+   step, then rerun \(K\) persistent private updates at the new shared state.
+
+Only persistent PS is a simple reversal of SP. On a fixed quadratic with
+matched block maps, persistent PS and SP are isospectral. Virtual commit and
+commit-then-SP have different dynamics and can be unstable. See
+[`proofs/alternating-quadratic-convergence.md`](proofs/alternating-quadratic-convergence.md).
 
 ## Definition: simultaneous baseline
 
@@ -106,3 +118,19 @@ The ordering ladder is:
 Complex response modeling is justified only if it improves over SP after
 matching private steps, data, gradient evaluations, and wall-clock budget.
 
+## Exact attribution identity
+
+For one window,
+
+\[
+\Delta_i^{total}
+=
+\Delta_i^{private}
++
+\Delta_i^{controlled}.
+\]
+
+Experiments must report all three quantities. A negative total loss change
+does not establish that the shared update helped if private-only adaptation
+would have improved more. See
+[`proofs/controlled-gain-and-commit-error.md`](proofs/controlled-gain-and-commit-error.md).
