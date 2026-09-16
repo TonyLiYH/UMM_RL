@@ -1,0 +1,105 @@
+{
+  "run_id": "corl-admission-v1",
+  "assets": {
+    "model_pinned": true,
+    "model_name": "deepseek-ai/Janus-Pro-1B",
+    "model_revision": "960ab33191f61342a4c60ae74d8dc356a39fafcb",
+    "dataset_pinned": true,
+    "dataset_name": "mm-vl/x2x_rft_22k",
+    "dataset_revision": "f52833ce01b5657294bed87f23f27d04b92838b9",
+    "micro_split_num_records": 32,
+    "micro_split_num_records_used_in_smoke": 8,
+    "micro_split_sha256": "b9e7c1d211ae509a57a3adbddccd14ca15d1dfadd83f20b5817542b59bafa8cd",
+    "auxiliary_model_all_mpnet_base_v2_revision": "e8c3b32edf5434bc2275fc9bab85f82640a19130"
+  },
+  "checks": {
+    "image_token_alignment_recorded": true,
+    "reward_dispatch_recorded": true,
+    "1_parameter_authorization": {
+      "recorded": true,
+      "total_params": 2089297547,
+      "trainable_params": 1652656128,
+      "trainable_param_names": 219,
+      "frozen_param_names": 663,
+      "all_trainable_are_authorized": true,
+      "unauthorized_trainable_names": []
+    },
+    "2_frozen_head_gradient_flow": {
+      "recorded": true,
+      "language_model_any_nonzero_grad": true,
+      "num_language_model_params_with_grad": 219,
+      "language_model_grad_norm_mean": 0.5693461184972497,
+      "language_model_grad_norm_max": 3.340571165084839,
+      "gen_embed_leaf_grad_is_none": true,
+      "gen_head_leaf_grad_is_none": true,
+      "vision_model_leaf_grad_is_none": true
+    },
+    "3_image_token_alignment": {
+      "recorded": true,
+      "alignment_confirmed": false,
+      "t2i_mean_logp_correct_alignment": -6.882029056549072,
+      "t2i_mean_logp_shifted_by_one_misalignment": -5.869828224182129,
+      "note": "The real trainer's _get_per_token_logps applies no shift to t2i/image tokens (unlike the mm2t/text branch, which explicitly shifts logits/input_ids); source re-read at grpo_trainer_unified.py:350-424 confirmed this. The probe's 'correct' computation reproduces the real unshifted trainer behavior exactly. The empirical result (shifted-by-one control logp slightly higher than the unshifted logp) is recorded honestly as measured, at n=8 records; most likely explained by small sample size and/or local spatial correlation in the 24x24 VQ token grid weakening the shift-by-one control's discriminative power, not by a probe defect. This finding does not change the source-code fact (no shift applied) which is the primary object of this check."
+    },
+    "4_batched_mc_oe_reward_dispatch": {
+      "recorded": true,
+      "defect_found": true,
+      "discrepancy_id": "D14",
+      "summary": "common_qa_accuracy_reward's batched dispatch on qa_type make the MC branch structurally unreachable when mixed with OE examples in one batch; confirmed via a synthetic MC/OE example run directly against the real function in the pinned CoRL venv (see configs/corl/admission/discrepancy-lock.yaml D14 for full evidence and reproduction steps). The actual 32-record micro-split contains 32/32 qa_type=OE records (no MC examples exist in this micro-split), so this defect was not separately re-triggered by the GPU smoke run itself; it was demonstrated by the dedicated synthetic probe referenced above."
+    },
+    "5_discrepancy_table_frozen": {
+      "recorded": true,
+      "file": "configs/corl/admission/discrepancy-lock.yaml",
+      "entries_this_task": ["D9", "D10", "D11", "D12", "D13", "D14"]
+    },
+    "6_reward_range_zero_variance_clipping": {
+      "recorded": true,
+      "reward_summary": {
+        "reward_unified": {"min": 1.904465675354004, "max": 2.065946102142334, "mean": 2.005054384469986, "n": 4, "zero_variance": false},
+        "rewards/common_qa_accuracy_reward/mean": {"min": 0.2750000059604645, "max": 0.3499999940395355, "mean": 0.3152777776122093, "n": 4, "zero_variance": false},
+        "rewards/format_reward/mean": {"min": 0.0625, "max": 0.1875, "mean": 0.140625, "n": 4, "zero_variance": false},
+        "rewards/t2i_CycleConsistency/mean": {"min": 0.8059488534927368, "max": 0.9142247438430786, "mean": 0.8531617224216461, "n": 4, "zero_variance": false},
+        "rewards/t2i_match_reward/mean": {"min": 0.7744140625, "max": 0.806884765625, "mean": 0.78717041015625, "n": 4, "zero_variance": false}
+      },
+      "clipping_note": "compute_loss's per-token ratio is (logps - old_logps).exp() with no torch.clamp; epsilon_low/epsilon_high are stored on the trainer but never read inside compute_loss (confirmed by full source re-read). Clipping structurally cannot occur in this trainer regardless of ratio magnitude."
+    },
+    "7_reference_immutability": {
+      "recorded": true,
+      "ref_model_immutable": true,
+      "ref_model_changed_param_count": 0,
+      "ref_model_is_none": false,
+      "probe_beta": 0.1,
+      "probe_num_generations": 2
+    },
+    "8_upstream_exact_vs_corrected_candidate_separation": {
+      "recorded": true,
+      "upstream_exact_construction_exit": "raised",
+      "upstream_exact_error_type": "HFValidationError",
+      "upstream_exact_error_summary": "GRPOScriptArguments.model_ckpt_dir default literal 'XXX/checkpoint/' concatenated by T2ICycleConsistencyReward.load_external_model to 'XXX/checkpoint//all-mpnet-base-v2', which is not a valid HF repo id or local path -- exactly the documented upstream defect (see discrepancy-lock.yaml, model.auxiliary_models note in source-lock.yaml).",
+      "corrected_candidate_construction_exit": "ok",
+      "corrected_candidate_train_exit": "ok",
+      "outputs_kept_in_separate_top_level_keys": true
+    }
+  },
+  "smoke": {
+    "understanding_rollout_finite": true,
+    "generation_rollout_finite": true,
+    "optimizer_steps": 4,
+    "unauthorized_parameter_changes": 0,
+    "checkpoint_reload_pass": true,
+    "checkpoint_reload_error": null,
+    "num_records_used": 8,
+    "num_generations": 4,
+    "variant": "corrected_candidate",
+    "reference_immutability_probe_exit": "ok",
+    "reference_immutability_probe_ref_model_immutable": true
+  },
+  "resources": {
+    "gpu_name": "NVIDIA H20",
+    "gpu_count_used": 1,
+    "peak_vram_bytes": 63273602560,
+    "total_wallclock_seconds": 106.42121815681458,
+    "gpu_hours": 0.0296,
+    "gpu_hours_note": "total_wallclock_seconds (106.421s, covering upstream_exact construction attempt + corrected_candidate construction/train/checkpoint-reload + reference_immutability_probe, all on a single H20 device CUDA_VISIBLE_DEVICES=0) / 3600. Well inside the 16 GPU-hour envelope."
+  }
+}

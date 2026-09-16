@@ -1,0 +1,52 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 8803,
+      "actual_sha256": "7df844c120f1939da0f64c062488342b453a8afc95ca435346c07caf88c815ca",
+      "artifact_id": "final-evidence-raw",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T710-corl-admission/final_evidence.json",
+      "expected_bytes": 8803,
+      "expected_sha256": "7df844c120f1939da0f64c062488342b453a8afc95ca435346c07caf88c815ca",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 7280,
+      "actual_sha256": "f9ba29f39e246cd28b7dbc56a34302f25541a949b1f2d05c0479b652d63e28ba",
+      "artifact_id": "dryrun-evidence-raw",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T710-corl-admission/dryrun_evidence.json",
+      "expected_bytes": 7280,
+      "expected_sha256": "f9ba29f39e246cd28b7dbc56a34302f25541a949b1f2d05c0479b652d63e28ba",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 6236,
+      "actual_sha256": "878680e59e5baa64d9ff65dad000b5529c4f07011361244ccfa997f30b57725e",
+      "artifact_id": "final-run-log-raw",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/cjobs/t710_final.log",
+      "expected_bytes": 6236,
+      "expected_sha256": "878680e59e5baa64d9ff65dad000b5529c4f07011361244ccfa997f30b57725e",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 56675,
+      "actual_sha256": "b9e7c1d211ae509a57a3adbddccd14ca15d1dfadd83f20b5817542b59bafa8cd",
+      "artifact_id": "micro-split-jsonl",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T710/configs/corl/admission/micro-split.jsonl",
+      "expected_bytes": 56675,
+      "expected_sha256": "b9e7c1d211ae509a57a3adbddccd14ca15d1dfadd83f20b5817542b59bafa8cd",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 368,
+      "actual_sha256": "ded13156c95c35dd45a03d505edff4df3bb9ff31cee7fcc5aa16d1b240619a5d",
+      "artifact_id": "storage-preflight-report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T710/configs/corl/admission/storage-preflight.json",
+      "expected_bytes": 368,
+      "expected_sha256": "ded13156c95c35dd45a03d505edff4df3bb9ff31cee7fcc5aa16d1b240619a5d",
+      "status": "pass"
+    }
+  ],
+  "checked": 5,
+  "failed": 0,
+  "passed": 5
+}
