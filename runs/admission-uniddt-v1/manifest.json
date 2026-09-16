@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "run_id": "admission-uniddt-v1",
+  "task_id": "T220",
+  "run_kind": "formal",
+  "source_revision": "4e34878abbb03e11bd722af40788e5b0fdb87a66",
+  "execution_revision": "0e81b647613d6de73d44e143cdd41c6e5a171438",
+  "dirty": false,
+  "config_sha256": "af93b238417630028e0cc87bde53216693a00742fa29abc10268c2b9638d9922",
+  "environment": {
+    "container": "H20-FoldUMM",
+    "gpu_model": "NVIDIA H20",
+    "gpu_count": 8,
+    "gpus_used": 1,
+    "torch": "2.5.1+cu124",
+    "torchvision": "0.20.1+cu124",
+    "torchaudio": "2.5.1+cu124",
+    "transformers": "4.57.0",
+    "diffusers": "0.35.0",
+    "lightning": "2.5.0.post0",
+    "accelerate": "1.10.0",
+    "einops": "0.8.2",
+    "cuda_runtime": "12.4.99",
+    "driver_version": "535.161.08",
+    "hf_home": "/dockerdata/t220-uniddt/hf_cache",
+    "hf_hub_offline": true,
+    "transformers_offline": true
+  },
+  "status": "pass",
+  "result_files": [
+    "reports/T220/first-report.md",
+    "reports/T220/result-summary.md",
+    "reports/T220/claim-check.md",
+    "reports/T220/failure-ledger.md",
+    "configs/admission/uniddt/storage-preflight.json",
+    "configs/admission/uniddt/artifact-verification.json",
+    "configs/admission/uniddt/environment-lock.md",
+    "configs/admission/uniddt/parameter-block-registry.yaml",
+    "runs/admission-uniddt-v1/metrics.json",
+    "runs/admission-uniddt-v1/notes.md"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "uniddt-vlm-512-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--MCG-NJU--UniDDT/blobs/46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "sha256": "46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "bytes": 22636060254
+    },
+    {
+      "artifact_id": "uniddt-vlm-512-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--MCG-NJU--UniDDT/blobs/46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "sha256": "46cf922df1eb30880f97c4d00f9e2c3b7cccfe3c6632ba48c9e273eb1a2cc28c",
+      "bytes": 22636060254
+    },
+    {
+      "artifact_id": "flux1-vae-safetensors",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--diffusers--FLUX.1-vae/blobs/f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "sha256": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "bytes": 167666902
+    },
+    {
+      "artifact_id": "flux1-vae-safetensors-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--diffusers--FLUX.1-vae/blobs/f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "sha256": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3",
+      "bytes": 167666902
+    },
+    {
+      "artifact_id": "qwen3-vl-4b-instruct-tokenizer-json",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/c6cc1014128b19d1fc46b1d30a23e3b1d35db421",
+      "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+      "bytes": 7032403
+    },
+    {
+      "artifact_id": "qwen3-vl-4b-instruct-tokenizer-json-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/c6cc1014128b19d1fc46b1d30a23e3b1d35db421",
+      "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+      "bytes": 7032403
+    },
+    {
+      "artifact_id": "qwen3-vl-4b-instruct-config-json",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/22be8bb79043d39840ca5e70d7a2dab80311602c",
+      "sha256": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+      "bytes": 1505
+    },
+    {
+      "artifact_id": "qwen3-vl-4b-instruct-config-json-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t220-uniddt/hf_cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/blobs/22be8bb79043d39840ca5e70d7a2dab80311602c",
+      "sha256": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+      "bytes": 1505
+    },
+    {
+      "artifact_id": "uniddt-source-ddt2-py",
+      "kind": "source_snapshot",
+      "canonical_uri": "/dockerdata/t220-uniddt/src-uniddt/src/models/transformer/uniddt/ddt2.py",
+      "sha256": "bb7dda12a547d58642158fcba7b5caee23bfec65433169835afa4be649800c53",
+      "bytes": 7588
+    },
+    {
+      "artifact_id": "resolved-config-vlm-uniddt-512",
+      "kind": "config",
+      "canonical_uri": "/dockerdata/t220-uniddt/src-uniddt/configs_uniddt/vlm_uniddt_512.yaml",
+      "sha256": "af93b238417630028e0cc87bde53216693a00742fa29abc10268c2b9638d9922",
+      "bytes": 7651
+    },
+    {
+      "artifact_id": "smoke-metrics-raw",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T220-uniddt-admission/smoke_metrics.json",
+      "sha256": "2833bef3b4a2a31bbac6060f1a434c46ec557b135605ff7baf661ca82793fe64",
+      "bytes": 633
+    },
+    {
+      "artifact_id": "block-registry-raw",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T220-uniddt-admission/block_registry_raw.json",
+      "sha256": "1d1f882552907010307ff58f82a253a97f92b99bd00938c4cbcba018feb0d00f",
+      "bytes": 1002
+    },
+    {
+      "artifact_id": "pip-freeze-snapshot",
+      "kind": "environment_snapshot",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T220-uniddt-admission/pip_freeze_20260903.txt",
+      "sha256": "67bebadacf3268e185a929da8a40a070cbc334a5eafc3c91489821ed4edd1742",
+      "bytes": 2038
+    }
+  ],
+  "retry": null
+}

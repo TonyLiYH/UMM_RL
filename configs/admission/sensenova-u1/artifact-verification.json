@@ -1,0 +1,142 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 4937383712,
+      "actual_sha256": "e7d833ffdd47df217eb187be1dee0df3aa8d8a5e8f1825e8588cfb7b4c98c861",
+      "artifact_id": "sensenova-u1-8b-mot-model-00001-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00001-of-00008.safetensors",
+      "expected_bytes": 4937383712,
+      "expected_sha256": "e7d833ffdd47df217eb187be1dee0df3aa8d8a5e8f1825e8588cfb7b4c98c861",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4999870648,
+      "actual_sha256": "aa2c14f5938f14ee85ce52a2076e8c4415821eec887b0134580c7f16888382d4",
+      "artifact_id": "sensenova-u1-8b-mot-model-00002-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00002-of-00008.safetensors",
+      "expected_bytes": 4999870648,
+      "expected_sha256": "aa2c14f5938f14ee85ce52a2076e8c4415821eec887b0134580c7f16888382d4",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4932725608,
+      "actual_sha256": "ae7a7cacccd4f77b0324f707b5e4eb333ba7148da6790ee4704c429c699585c5",
+      "artifact_id": "sensenova-u1-8b-mot-model-00003-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00003-of-00008.safetensors",
+      "expected_bytes": 4932725608,
+      "expected_sha256": "ae7a7cacccd4f77b0324f707b5e4eb333ba7148da6790ee4704c429c699585c5",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4999868056,
+      "actual_sha256": "4faa39e5d3e627b9fd952f2669d94a0cd26392aec647dea0f439b3a13dc07678",
+      "artifact_id": "sensenova-u1-8b-mot-model-00004-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00004-of-00008.safetensors",
+      "expected_bytes": 4999868056,
+      "expected_sha256": "4faa39e5d3e627b9fd952f2669d94a0cd26392aec647dea0f439b3a13dc07678",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4932728352,
+      "actual_sha256": "bc49de4f92d33d8646d6e372eb550446dc4aeef96317e34aceb7f670b72986bd",
+      "artifact_id": "sensenova-u1-8b-mot-model-00005-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00005-of-00008.safetensors",
+      "expected_bytes": 4932728352,
+      "expected_sha256": "bc49de4f92d33d8646d6e372eb550446dc4aeef96317e34aceb7f670b72986bd",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4932725624,
+      "actual_sha256": "4855e684f8ea97fda6cf7cdb7d72478cdeee59eabc6dec45b7a8437460fb6668",
+      "artifact_id": "sensenova-u1-8b-mot-model-00006-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00006-of-00008.safetensors",
+      "expected_bytes": 4932725624,
+      "expected_sha256": "4855e684f8ea97fda6cf7cdb7d72478cdeee59eabc6dec45b7a8437460fb6668",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 3959659416,
+      "actual_sha256": "277f8b672b79750faa5c9f7817df6c0d4c14bfa002f08c50fe8d78ef110c94fe",
+      "artifact_id": "sensenova-u1-8b-mot-model-00007-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00007-of-00008.safetensors",
+      "expected_bytes": 3959659416,
+      "expected_sha256": "277f8b672b79750faa5c9f7817df6c0d4c14bfa002f08c50fe8d78ef110c94fe",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1409869776,
+      "actual_sha256": "4a7b8fb8e65c343b00d8adc0257d5ed194178631c9acdda7fc75207ac5885204",
+      "artifact_id": "sensenova-u1-8b-mot-model-00008-of-00008-safetensors",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model-00008-of-00008.safetensors",
+      "expected_bytes": 1409869776,
+      "expected_sha256": "4a7b8fb8e65c343b00d8adc0257d5ed194178631c9acdda7fc75207ac5885204",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 113474,
+      "actual_sha256": "6d7e7f1f997e805f17ef38fbff5f50c281781696440b05acb12c6c638a1d3692",
+      "artifact_id": "sensenova-u1-8b-mot-model-safetensors-index-json",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/model.safetensors.index.json",
+      "expected_bytes": 113474,
+      "expected_sha256": "6d7e7f1f997e805f17ef38fbff5f50c281781696440b05acb12c6c638a1d3692",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 2631,
+      "actual_sha256": "4cc71924e90dd62858132f99fab08038fff6ac7bc32bb039fbd3f08810e629df",
+      "artifact_id": "sensenova-u1-8b-mot-config-json",
+      "canonical_uri": "/dockerdata/t230-sensenova/checkpoints/SenseNova-U1-8B-MoT/config.json",
+      "expected_bytes": 2631,
+      "expected_sha256": "4cc71924e90dd62858132f99fab08038fff6ac7bc32bb039fbd3f08810e629df",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4573,
+      "actual_sha256": "b64047b54818117c9e6ee28200622ad8317f5e27667a9998a8c1fc472dfadf9f",
+      "artifact_id": "smoke-vqa-answer",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T230-sensenova-u1-admission/evidence/answer.txt",
+      "expected_bytes": 4573,
+      "expected_sha256": "b64047b54818117c9e6ee28200622ad8317f5e27667a9998a8c1fc472dfadf9f",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 5232813,
+      "actual_sha256": "d0e1cc9bc4662e29bdf80cce4117ff47272b46108420d9f40bf4ac07d9d7b326",
+      "artifact_id": "smoke-t2i-output-image",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T230-sensenova-u1-admission/evidence/output.png",
+      "expected_bytes": 5232813,
+      "expected_sha256": "d0e1cc9bc4662e29bdf80cce4117ff47272b46108420d9f40bf4ac07d9d7b326",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 91006,
+      "actual_sha256": "9b59019aa33ca5aceb4fed801fb9e62b394d4fcea3fd08ea950deb984bd3faef",
+      "artifact_id": "param-inspect-output",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T230-sensenova-u1-admission/evidence/inspect_output.txt",
+      "expected_bytes": 91006,
+      "expected_sha256": "9b59019aa33ca5aceb4fed801fb9e62b394d4fcea3fd08ea950deb984bd3faef",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1208,
+      "actual_sha256": "e06b3bcb5db531f5094ebda1f819a462ab2e8d22545156f97890349e9229c832",
+      "artifact_id": "pip-freeze-snapshot",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T230-sensenova-u1-admission/pip_freeze_20260903.txt",
+      "expected_bytes": 1208,
+      "expected_sha256": "e06b3bcb5db531f5094ebda1f819a462ab2e8d22545156f97890349e9229c832",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 965,
+      "actual_sha256": "45fe4c6c894fbbf6ebdda3079d3907a6d71892fc1510ce67bf1edfa1b5d1b798",
+      "artifact_id": "checkpoint-hash-manifest",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T230-sensenova-u1-admission/SHA256SUMS_20260903.txt",
+      "expected_bytes": 965,
+      "expected_sha256": "45fe4c6c894fbbf6ebdda3079d3907a6d71892fc1510ce67bf1edfa1b5d1b798",
+      "status": "pass"
+    }
+  ],
+  "checked": 15,
+  "failed": 0,
+  "passed": 15
+}

@@ -19,11 +19,11 @@ Current authorized remote entries:
 - T210 Show-o2 admission audit and smoke — accepted with recorded limitations 2026-09-01;
 - T215 Show-o2 reversible finite-response diagnostics — ready;
 - T216 Show-o2 compute-matched alternating-protocol diagnostic — ready;
-- T220 UniDDT admission — ready;
-- T230 SenseNova-U1 admission and routed-overlap audit — ready;
-- T240 UniAR boundary-control admission — ready;
-- T250 post-training starting-checkpoint selection — ready;
-- T260 joint post-training dataset admission — ready;
+- T220 UniDDT admission — accepted for read-only architecture/inference scope;
+- T230 SenseNova-U1 admission and routed-overlap audit — accepted;
+- T240 UniAR boundary-control admission — accepted for AR boundary-control scope;
+- T250 post-training starting-checkpoint selection — revision needed;
+- T260 joint post-training dataset admission — revision needed;
 - T270 selected-model training-interface smoke — planned pending T250/T260.
 
 These tasks do not authorize joint post-training. T300 remains closed until
@@ -76,11 +76,12 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 3. Execute T216 independently from accepted `main` to compare simultaneous,
    shared-then-private, private-only control, and private-then-shared commit
    protocols. T216 does not depend on T215's failed full-rerun implementation.
-4. Execute T220, T230, and T240 independently under the common admission
-   contract and local-SSD preflight.
-5. Execute T250 and T260 in parallel. T250 selects an SFT-capable,
-   pre-preference/RL checkpoint; T260 freezes at least 100,000 usable
-   post-training records with paired, instruction, and generation roles.
+4. T220, T230, and T240 have completed local review. Preserve their accepted
+   limitations: UniDDT is read-only, SenseNova mixed-token forward is
+   unsupported, and UniAR pixel-decoder training is unreleased.
+5. Revise T250 and T260 in parallel. T250 must pin, hash, load, and smoke the
+   actual SenseNova SFT checkpoint. T260 must produce materializable, sharded
+   data manifests and a real media-availability/near-duplicate audit.
 6. Open T270 only after T250 and T260 are locally accepted and its placeholder
    contract is replaced with selected model/data-specific paths.
 7. Open T140/T150 only after their declared prerequisites are accepted.

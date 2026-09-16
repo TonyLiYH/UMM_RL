@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "run_id": "admission-posttraining-startpoints-v1",
+  "task_id": "T250",
+  "run_kind": "formal",
+  "source_revision": "45c54ba403a2b5c95985a49206243449436717c8",
+  "execution_revision": "65f97c426a0d40b7b7b8b794b6daecf547ed74f4",
+  "dirty": false,
+  "config_sha256": "9c06399d4df26762a333b578b4493661108b4b27490b1c769cadf85c0f637a12",
+  "environment": {
+    "audit_mode": "cpu_source_only",
+    "gpu_used": false,
+    "gpu_hours": 0.0,
+    "python": "3.11.6",
+    "host": "cq9-worktree"
+  },
+  "status": "pass",
+  "result_files": [
+    "reports/T250/first-report.md",
+    "reports/T250/checkpoint-stage-evidence.md",
+    "reports/T250/training-interface-audit.md",
+    "reports/T250/decision-matrix.md",
+    "reports/T250/result-summary.md",
+    "reports/T250/claim-check.md",
+    "reports/T250/failure-ledger.md",
+    "configs/admission/posttraining-startpoints/candidates.yaml",
+    "configs/admission/posttraining-startpoints/storage-preflight.json",
+    "configs/admission/posttraining-startpoints/artifact-verification.json",
+    "runs/admission-posttraining-startpoints-v1/metrics.json",
+    "runs/admission-posttraining-startpoints-v1/notes.md"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "t250-first-report",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/first-report.md",
+      "sha256": "a19b8feff91ad14bd963fed7dedc77d5887d7b225f45a91991f9579ec96ff111",
+      "bytes": 11325
+    },
+    {
+      "artifact_id": "t250-checkpoint-stage-evidence",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/checkpoint-stage-evidence.md",
+      "sha256": "e22e9e32bf6a453b6a9c3fb524d4e40498cd8811bbaa24dd3b154e531a4128b6",
+      "bytes": 6808
+    },
+    {
+      "artifact_id": "t250-training-interface-audit",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/training-interface-audit.md",
+      "sha256": "efd4d42160b9f9603dca213bc1fd69b9314478929ae8df910dbeb7c4800b976e",
+      "bytes": 10718
+    },
+    {
+      "artifact_id": "t250-decision-matrix",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/decision-matrix.md",
+      "sha256": "510328c2a6a4766474663bca9483a9e21bc040f696b01a2edd7808387d552a9a",
+      "bytes": 6569
+    },
+    {
+      "artifact_id": "t250-result-summary",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/result-summary.md",
+      "sha256": "6d38e48e85bca6be97cf3c446a8c73b238e3dca81fd7c90d990fb1d61a7308c5",
+      "bytes": 3352
+    },
+    {
+      "artifact_id": "t250-claim-check",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/claim-check.md",
+      "sha256": "bcd8c8515ddb081f0401e094f2e3b7f7b55c0b220ac525143ce2ac4c74aed0d9",
+      "bytes": 4451
+    },
+    {
+      "artifact_id": "t250-failure-ledger",
+      "kind": "report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/reports/T250/failure-ledger.md",
+      "sha256": "5f365b472af058d0075d0cd2e017c7b23de18d99d87b513d8a70388dea23251e",
+      "bytes": 7074
+    },
+    {
+      "artifact_id": "t250-candidates-config",
+      "kind": "config",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/configs/admission/posttraining-startpoints/candidates.yaml",
+      "sha256": "9c06399d4df26762a333b578b4493661108b4b27490b1c769cadf85c0f637a12",
+      "bytes": 9645
+    },
+    {
+      "artifact_id": "t250-storage-preflight",
+      "kind": "config",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T250/configs/admission/posttraining-startpoints/storage-preflight.json",
+      "sha256": "cce6cf8e8a2cc1a0b4b8e8002210439da0398f5127be316c62278bfbe75ec4d7",
+      "bytes": 376
+    }
+  ],
+  "retry": null
+}

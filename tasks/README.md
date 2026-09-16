@@ -32,12 +32,12 @@ T000  CompPareto / UMM_RL research [root]  running
 │   ├── T210  Show-o2 admission  accepted
 │   ├── T215  Show-o2 finite-response diagnostic feasibility  ready
 │   ├── T216  Show-o2 compute-matched alternating-protocol diagnostic  ready
-│   ├── T220  UniDDT admission  ready
-│   ├── T230  SenseNova-U1 admission  ready
-│   ├── T240  UniAR boundary-control admission  ready
-│   ├── T250  Post-training starting-checkpoint selection audit  ready
+│   ├── T220  UniDDT admission  accepted (read-only scope)
+│   ├── T230  SenseNova-U1 admission  accepted
+│   ├── T240  UniAR boundary-control admission  accepted
+│   ├── T250  Post-training starting-checkpoint selection audit  revision_needed
 │   └── T270  Selected-checkpoint post-training interface smoke  planned
-├── T260  Joint post-training dataset admission and frozen manifests  ready
+├── T260  Joint post-training dataset admission and frozen manifests  revision_needed
 ├── T300  D0 compensation-aware conflict diagnostics  planned
 │   ├── T310  Shared/private parameter-block registry  planned
 │   ├── T320  Identical-A_i^K hypergradient cache  planned
@@ -61,11 +61,8 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
 | [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
 | [T216](T216-showo2-alternating-protocol-diagnostic.md) | P0 | `agent/T216-showo2-alternating-protocol-diagnostic` | Compute-matched SP vs PS/commit reversible diagnostics |
-| [T220](T220-uniddt-admission.md) | P1 | `agent/T220-uniddt-admission` | UniDDT dual-path admission |
-| [T230](T230-sensenova-u1-admission.md) | P1 | `agent/T230-sensenova-u1-admission` | SenseNova-U1 admission and routed-overlap audit |
-| [T240](T240-uniar-admission.md) | P1 | `agent/T240-uniar-admission` | UniAR boundary-control admission |
-| [T250](T250-posttraining-startpoint-audit.md) | P0 | `agent/T250-posttraining-startpoint-audit` | Select an SFT-capable, pre-preference/RL starting checkpoint |
-| [T260](T260-posttraining-data-admission.md) | P0 | `agent/T260-posttraining-data-admission` | Admit and freeze paired/instruction/generation data manifests |
+| [T250](T250-posttraining-startpoint-audit.md) | P0 | `agent/T250-posttraining-startpoint-audit` | Revision: pin and smoke the actual SFT checkpoint |
+| [T260](T260-posttraining-data-admission.md) | P0 | `agent/T260-posttraining-data-admission` | Revision: materializable, sharded post-training manifests |
 
 No persistent real-model training task is authorized. T215 requires accepted
 T210 and is limited to reversible diagnostic feasibility. T300 requires
@@ -85,11 +82,11 @@ accepted T100, T170, T210, and T215; T400 requires accepted T300.
 | T210 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
 | T215 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
 | T216 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T220 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
-| T230 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
-| T240 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
-| T250 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T260 | T000 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T220 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T230 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T240 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T250 | T200 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
+| T260 | T000 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
 | T270 | T200 | planned | P0 | unassigned | local-research-agent |
 | T160 | T100 | planned | P0 | unassigned | local-research-agent |
 | T170 | T100 | planned | P0 | unassigned | local-research-agent |

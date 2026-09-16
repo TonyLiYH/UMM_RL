@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": "admission-posttraining-startpoints-v1",
+  "task_id": "T250",
+  "candidates": {
+    "audited": ["sensenova-u1-8b-mot-sft", "showo2-1.5b", "uniddt"],
+    "stage_labels_complete": true,
+    "training_readiness_separated_from_inference": true
+  },
+  "selection": {
+    "primary_recommendation_recorded": true,
+    "primary": "sensenova-u1-8b-mot-sft",
+    "fallback": "showo2-1.5b",
+    "excluded": ["uniddt"],
+    "excluded_reason": {"uniddt": "missing_license"}
+  },
+  "persistent_updates": 0,
+  "resources": {
+    "gpu_hours": 0.0,
+    "gpu_count_used": 0,
+    "gpu_model": null,
+    "optimizer_steps": 0,
+    "dataset_scale_runs": 0
+  },
+  "artifacts": {
+    "checked": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "tests": {
+    "pytest_passed": 156,
+    "pytest_failed": 0,
+    "compile_status": "pass",
+    "repo_state_status": "pass"
+  }
+}
