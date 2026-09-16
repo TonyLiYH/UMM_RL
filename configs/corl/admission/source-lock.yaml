@@ -50,6 +50,15 @@ dataset:
     cls_solution, od_problem]
   admission_scope: "micro-split only, <=32 unique records streamed, not the
     full ~11GB parquet"
+  actual_materialized: "32/32 unique records + 32/32 real images (real_image
+    field, NOT 'image' as originally assumed -- the dataset's actual image
+    column is named real_image; the first micro-split attempt used the wrong
+    key name and silently wrote 32 null image_path rows, caught by a
+    post-hoc verification pass and corrected before proceeding; see
+    runs/corl-admission-v1/notes.md). Materialized to
+    /dockerdata/t710-corl/assets/micro-split.jsonl (20K) +
+    /dockerdata/t710-corl/assets/micro-split-images/ (16M, 32 PNGs), both on
+    local SSD, not committed to git."
 
 auxiliary_models:
   - name: all-mpnet-base-v2
@@ -58,7 +67,11 @@ auxiliary_models:
       using_external_caption_model=False, so policy model captions its own
       generation; bertscore compares that caption to the source prompt)"
     hub: huggingface (sentence-transformers/all-mpnet-base-v2)
-    pinned_revision: TBD_AT_DOWNLOAD_TIME
+    pinned_revision: e8c3b32edf5434bc2275fc9bab85f82640a19130
+    revision_resolution_method: "HfApi().model_info('sentence-transformers/all-mpnet-base-v2').sha
+      at download time, then snapshot_download(revision=<that sha>) to pin it;
+      resolved sha recorded to /dockerdata/t710-corl/assets/all-mpnet-base-v2.revision.txt
+      on the GPU container (not committed to git, per local-SSD large-artifact rule)."
     license: Apache-2.0
     required_because: >
       corl/scripts/corl_unified.sh never sets --model_ckpt_dir; the
@@ -87,6 +100,32 @@ pinned_python_deps_from_pyproject_toml:
     pycocotools, pycocoevalcap, latex2sympy2_extended, math_verify,
     matplotlib) are unpinned upstream; the admission venv will record the
     exact resolved versions in environment-lock.md after build.
+
+resolved_environment_pins:
+  note: >
+    CoRL's own pyproject.toml pin set is internally inconsistent (see
+    discrepancy-lock.yaml D13): transformers>=4.49.0 (unbounded) conflicts
+    with trl==0.18.1's real floor of transformers>=4.50.0, and unpinned
+    sentence-transformers resolves by default to 6.0.1 which requires
+    transformers>=5.0.0 (breaks Janus's modeling_vlm.py under transformers
+    5.x). The venv actually built and verified for the T710 smoke uses the
+    corrected pins below; full import chain confirmed OK
+    (ALL_IMPORTS_OK marker, venv at /root/venvs/corl on H20-FoldUMM,
+    2026-09-16 21:49 CST, exit=0).
+  torch: "2.6.0"
+  transformers: "4.50.0"
+  huggingface_hub: "0.36.2"
+  trl: "0.18.1"
+  deepspeed: "0.16.4"
+  datasets: "3.2.0"
+  timm: "1.0.14"
+  open_clip_torch: "2.31.0"
+  sentence_transformers: "3.0.1"
+  flash_attn: "NOT_INSTALLED (wheel local-version-tag mismatch against pip's
+    exact-match spec; janus.models.modeling_vlm import succeeds without it,
+    so sdpa/eager attention fallback is used for the smoke; not yet
+    confirmed whether this affects numerical results, only that it does not
+    block import/forward)"
 
 gpu_container:
   name: H20-FoldUMM

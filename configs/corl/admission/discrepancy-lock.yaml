@@ -285,6 +285,53 @@ entries:
       from corl_unified.sh's 8-GPU config). Recorded honestly as
       unreconciled rather than guessed at.
 
+  - id: D13
+    topic: "CoRL's own pinned dependency set is internally inconsistent
+      (discovered while building the venv for the GPU smoke, after the
+      first-report gate was already committed/pushed)."
+    paper: "N/A — packaging/reproducibility issue, not a paper claim."
+    code: >
+      pyproject.toml pins transformers>=4.49.0 (unbounded ceiling) and
+      trl==0.18.1 (exact pin). trl 0.18.1 itself requires
+      transformers>=4.50.0, one patch level above CoRL's own stated floor,
+      so literally following CoRL's floor pin (transformers==4.49.0)
+      produces a pip dependency-resolver warning against its own trl pin.
+      Separately, sentence-transformers is left completely unpinned by
+      CoRL and resolves by default to 6.0.1, which requires
+      transformers>=5.0.0 and huggingface-hub>=1.3.0 — directly
+      incompatible with the transformers-4.x branch Janus's custom
+      modeling_vlm.py requires (transformers 5.x breaks the Janus import
+      in this venv). Both conflicts were only reachable by actually
+      building the venv and running pip end-to-end; they are not visible
+      from reading pyproject.toml alone.
+    verdict: defect
+    evidence: >
+      Live venv build at /root/venvs/corl (H20-FoldUMM container):
+      `pip install transformers==4.49.0` succeeded and
+      `from janus.models.modeling_vlm import MultiModalityCausalLM`
+      imported OK, but pip emitted "trl 0.18.1 requires
+      transformers>=4.50.0, but you have transformers 4.49.0, which is
+      incompatible"; default unpinned sentence-transformers resolved to
+      6.0.1 and pip emitted "sentence-transformers 6.0.1 requires
+      transformers<6.0.0,>=5.0.0 ... but you have transformers 4.50.0,
+      which is incompatible" plus a matching huggingface-hub complaint.
+    corrected_candidate_plan: >
+      T710's venv pins transformers==4.50.0 (satisfies trl's real floor,
+      one patch above CoRL's stated floor, still within CoRL's unbounded
+      ">=4.49.0" range so not a violation of CoRL's own spec) and
+      sentence-transformers==3.0.1 (a transformers-4.x-compatible major
+      version; confirmed by reading bert_score_wrapper.py that only the
+      narrow `from sentence_transformers import util` symbol is actually
+      used anywhere in CoRL, so downgrading two major versions is safe).
+      Full import chain (transformers, huggingface_hub, trl core classes,
+      deepspeed, datasets, sentence_transformers.util, janus
+      MultiModalityCausalLM, corl.open_r1.trainer.grpo_trainer_unified.
+      JanusProUnifiedGRPOTrainer, corl.open_r1.rewards.reward_funcs_registry,
+      corl.open_r1.rewards.bert_score.bert_score_wrapper.BertScoreWrapper)
+      verified OK end-to-end under this pin set (ALL_IMPORTS_OK marker,
+      2026-09-16 21:49 CST run, exit=0). Resolved final pins recorded in
+      configs/corl/admission/source-lock.yaml.
+
 open_items:
   - "token_level_max_match_similarity (r_utils.py) not yet re-derived
     formula-by-formula against Eq. 4; r_utils.py (415 lines) was not fully
