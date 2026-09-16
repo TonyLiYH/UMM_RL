@@ -2,7 +2,7 @@
 id: T750
 title: Per-task GRPO gradient and optimizer-update instrumentation
 parent: T700
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -58,4 +58,8 @@ realized update; no silent device fallback is allowed.
 ```bash
 bash scripts/validate_task_submission.sh T750
 ```
+
+## Review history
+
+- 2026-09-16 — Remote executor created/resumed branch `agent/T750-corl-gradient-update-instrumentation` from `origin/main` (`448c517`), confirmed `source_revision` `818d1d8` is an ancestor of HEAD, and set status to `running`. This is a CPU-default software-engineering task (framework-neutral gradient/optimizer-update instrumentation layer plus a CoRL adapter); checked `T710` (blocks-adjacent sibling task, not a dependency) and found its `runs/corl-admission-v1/` does not yet exist and its task status is `running`, not `awaiting_review` or later, so per the task brief the optional stage 5 (real T710 diagnostic batch) will be skipped for this submission and stages 1-4 (deterministic toy tests, sequential task batches at one shared-state hash, instrumented-vs-uninstrumented equivalence proof, mock CoRL-compatible model) will be the primary and sole evidence path. No GPU work is planned or required.
 
