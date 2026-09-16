@@ -330,7 +330,19 @@ class JanusLLamaModel(MultiModalityCausalLM):
                 self.save_stack_images(new_visual_img, batch_size=new_visual_img.shape[0], save_path=os.path.join(img_path, f'{cur_step}_second.png'))
                 self.save_stack_images(final_visual_img, batch_size=final_visual_img.shape[0], save_path=os.path.join(img_path, f'{cur_step}_final.png'))
                 
-        return (img_ids_1, all_imgs_1), (img_ids_2, all_imgs_2), (output_text_ids, selfcheck.squeeze(), attention_mask_txt), (embeds_1, attention_mask_1), (embeds_2, attention_mask_2), (embeds_3, attention_mask_3)
+        # T720 patch (comppareto/adapters/janus_pro_r1): upstream's `selfcheck`
+        # is only reassigned from its initial `[]` to a real tensor inside the
+        # `if 2 <= task_list[-1]:` block above. When this function is called
+        # with `task_list=[1]` (T720's documented, bounded stage-1-only
+        # rollout -- see grpo_smoke.py's module docstring) that block never
+        # runs, so `selfcheck` is still a plain empty list here and the
+        # original unconditional `selfcheck.squeeze()` raises
+        # `AttributeError: 'list' object has no attribute 'squeeze'` before
+        # ever returning -- even though grpo_smoke.py never reads this field.
+        # One-line guard, no change to any tensor/weight/logic on the
+        # exercised path; see reports/T720/failure-ledger.md.
+        selfcheck_out = selfcheck.squeeze() if torch.is_tensor(selfcheck) else selfcheck
+        return (img_ids_1, all_imgs_1), (img_ids_2, all_imgs_2), (output_text_ids, selfcheck_out, attention_mask_txt), (embeds_1, attention_mask_1), (embeds_2, attention_mask_2), (embeds_3, attention_mask_3)
 
     @torch.no_grad()
     def edit_image(

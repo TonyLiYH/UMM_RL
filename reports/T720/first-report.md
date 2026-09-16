@@ -31,8 +31,10 @@ version conflict breaks `import transformers` — and is not reused):
 
 - **SFT** (`configs/janus-pro-r1/admission/environment-sft-lock.md`):
   upstream's `requirements-sft.txt` pins neither `torch` nor
-  `transformers`; T720 pins `torch==2.5.1+cu121` /
-  `transformers==4.50.0` (matching the RL side) plus the small set of
+  `transformers`; T720 pins `torch==2.6.0` /
+  `transformers==4.50.0` (matching the RL side, which itself bumps torch
+  from upstream's `2.5.1+cu121` pin to `2.6.0` to reuse a prebuilt local
+  wheel) plus the small set of
   packages actually imported by the exercised code path (`einops`, `timm`,
   `easydict`, `attrdict`, `pillow`, `sentencepiece`, `pyyaml`,
   `datasets==2.16.1`). `deepspeed`/`albumentations`/`basicsr`/etc. from the
@@ -42,9 +44,13 @@ version conflict breaks `import transformers` — and is not reused):
   upstream's `requirements-rl.txt` is fully version-pinned; T720 installs
   the subset actually imported by `grpo_t2i.py` / `internvl_img.py` /
   `mydataset.py` and the vendored `internvl/` package
-  (`torch==2.5.1+cu121`, `transformers==4.50.0`, `tokenizers==0.21.2`,
+  (`torch==2.6.0`, `transformers==4.50.0`, `tokenizers==0.21.2`,
   `einops==0.8.1`, `numpy==2.3.1`, `sentencepiece==0.2.0`,
-  `Pillow==11.3.0`, `timm==1.0.16`, `decord==0.6.0`, `flash_attn==2.7.4.post1`).
+  `Pillow==11.3.0`, `timm==1.0.16`, `decord==0.6.0`).
+  `flash_attn` is skipped: InternVL's own guarded import falls back to
+  eager attention (`has_flash_attn=False` -> `use_flash_attn=False`) with
+  only a printed warning, not an exception — verified by reading
+  `modeling_intern_vit.py`/`modeling_internvl_chat.py`.
   `apex` and `petrel_client` are skipped by design: both are guarded
   `try/except ImportError` in the vendored source with working pure-PyTorch
   / local-PIL fallbacks (verified by direct `grep` of every hit — all
@@ -146,3 +152,51 @@ InternVL2.5-8B bf16 ~16GB resident for reward scoring — expected to fit
 within a single 96GB H20 but this is the primary technical risk for the
 GRPO smoke and will be reported honestly (including as a `[FAIL]`/blocked
 item in `failure-ledger.md` if it does not fit) rather than assumed.
+
+## 8. Post-execution corrections (added after GPU execution, this report's
+## pre-execution text above is left otherwise unmodified)
+
+This report is the pre-registered plan and is deliberately *not* rewritten
+to look retrospectively correct. Four items in section 2 above turned out
+to be wrong or incomplete once the smokes actually ran; the full discovery
+story for each (exact error text, root cause, fix) lives in
+`configs/janus-pro-r1/admission/environment-{sft,rl}-lock.md` and
+`reports/T720/failure-ledger.md` — summarized here for a reader of this
+report specifically:
+
+- **`deepspeed` is a real SFT install requirement**, not skipped: the
+  vendored `trainer/utils/__init__.py` unconditionally imports it at
+  package-init time (only used for an unused CLI-arg extension on the path
+  this smoke exercises, but still required to be *importable*). Pinned to
+  `deepspeed==0.15.4` (upstream's own RL-side pin), not the latest release,
+  which is incompatible with `torch==2.6.0`.
+- **`flash_attn` is a real RL install requirement**, not skipped: the
+  policy model's own vendored `janus-rl/src/open_r1/models/modeling_vlm.py`
+  hardcodes `flash_attention_2` unconditionally (the InternVL
+  guarded-fallback claim above is still correct in isolation, but was
+  incorrectly generalized to the whole RL venv).
+- **`peft==0.10.0` is a real RL install requirement**, not mentioned above:
+  `internvl_img.py`'s import of `InternVLChatModel` transitively hits
+  `modeling_internvl_chat.py`'s unconditional `from peft import ...`, never
+  actually applied by `InternVLReward`.
+- **`scipy==1.15.3` is required in both venvs**, not mentioned above, for a
+  reason unrelated to Janus-Pro-R1 entirely: `python -m
+  comppareto.adapters.janus_pro_r1.{sft_smoke,grpo_smoke}` forces Python to
+  import `comppareto/__init__.py` first (outside this task's
+  `allowed_paths`), which unconditionally imports `.quadratic`, which
+  imports `scipy.optimize.minimize`.
+- **`numpy` is pinned to `2.2.6` in the RL venv**, not upstream's
+  `2.3.1` as stated above: no `numpy==2.3.1` wheel exists for this cp310
+  venv (`numpy>=2.3.0` requires Python>=3.11); `2.2.6` is what
+  `torch`/`torchvision` themselves already resolve to transitively.
+
+One additional, separate correction not about the environment: upstream's
+`JanusLLamaModel.generate_with_refine` (`vendor/janus-pro-r1/janus-rl/src/
+open_r1/llama.py`) has an unconditional `selfcheck.squeeze()` in its return
+statement that crashes with `AttributeError: 'list' object has no attribute
+'squeeze'` when called with `task_list=[1]` (this smoke's documented,
+bounded stage-1-only rollout) — `selfcheck` is only ever reassigned from
+its initial `[]` inside the `task_list[-1] >= 2` branch. Patched with a
+one-line, clearly-commented guard (`selfcheck.squeeze() if
+torch.is_tensor(selfcheck) else selfcheck`); see the patch comment in
+`llama.py` itself and `reports/T720/failure-ledger.md`.
