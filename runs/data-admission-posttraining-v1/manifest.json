@@ -30,66 +30,122 @@
     },
     {
       "artifact_id": "sources-yaml",
-      "bytes": 7494,
+      "bytes": 10132,
       "canonical_uri": "configs/data/posttraining-v1/sources.yaml",
       "kind": "config",
-      "sha256": "6fc0ef14ea726a034019615f3eda3cbe7d022bf6ef04d2f2ef08d35777b37672"
+      "sha256": "4f9fb32e7f29600aac8b7a1c1837fb3f29cdbb5a34a172235ce653852104f53b"
     },
     {
       "artifact_id": "diagnostic-manifest",
-      "bytes": 1185847,
+      "bytes": 1834878,
       "canonical_uri": "configs/data/posttraining-v1/diagnostic.jsonl",
       "kind": "manifest",
-      "sha256": "0aa9262f98b6fc2c3c561a5642f249987023102d133729d91d98b111da10e967"
-    },
-    {
-      "artifact_id": "pilot-train-manifest",
-      "bytes": 86150521,
-      "canonical_uri": "configs/data/posttraining-v1/pilot_train.jsonl",
-      "kind": "manifest",
-      "sha256": "0e7fd0eea8466d7972eb7834585e1d96f629ba962e162db8dbe9bb669f29b6ce"
+      "sha256": "8d70726289f45abf2643ef863431e3ead690fbe9833aa77356c6bf80261f0552"
     },
     {
       "artifact_id": "pilot-validation-manifest",
-      "bytes": 8942853,
+      "bytes": 15002780,
       "canonical_uri": "configs/data/posttraining-v1/pilot_validation.jsonl",
       "kind": "manifest",
-      "sha256": "419dd849b1e145c80221de00fd424998469981fa46879d6ef4a4606cbe6fed80"
+      "sha256": "d16416876de58eb9169643444d01a337279c50d5948a39cfa71b2c29dbafe09d"
     },
     {
       "artifact_id": "pilot-meta-manifest",
-      "bytes": 5280483,
+      "bytes": 8959007,
       "canonical_uri": "configs/data/posttraining-v1/pilot_meta.jsonl",
       "kind": "manifest",
-      "sha256": "aa09c69cd4421d48acb3025d25eedd38328e2a2ba68fdd3805f8d4200cab07e9"
+      "sha256": "fb66e4a4e967ecafc6ecd6a7cf6cf74adb50d6f4c8af456707a6feb86e2cbcf2"
     },
     {
       "artifact_id": "evaluation-only-manifest",
-      "bytes": 2179818,
+      "bytes": 3270121,
       "canonical_uri": "configs/data/posttraining-v1/evaluation_only.yaml",
       "kind": "manifest",
-      "sha256": "7f6861249ef8b697cecb4d30328e8fce339778f185384d675c6780f522a8c400"
+      "sha256": "5e9544824b85e0419da97dcf3acf92e24e52e5edad6aeb7306893c77088a2afa"
     },
     {
       "artifact_id": "metrics-json",
-      "bytes": 850,
+      "bytes": 1400,
       "canonical_uri": "runs/data-admission-posttraining-v1/metrics.json",
       "kind": "metrics",
-      "sha256": "ab2389ac61f72913d1b0102dffc5332cc2361e89ca44c61bf531b8e6649515d6"
+      "sha256": "6fa33139ca070a0c5e4de14ddebb160a2c6dd2daca151660b76727c027951ab1"
+    },
+    {
+      "artifact_id": "pilot-train-shards-index",
+      "bytes": 1587,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shards.json",
+      "kind": "manifest",
+      "sha256": "ee847fb08733ad916d0c618f25faa6c69b3945324816b42ae5c2425fe3c3af88"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard0",
+      "bytes": 39999850,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.jsonl",
+      "kind": "manifest",
+      "sha256": "2000b2516524350706fd656efe3289ae309d2e54b484f97a59be60fea75b9bea"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard1",
+      "bytes": 39999516,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shard1.jsonl",
+      "kind": "manifest",
+      "sha256": "9901ca3e8d403f277f0f8beb0f02d7c6b39dc1cb00ac014728ec182353fe3c5f"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard2",
+      "bytes": 39999125,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shard2.jsonl",
+      "kind": "manifest",
+      "sha256": "c4afd50ae7474f00019be5e07bc804c9b97647a025182b48476c35edd3dfde51"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard3",
+      "bytes": 39999116,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shard3.jsonl",
+      "kind": "manifest",
+      "sha256": "75ddc261217b66c0f01d7b3f4b962127b615ccc142a6752f2e918f0f8abda941"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard4",
+      "bytes": 39999373,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shard4.jsonl",
+      "kind": "manifest",
+      "sha256": "3ace73ce9ed025ff23f2371fc395c544243984e6a4b4028ec6e477a82e299e7e"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard5",
+      "bytes": 39998951,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shard5.jsonl",
+      "kind": "manifest",
+      "sha256": "a0c8690544d7d503d5dca024271872eade28c5a05302b0f54e9ed915a1f41f20"
+    },
+    {
+      "artifact_id": "pilot-train-manifest-shard6",
+      "bytes": 32058540,
+      "canonical_uri": "configs/data/posttraining-v1/pilot_train.shard6.jsonl",
+      "kind": "manifest",
+      "sha256": "8c337131b2f1f5af060b059b221a6420a3395889042bbc0734716d7fd9292d6b"
     }
   ],
-  "config_sha256": "366a1fde59755a5365d6ac1f89fcd2e5f4d58496950bc2d2fdf6446564eee155",
+  "config_sha256": "74f1d92d2e6130c14f7334364e55bfd2c7713ea737fd93f79b17d3ff0c0f90c6",
   "dirty": false,
   "environment": {
     "gpu_hours": 0,
     "python_implementation": "CPython",
     "role": "data-admission-manifest-build"
   },
-  "execution_revision": "2cd5f2b793604ac4c64a85ef04ae7427edceceec",
+  "execution_revision": "edf9a2ce0023b64f02cbe22ae9ce8da6947986e9",
   "result_files": [
     "configs/data/posttraining-v1/sources.yaml",
     "configs/data/posttraining-v1/diagnostic.jsonl",
     "configs/data/posttraining-v1/pilot_train.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shard1.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shard2.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shard3.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shard4.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shard5.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shard6.jsonl",
+    "configs/data/posttraining-v1/pilot_train.shards.json",
     "configs/data/posttraining-v1/pilot_validation.jsonl",
     "configs/data/posttraining-v1/pilot_meta.jsonl",
     "configs/data/posttraining-v1/evaluation_only.yaml",
@@ -97,6 +153,7 @@
     "reports/T260/source-license-audit.md",
     "reports/T260/split-and-decontamination.md",
     "reports/T260/mixture-and-accounting.md",
+    "reports/T260/media-materialization-plan.md",
     "reports/T260/result-summary.md",
     "reports/T260/claim-check.md",
     "reports/T260/failure-ledger.md",

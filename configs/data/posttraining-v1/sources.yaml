@@ -45,8 +45,12 @@ sources:
       Only annotation/caption JSON is bulk-downloaded. A small verification
       sample of individual train2017/val2017 JPEGs is fetched separately
       (see reports/T260/first-report.md) to confirm official file names
-      resolve to real images; the ~19GB train2017 + ~1GB val2017 image
-      archives are never bulk-downloaded by this task.
+      resolve to real images; the 19,336,861,798-byte train2017 archive and
+      815,585,330-byte val2017 archive (real Content-Length, confirmed via
+      HEAD request; see reports/T260/media-materialization-plan.md Sec. 2)
+      are never bulk-downloaded by this task -- only a media-materialization
+      *plan* documenting their exact expected size/destination is produced,
+      per local review item 2 (2026-09-16).
     used_by_manifest_splits: [diagnostic, pilot_train, pilot_validation, pilot_meta, evaluation_only]
 
   - name: llava_instruct_150k
@@ -59,12 +63,22 @@ sources:
     license_notes: >
       Distributed by the LLaVA authors under CC BY 4.0. Conversations were
       generated with GPT-4 from COCO metadata, so downstream use also
-      remains subject to OpenAI's Terms of Use for GPT-4-derived content
-      (non-competitive-use restriction); this manifest only stores a
+      remains subject to OpenAI's Usage Policies for GPT-4-derived
+      content. Conservative project-level decision (2026-09-16, superseding
+      the prior round's "non-blocking caveat" framing): every D2 record's
+      GPT-4-authored assistant turn is admitted as metadata (stored as a
       bounded first-turn preview plus a reference to the frozen source
-      file, not a redistribution of the full generated corpus at scale.
-      Every referenced image is a COCO train2017 file, so image licensing
-      is identical to the coco_captions_2017 entry above.
+      file) but marked `training_constraints.restricted_as_training_target
+      = true` in the manifest itself (see
+      `src/comppareto/data/llava.py::TRAINING_CONSTRAINTS`) -- it must not
+      be used as a raw gradient training target/label in any CompPareto
+      post-training run without an explicit, separately recorded
+      local-review sign-off overriding this default. The human
+      instruction/question text and the referenced COCO train2017 image
+      are not GPT-4 output and remain unrestricted
+      (`restricted_as_training_target = false`). See
+      reports/T260/source-license-audit.md Sec. "D2 -- LLaVA GPT-terms
+      decision" for the full reasoning.
     fetched_artifact:
       url: https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/llava_instruct_150k.json
       local_path: /apdcephfs_cq7/share_1447896/yihangli/data/posttraining-v1/llava_instruct_150k/llava_instruct_150k.json
@@ -106,16 +120,41 @@ sources:
     media_note: >
       Only the 2,000,000-row metadata table is downloaded. Individual
       generated images live inside `images/part-NNNNNN.zip` bundles on the
-      hub and are not individually fetchable without downloading a whole
-      part archive; this task materializes only a small range-fetch
-      verification sample of one part archive's local file header (see
-      reports/T260/first-report.md), never a bulk image download.
+      hub. The row-level-only subsampling used in the prior round touched
+      1,999 of the 2,000 part archives (1.24TB) for just 18,339 usable
+      rows -- an impractical media-materialization fan-out flagged by
+      local review. Redesigned (2026-09-16, see `admission_subsampling`
+      below): a small, fixed set of whole part archives is selected first,
+      and every safety-passing row inside a selected archive is kept. This
+      task still materializes only a small range-fetch verification sample
+      (see reports/T260/media-materialization-plan.md), never a bulk image
+      download.
     admission_subsampling: >
-      Deterministically keeps ~1/50 (2%) of rows by
-      group_bucket(image_name, num_buckets=50) < 1, applied after an NSFW
-      safety filter (image_nsfw < 0.2 and prompt_nsfw < 0.5, rows with a
-      missing score excluded). Both filters are pure functions of the
-      row's own recorded metadata, never of any model outcome.
+      Redesigned two-stage filter (2026-09-16; see
+      `src/comppareto/data/diffusiondb.py` module docstring for the full
+      derivation). Stage 1 (archive-level, new): keep a whole
+      `part-NNNNNN.zip` archive iff
+      group_bucket(f"diffusiondb-part::{part_id}", num_buckets=2000) < 32
+      -- a pure function of the archive's own part_id alone. Measured
+      against the real DiffusionDB `images/` file listing (2,000 parts,
+      real per-file byte sizes via the HF tree API): this keeps exactly 25
+      of the 2,000 part archives, totaling 15,587,973,934 bytes (~15.6GB)
+      -- a single bounded download well under this task's 20GB
+      single-step ceiling, vs. the prior design's 1,999 archives / 1.24TB.
+      Stage 2 (row-level, unchanged): within a kept archive, every row must
+      still clear the NSFW safety filter (image_nsfw < 0.2 and
+      prompt_nsfw < 0.5, rows with a missing score excluded). There is no
+      longer any additional row-level *sampling* hash on top of archive
+      selection -- once an archive is selected, every safety-passing row in
+      it is retained, which is what maximizes rows-per-archive-byte.
+      Measured against the real, complete metadata cache: this yields
+      19,842 real retained rows across the 25 kept archives (more than the
+      prior design's 18,339 rows across 1,999 archives). Both stages are
+      pure functions of each row/archive's own recorded metadata, never of
+      any model outcome. See reports/T260/media-materialization-plan.md
+      for the exact 25 kept part IDs, expected bytes, and destination
+      paths, and reports/T260/mixture-and-accounting.md Sec. "DiffusionDB
+      archive fan-out" for the full before/after comparison.
     used_by_manifest_splits: [diagnostic, pilot_train, pilot_validation, pilot_meta]
 
   - name: journeydb

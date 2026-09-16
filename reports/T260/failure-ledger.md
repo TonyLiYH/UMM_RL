@@ -246,3 +246,76 @@ here was "fixed" by fudging a metric or fabricating a count.
   `reports/T260/result-summary.md` and this task's frontmatter
   review-history for the confirmed successful push and re-run validator
   output.
+
+## [REVISION] Local review (2026-09-16) returned `revision_needed` with 8 numbered items -- all addressed this round
+
+* **What happened**: Local review examined the prior round's submission
+  and found the prose-level documentation ("non-blocking caveat" for
+  LLaVA, "media-materialization is out of scope") insufficiently
+  auditable/actionable in several places, and found the DiffusionDB
+  admission design itself impractical (materializing its own retained
+  rows would require ~1.24TB of archive fetches). Full item list:
+  `tasks/T260-posttraining-data-admission.md`, "Local review
+  requirements -- 2026-09-16".
+* **Disposition, per item** (none fixed by fudging a metric; every fix is
+  a deterministic code/schema change re-measured against the complete
+  real sources):
+  1. `metadata_admitted` vs. `media_materialized` -- both are now
+     explicit boolean fields on every record's `image` object, and
+     `metrics.json` reports both counts (`media.metadata_admitted_records
+     = 300841`, `media.media_materialized_records = 65`) rather than only
+     prose.
+  2. Media-materialization plan for exact retained groups -- new report
+     `reports/T260/media-materialization-plan.md`: real per-archive
+     bytes/sha256 (via HF Hub tree API and plain HTTP `HEAD`, no content
+     downloaded) for the 25 kept DiffusionDB parts and the 2 COCO
+     archives.
+  3. DiffusionDB archive fan-out -- redesigned
+     `src/comppareto/data/diffusiondb.py` to a two-stage
+     archive-then-row filter: 1,999 archives/~1.24TB -> 25 archives/
+     15,587,973,934 bytes, and rows retained *increased* (18,339 ->
+     19,842) because whole selected archives are no longer additionally
+     thinned by a row-level hash.
+  4. Preregistered real media-availability probes -- new module
+     `src/comppareto/data/media_check.py`: a fixed-in-code sampling rule
+     (5 records per real `(source, split)` pair) picks records *before*
+     any probe runs; 65/65 real network probes succeeded this round.
+  5. `pilot_train.jsonl` monolith -- replaced by
+     `_write_pilot_train_shards` in `src/comppareto/data/build.py`: 7
+     byte-bounded shards (max 40,000,000 bytes each) plus a hash-addressed
+     `pilot_train.shards.json` index, eliminating the prior round's
+     record-count cap entirely (270,207 records now retained, up from a
+     capped 150,028).
+  6. LLaVA GPT-derived text terms -- replaced the vague "non-blocking
+     caveat" with an explicit `training_constraints` object
+     (`restricted_as_training_target = true`) on every D2 record,
+     recorded in `src/comppareto/data/llava.py::TRAINING_CONSTRAINTS` and
+     `reports/T260/source-license-audit.md`.
+  7. Near-duplicate checks beyond `group_key` equality -- new module
+     `src/comppareto/data/near_dup.py`: exact-normalized-text duplicate
+     groups (558) and LSH-bucketed shingle-Jaccard near-duplicate pairs
+     (205,558 at threshold 0.8), scoped to `diagnostic` +
+     `pilot_validation` + `pilot_meta` to keep the comparison bounded
+     (not `O(n^2)` over the full pool).
+  8. D1-paired count within `diagnostic` -- `metrics.json`'s
+     `paired_core` object now reports
+     `diagnostic_d1_paired_record_count = 737` alongside
+     `diagnostic_total_record_count = 1828`, rather than only the split
+     total.
+* **Also corrected as a drive-by fix while re-verifying this round's
+  documentation**: `reports/T260/split-and-decontamination.md` Sec. 2 had
+  stated `diagnostic`'s bucket share as "2% (buckets 0-199)" -- this was
+  already stale relative to the *prior* round's own code (which had
+  already re-tuned the share to 0.63%/63 buckets to fix the
+  diagnostic-ceiling overshoot recorded above), a pre-existing
+  documentation bug rather than a new defect. Corrected in place this
+  round to match the real, current `SPLIT_FRACTIONS` value.
+* **Net effect of the DiffusionDB redesign on other sources**: verified
+  empirically (not just asserted) that COCO/LLaVA per-split record
+  counts are byte-for-byte unchanged before and after the redesign,
+  since `assign_split` is a pure function of each record's own
+  `group_key` alone. Only `diffusiondb_2m`'s own counts, and
+  `pilot_train`'s resulting total, changed.
+* **Full updated numbers**: `reports/T260/mixture-and-accounting.md`,
+  `reports/T260/result-summary.md`, `reports/T260/claim-check.md`,
+  `runs/data-admission-posttraining-v1/metrics.json`.
