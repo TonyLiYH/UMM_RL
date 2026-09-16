@@ -28,9 +28,17 @@ pilot_validation / pilot_meta)
    first 8 hex chars as an integer, reduce mod 10,000 -> a bucket in
    `[0, 10000)` (`src/comppareto/data/ids.py:group_bucket`).
 2. Map the bucket to a split via fixed cumulative boundaries: `diagnostic`
-   2% (buckets 0-199), `pilot_validation` 5% (200-699), `pilot_meta` 3%
-   (700-999), `pilot_train` 90% (1000-9999, absorbing any rounding
-   remainder).
+   0.63% (buckets 0-62), `pilot_validation` 5% (63-562), `pilot_meta` 3%
+   (563-862), `pilot_train` 91.37% (863-9999, absorbing any rounding
+   remainder). **Correction (2026-09-16)**: an earlier revision of this
+   document stated `diagnostic` as "2% (buckets 0-199)" -- that was
+   already stale relative to the code even before this round (the
+   `diagnostic` share was re-tuned to 0.63%/63 buckets in a prior round
+   after the flat-2% share measured 6,350 real records against the task
+   file's 512-2,048 ceiling; see `reports/T260/failure-ledger.md`). The
+   boundaries above are the real, current values in
+   `src/comppareto/data/split.py:SPLIT_FRACTIONS`, re-verified against the
+   source file at the time of this correction.
 
 This is a **pure function of the group key alone** -- it never inspects
 any model gradient, loss, prediction, or other training outcome, and it is
@@ -96,12 +104,75 @@ checks that no two records (even across sources) were assigned the same
 `record_id` -- a defense against a namespace-collision bug in
 `stable_id`, orthogonal to the group-key-based checks above.
 
-## 7. Verification against real data
+## 7. Near-duplicate detection beyond exact `group_key` equality (local review item 7, 2026-09-16)
 
-All five checks above are exercised against synthetic fixtures in
-`tests/data/test_build.py` (43 tests total across the package, all
-passing per `reports/T260/result-summary.md`), and re-run against the real
-downloaded COCO/LLaVA/DiffusionDB metadata as part of building the actual
-frozen manifests -- the real, measured values are what is written to
+Group-key equality (Secs. 4-6) only catches records that share the exact
+same underlying media identity. It does not catch two records with
+*different* `group_key`s whose *text* is near-identical or exactly
+identical after normalization -- e.g. two DiffusionDB rows with distinct
+generated-image UUIDs but the same or a lightly-edited prompt string.
+Local review flagged this as a real gap for the diagnostic/meta/
+validation splits specifically, since those are the splits most likely
+to be used as small, human-inspected quality checks where duplicate or
+near-duplicate content silently wastes the sample.
+
+`src/comppareto/data/near_dup.py` adds two bounded (non-`O(n^2)`) checks,
+scoped to exactly the three splits local review named --
+`diagnostic`, `pilot_validation`, `pilot_meta` (25,634 real records in
+total; `pilot_train` and `evaluation_only` are deliberately excluded,
+since they are large enough that an `O(n^2)`-adjacent comparison would
+be disproportionate, and their role is training volume/held-out
+benchmarking rather than small-sample inspection):
+
+1. **Exact-normalized-text duplicate groups**: each record's
+   primary text field is lowercased, whitespace-collapsed, and grouped;
+   any group with more than one member is an exact-normalized-text
+   duplicate group. Real measured count:
+   `exact_normalized_text_duplicate_group_count = 558`.
+2. **Shingle-Jaccard near-duplicate pairs**: an LSH-style bounded
+   comparison -- records are bucketed by their lexicographically smallest
+   word-shingle ("MinHash-lite" signature), and only records sharing a
+   bucket are ever compared pairwise (never a full `O(n^2)` scan over all
+   25,634 records). A pair is reported if its Jaccard similarity over
+   word shingles is `>= 0.8` (`near_duplicates.jaccard_threshold` in
+   `metrics.json`). Real measured count:
+   `shingle_jaccard_near_duplicate_pair_count = 205558`.
+
+Both counts are **reported, not gating** -- the acceptance contract does
+not define a required ceiling for either metric, and this task's role is
+to surface the real measured signal (which a downstream review/curation
+task can act on), not to silently thin the manifests based on a
+threshold this task was never asked to choose. Both are real numbers
+from the actual frozen `diagnostic`/`pilot_validation`/`pilot_meta`
+manifests, in `runs/data-admission-posttraining-v1/metrics.json`'s
+`near_duplicates` object.
+
+## 8. D1-paired records within `diagnostic`, reported separately (local review item 8, 2026-09-16)
+
+The task file describes `diagnostic` as containing "paired examples" --
+but `diagnostic` is actually a mixed-source split (D1 COCO + D2 LLaVA +
+D3 DiffusionDB records all land in it via the same hash-bucket
+mechanism), and only the D1 (COCO caption) records are the
+bidirectionally-paired (`i2t`/`t2i`) core the paired-examples language
+refers to. Reporting only the split's total record count therefore
+overstates how many *paired* examples `diagnostic` actually contains.
+
+`metrics.json`'s `paired_core` object now reports both numbers
+explicitly: `diagnostic_total_record_count = 1828` (the whole split, all
+three sources) and `diagnostic_d1_paired_record_count = 737` (the D1
+COCO-caption subset alone, i.e. the actual paired-example count). Both
+are within the task file's "512-2,048 paired examples where available"
+range read literally against the paired subset (737) and against the
+whole split (1,828) -- so this split-out does not create a new failure,
+it only makes explicit which of the two readings the real data satisfies
+and by how much, rather than leaving that ambiguity to the reader.
+
+## 9. Verification against real data
+
+All checks above are exercised against synthetic fixtures in
+`tests/data/` (all tests passing per `reports/T260/result-summary.md`),
+and re-run against the real downloaded COCO/LLaVA/DiffusionDB metadata as
+part of building the actual frozen manifests -- the real, measured
+values are what is written to
 `runs/data-admission-posttraining-v1/metrics.json`, not asserted or
 assumed values.

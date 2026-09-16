@@ -1,12 +1,30 @@
 {
   "duplicate_record_ids": 0,
+  "media": {
+    "media_availability_sample_confirmed_available": 65,
+    "media_availability_sample_size": 65,
+    "media_materialized_records": 65,
+    "metadata_admitted_records": 300841
+  },
+  "near_duplicates": {
+    "exact_normalized_text_duplicate_group_count": 558,
+    "jaccard_threshold": 0.8,
+    "scoped_splits": [
+      "diagnostic",
+      "pilot_validation",
+      "pilot_meta"
+    ],
+    "shingle_jaccard_near_duplicate_pair_count": 205558
+  },
   "paired_core": {
     "bidirectional_mapping_verified": true,
-    "d1_record_count": 67893
+    "d1_record_count": 118287,
+    "diagnostic_d1_paired_record_count": 737,
+    "diagnostic_total_record_count": 1828
   },
   "pilot": {
-    "total_task_records": 176787,
-    "usable_task_records": 150028
+    "total_task_records": 295841,
+    "usable_task_records": 270207
   },
   "provenance": {
     "admitted_sources": [
@@ -27,11 +45,11 @@
   "run_id": "data-admission-posttraining-v1",
   "splits": {
     "counts": {
-      "diagnostic": 2037,
+      "diagnostic": 1828,
       "evaluation_only": 5000,
-      "pilot_meta": 9242,
-      "pilot_train": 150028,
-      "pilot_validation": 15480
+      "pilot_meta": 8922,
+      "pilot_train": 270207,
+      "pilot_validation": 14884
     },
     "cross_split_duplicate_groups": 0,
     "evaluation_records_in_training": 0
