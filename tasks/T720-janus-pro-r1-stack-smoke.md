@@ -2,7 +2,7 @@
 id: T720
 title: Janus-Pro-R1 reusable SFT and GRPO stack smoke
 parent: T700
-status: ready
+status: running
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -65,3 +65,16 @@ is blocking.
 ```bash
 bash scripts/validate_task_submission.sh T720
 ```
+
+## Review history
+
+- 2026-09-16 — Remote executor created branch `agent/T720-janus-pro-r1-stack-smoke`
+  from the latest authorized `main`, set status to `running`, and identified the
+  official public assets (repo `wendell0218/Janus-Pro-R1` @ `0e40b3aa291cb15770f69affc956602c217490af`;
+  base checkpoint `deepseek-ai/Janus-Pro-7B` @ `5c3eb3fb2a3b61094328465ba61fcd4272090d67`,
+  hash-verified against the pre-existing H20-FoldUMM local cache; SFT data released in-repo
+  under `janus-sft/data/t2i_examples` plus HF dataset `midbee/Janus-Pro-R1-Data` @
+  `dc4c00a8a175820e4d917b5cf540fc8fc96dc4e1`; smallest usable reward `OpenGVLab/InternVL2_5-8B`
+  @ `e9e4c0dc1db56bfab10458671519b7fa3dd29463` run offline in-process per the upstream
+  `InternVLReward.evaluate` path). Publishing the first report before any large download or
+  GPU execution.
