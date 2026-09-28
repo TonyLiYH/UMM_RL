@@ -2,7 +2,7 @@
 id: T110
 title: Random disjoint, partial, and full overlap quadratic families
 parent: T100
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -68,4 +68,48 @@ Acceptance contributes to T140 and T100.
 ## Review history
 
 - 2026-08-26 — Authorized for remote execution; no result submitted.
+- 2026-09-28 — Remote agent: status set to `running`. First report (this task's bounded CPU work
+  was pre-authorized for remote execution, so this report is published alongside the
+  implementation rather than gating it):
+  - **Generator parameter ranges**: `global_dim` cycles deterministically over `[2, 32]` inclusive
+    (31 values) as `case_index` increases, so any run of >=100 seeds/regime covers every dimension
+    at least 3 times. `num_tasks` in `[2, min(5, global_dim)]`. Per task: `private_dim` in `[1, 6]`,
+    `mu` in `[0.05, 2.0]` (uniform), curvature `condition_number` in `[1, 1000]` (log-uniform,
+    applied independently to each task's shared-block curvature `h_xx` and private curvature
+    `h_phiphi`), coupling `rank` in `[1, min(local_dim, private_dim)]`, `gradient_scale` in
+    `[0.1, 10]` (log-uniform) scaling a standard-normal `local_gradient`. Curvature/coupling
+    generation reuses `comppareto.oracle.generation.generate_curvature`/`generate_coupling`
+    (log-spaced-eigenvalue PD matrices, rank-controlled coupling via random orthonormal factors).
+    Selector supports (sets of global coordinate indices per task) are generated independently per
+    regime in `comppareto.overlap.regimes` (not via `comppareto.oracle.selectors.build_incidence`,
+    whose `num_blocks in [4, 64]` floor is incompatible with T110's required `global_dim=2` floor):
+    `disjoint` partitions `range(global_dim)` into `num_tasks` disjoint groups; `full` gives every
+    task every coordinate; `partial` forces a shared "hub" coordinate across all tasks plus a
+    coordinate deliberately excluded from task 0, guaranteeing genuine non-degenerate partial
+    overlap by construction (not chance) at every `global_dim >= 2`.
+  - **Seed policy**: every case is keyed by `(config_seed, regime_offset, case_index)` fed into
+    `numpy.random.SeedSequence(...).spawn(5)`, producing five independent `Generator` streams
+    (structure/curvature/coupling/gradient/probe) per case — never Python's randomized `hash()`.
+    Safe-set perturbation draws use a sixth derived stream keyed additionally on a fixed constant.
+    This makes every case, and every check within it, exactly reproducible in isolation.
+  - **Direct-reference calculation**: three independent legs, one per required check. (1) Block
+    lifting: `QuadraticTask.lifted_gradient()` / `selector.T @ h_xx @ selector` are each checked
+    against a hand-coded scatter (index assignment, not matrix multiplication) of the same local
+    blocks into global coordinates. (2) Objective changes: the existing
+    `compensated_change == direct_change(step, private_response(step))` closed-form identity is
+    re-verified numerically, and `private_response`/the resulting objective change are separately
+    cross-checked against an independent **linear conjugate-gradient** solve
+    (`scipy.sparse.linalg.cg`) of the private stationarity system — a Krylov iterative method,
+    genuinely distinct from the closed-form `numpy.linalg.solve` used internally. (An initial
+    attempt used scipy's *nonlinear* CG minimizer instead; it stalled short of the closed-form
+    answer on ~9% of a 450-case smoke sweep for ill-conditioned private curvature — a
+    verification-code convergence artifact, not a `quadratic.py` bug, since the closed-form Schur
+    identity itself stayed exact to ~1e-16 throughout. Switched to linear CG, which has a
+    finite-termination guarantee for an exact SPD system.) (3) Safe-set relations: for task pair
+    `(i, j)` with `S_i \ S_j` nonempty, a perturbation supported only on `S_i \ S_j` must leave
+    task `j`'s `compensated_change` exactly unchanged (checked to `1e-9`); vacuous when
+    `S_i \ S_j` is empty (always true under `full`; maximal under `disjoint`).
+  - **CPU estimate**: pure CPU, no GPU/network. A 1200-case smoke sweep (400 cases/regime, up to
+    5 tasks/case, dims 2-32) ran in well under a minute on a single core. The formal run
+    (>=100 seeds/regime = >=300 cases) is expected to take well under one minute total.
 
