@@ -1,0 +1,13 @@
+task: T120
+suite: kkt-reference-suite
+date: "2026-09-28"
+seed: 20260928
+random_private_response_count: 40
+random_trust_region_count: 40
+random_negotiation_count: 20
+source_config: configs/t1b/kkt-reference-suite.json
+branch: agent/T120-independent-kkt-reference
+source_revision: c3f8dbb7d626d171dca5aa5820a53840868ab552
+python_version: "3.11.6"
+numpy_version: "2.4.6"
+scipy_version: "1.17.1"
