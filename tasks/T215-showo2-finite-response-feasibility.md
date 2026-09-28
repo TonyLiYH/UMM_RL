@@ -12,7 +12,7 @@ blocks: [T300, T310]
 allowed_paths: ["tasks/T215-showo2-finite-response-feasibility.md", "configs/feasibility/showo2/", "runs/feasibility-showo2-v1/", "reports/T215/", "src/comppareto/adapters/showo2/", "tests/adapters/showo2/"]
 source_revision: "217d183b30995db4ac82158259f45800e57e2eb1"
 created_at: 2026-08-27
-updated_at: 2026-09-03
+updated_at: 2026-09-28
 ---
 
 # T215: Show-o2 finite-response diagnostic feasibility
@@ -196,3 +196,79 @@ other declared dependencies.
   revised to accept a documented K=1 failure as a valid submission, or whether T215 should be
   formally closed as a negative feasibility result via some other path. No fabricated or rounded
   numbers were used to force a pass.
+- 2026-09-28 — Remote executor resumed T215 for a second, independent verification pass, per
+  `origin/main`'s `tasks/README.md` re-listing T215 as `ready` (this task file's own front matter
+  was still `blocked` from the prior attempt — that is the state resumed from, not a fresh restart;
+  no local-review acceptance of the prior `blocked` outcome had occurred). Merged 71 unrelated
+  `origin/main` commits into this branch with zero conflicts in T215's `allowed_paths` (merge commit
+  `2eab9ba`). No adapter/protocol/config file was modified and no new GPU run was executed this
+  round — the objective was to determine, independently, whether commit `e33d76c`'s `blocked`
+  verdict reflects a genuine, fixable implementation defect (in which case fix and rerun for real)
+  or an irreducible negative finding under the frozen protocol (in which case strengthen the
+  evidence trail). Findings, each re-derived directly from the code and the already-recorded
+  `runs/feasibility-showo2-v1/metrics.json`, not merely re-read from the prior report:
+  1. **MMU-NAN reconfirmed as a true mathematical singularity, not a coincidental fp32 rounding
+     artifact.** Re-derived `protocols.py::adamw_step`'s bias-correction identity by hand: at
+     `step=1`, `bias_correction2 == 1 - ADAMW_BETA2`, and since `exp_avg_sq` starts at zero,
+     `exp_avg_sq_1 == (1-ADAMW_BETA2) * grad_p**2` exactly, so `exp_avg_sq_1/bias_correction2 ==
+     grad_p**2` bit-for-bit and `denom = sqrt(grad_p**2) + eps = |grad_p| + eps`. `d(sqrt(x))/dx`
+     at `x=0` is a genuine `0/0` under the chain rule when `grad_p` is exactly zero, independent of
+     floating-point precision — the MMU NTP loss's `IGNORE_INDEX=-100` masking structurally zeroes
+     the gradient contribution of most target positions across the ~21.7M-parameter
+     `fusion_proj`+`und_trans.layers[0]` block, making an exact-zero coordinate a structural
+     near-certainty, not an underflow coincidence a higher-precision dtype would avoid. Checked
+     whether moving `eps` inside the `sqrt` (a known differentiable-optimizer stabilization
+     convention) would fix this: `reports/T215/first-report.md` section 4 declared the
+     exact-`torch.optim.AdamW`-semantics formula (`eps` outside `sqrt`) in the pre-registered first
+     report, published before any GPU execution — relocating `eps` now, after observing the NaN,
+     would be a post-hoc protocol-formula change with no preregistered rule authorizing it. Declined
+     to apply it. **MMU-NAN stands as previously recorded.**
+  2. **T2I-FDMISS: identified and quantitatively confirmed the actual noise mechanism (fp32
+     catastrophic cancellation in the central-difference numerator), strengthening rather than
+     overturning the prior finding.** Estimated cancellation-error floor:
+     `machine_eps(fp32) * max(|loss_plus|,|loss_minus|) / (2*eps) ≈ 1.19e-7 * 0.1 / 1.16e-4 ≈ 1e-4`
+     — matches the observed `|analytic_value - fd_value|` gaps on the 3 Rademacher directions of the
+     `disjoint_k1` T2I variant (`1.18e-4`, `5.6e-5`, `1.2e-5`) to within an order of magnitude, and
+     explains why only the 4th ("natural", gradient-aligned) direction — whose `fd_value` (`0.147`)
+     is 3-4 orders of magnitude larger than the Rademacher directions' (`~1e-4`) — comes anywhere
+     close to tolerance (0.6-1.0% relative error): its true directional derivative is large enough to
+     swamp this fp32 floor, while the small-magnitude directions are not. This sharpens, and does not
+     contradict, the prior ledger's qualitative "higher-order curvature / cancellation noise"
+     description. Considered recomputing the FD reference in fp64 to remove this artifact: plausible
+     in principle, but declined — `reports/T215/first-report.md` section 1 explicitly commits to
+     fp32 for the diagnostic ("the diagnostic's finite-difference check ... need[s] fp32 numerical
+     precision"), published before any GPU execution; switching to fp64 now, having observed the
+     fp32 result fail, is exactly the post-hoc eps/precision substitution the failure ledger already
+     identifies as prohibited. A fp64 FD variant would need to be proposed and preregistered as a new,
+     distinct diagnostic configuration, not retrofitted onto this K=1 gate's recorded result. **T2I-FDMISS
+     stands as previously recorded, now with a quantitatively confirmed root-cause mechanism.**
+  3. **Contract-vs-finding mismatch reconfirmed independently.** Re-ran
+     `bash scripts/validate_task_submission.sh T215` from a clean, post-merge tree: the full local
+     test suite (341 tests, up from 190 due to the merged-in unrelated tasks' own tests) passes
+     cleanly; the submission gate fails on exactly the same 4 conditions as before (task status not
+     `awaiting_review`; `manifest.json:status` `fail`≠`pass`; `metrics.json:snapshot_restore.failed`
+     `4`≠`0`; `metrics.json:finite_difference.failed` `4`≠`0`). Verbatim output:
+     ```
+     task_tree=pass tasks=43
+     run_manifests=pass manifests=12
+     research_state=pass
+     341 passed in 188.63s (0:03:08)
+     submission_validation=fail task=T215
+     task status must be awaiting_review for submission; found blocked
+     runs/feasibility-showo2-v1/manifest.json:status: expected == 'pass', found 'fail'
+     runs/feasibility-showo2-v1/metrics.json:snapshot_restore.failed: expected == 0, found 4
+     runs/feasibility-showo2-v1/metrics.json:finite_difference.failed: expected == 0, found 4
+     ```
+  **Conclusion**: the prior `blocked` verdict is confirmed correct and irreducible under the frozen
+  protocol as declared in the pre-registered first report. No fixable defect was found in the
+  diagnostic implementation itself — both the AdamW singularity and the FD-noise mechanism were
+  independently re-derived mathematically this round, not merely re-read. The two K=1 failures
+  (MMU's exact differentiation singularity at a structurally-zero-gradient coordinate; T2I's
+  fp32-cancellation-dominated FD mismatch on 3 of 4 directions) are genuine, now doubly root-caused
+  negative results, and `tasks/contracts/T215.acceptance.yaml`'s unconditional pass-only metric
+  structure has no branch to represent them. **Status remains `blocked`.** This remains a
+  local-research-agent/task-owning decision point (revise the acceptance contract to accept a
+  documented, gated K=1 failure as a valid closed submission, or formally close T215 as a negative
+  feasibility result via another mechanism) — not something further remote GPU execution within
+  this task's current authorization can resolve. No file outside this task's `allowed_paths` was
+  modified; no new fabricated or rounded numbers were used.

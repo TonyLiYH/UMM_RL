@@ -161,6 +161,62 @@ a genuine, reportable diagnostic/numerical failure that stands as the task's K=1
   change the overall K=1 pass/fail outcome, and the task instructs against continuing to
   K=3/further remediation once K=1 has failed.
 
+## Second-round independent re-verification (2026-09-28, no code/config/run changes)
+
+A second remote-executor pass (resumed after `origin/main`'s `tasks/README.md` re-listed T215 as
+`ready`) independently re-derived the root causes below from the code and the already-recorded
+`metrics.json`, without re-running the GPU diagnostic or changing any adapter/protocol/config file.
+Both re-derivations CONFIRM the prior verdict; neither identifies a fixable defect.
+
+### MMU-NAN: independent re-derivation of the exact singularity
+
+Hand-derived `adamw_step`'s bias-correction identity at `step=1`: `bias_correction2 = 1 -
+ADAMW_BETA2`, and since `exp_avg_sq` starts at zero, `exp_avg_sq_1 = (1-ADAMW_BETA2)*grad_p**2`
+exactly, so `exp_avg_sq_1/bias_correction2 == grad_p**2` bit-for-bit and `denom = sqrt(grad_p**2) +
+eps = |grad_p| + eps`. `d(sqrt(x))/dx` at `x=0` is `0/0` under the chain rule when `grad_p` is
+exactly zero -- a genuine mathematical singularity, not an fp32 underflow of a tiny nonzero value: the
+MMU NTP loss's `IGNORE_INDEX=-100` masking structurally zeroes the gradient contribution of most
+target positions across the ~21.7M-parameter subspace, so an exact-zero coordinate is a structural
+near-certainty independent of dtype. Moving `eps` inside the `sqrt` would avoid this, but that
+formula was declared (matching exact `torch.optim.AdamW` semantics) in `reports/T215/first-report.md`
+section 4, published before any GPU execution -- changing it now, after observing the NaN, has no
+preregistered authorization. Not applied.
+
+### T2I-FDMISS: quantitative confirmation of the fp32-cancellation noise floor
+
+Predicted cancellation-error floor in the central-difference numerator:
+`machine_eps(fp32) * max(|loss_plus|,|loss_minus|) / (2*eps) ~= 1.19e-7 * 0.1 / 1.16e-4 ~= 1e-4`.
+This matches the observed `disjoint_k1` T2I `|analytic_value - fd_value|` gaps on the 3 Rademacher
+directions (`1.18e-4`, `5.6e-5`, `1.2e-5`) to within an order of magnitude, and explains why only the
+4th ("natural") direction -- `fd_value = 0.147`, 3-4 orders of magnitude above this noise floor --
+comes close to tolerance (0.6-1.0% relative error) while the 3 small-magnitude directions do not:
+their true directional derivatives are near or below the fp32 noise floor for this `eps`. This
+sharpens (does not contradict) the original "higher-order curvature / cancellation noise"
+description. Recomputing the FD reference in fp64 would plausibly remove this artifact, but
+`reports/T215/first-report.md` section 1 explicitly commits to fp32 for this diagnostic, published
+before any GPU execution -- switching to fp64 now, having observed the fp32 result fail, would be
+exactly the post-hoc precision/tolerance substitution this ledger already treats as prohibited. Not
+applied; would need to be proposed as a new, preregistered diagnostic variant, not retrofitted onto
+this K=1 gate's recorded result.
+
+### Validator re-run (clean tree, post-merge with 71 unrelated `origin/main` commits, zero conflicts
+in T215's `allowed_paths`, merge commit `2eab9ba`)
+
+```
+task_tree=pass tasks=43
+run_manifests=pass manifests=12
+research_state=pass
+341 passed in 188.63s (0:03:08)
+submission_validation=fail task=T215
+task status must be awaiting_review for submission; found blocked
+runs/feasibility-showo2-v1/manifest.json:status: expected == 'pass', found 'fail'
+runs/feasibility-showo2-v1/metrics.json:snapshot_restore.failed: expected == 0, found 4
+runs/feasibility-showo2-v1/metrics.json:finite_difference.failed: expected == 0, found 4
+```
+
+Confirms the contract-vs-finding mismatch is unchanged and reproducible: the full test suite passes,
+and the submission gate fails on exactly the same 4 conditions as the first attempt recorded.
+
 ## Summary
 
 - 2 infrastructure defects found and fixed as permitted retries (INFRA-1, INFRA-2).
@@ -171,3 +227,8 @@ a genuine, reportable diagnostic/numerical failure that stands as the task's K=1
 - K=3 was correctly NOT run for either task path, per the task's mandatory K=1-before-K=3 rule.
 - Total GPU-hours consumed across all failure-diagnosis and retry attempts this session:
   ≈0.0323 h, against the 8-h cap (0.4%). GPU count: 1, against the 2-GPU cap.
+- 2026-09-28 second-round independent re-verification: both MMU-NAN and T2I-FDMISS root causes
+  re-derived from first principles (not merely re-read) and CONFIRMED, with T2I-FDMISS additionally
+  now quantitatively explained (fp32 cancellation floor ≈1e-4 matches observed gaps). No fixable
+  defect found; no code/config/run file changed; 0 additional GPU-hours consumed (no rerun). Verdict
+  unchanged: genuine, irreducible K=1 negative result under the frozen protocol.
