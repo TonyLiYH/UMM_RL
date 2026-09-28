@@ -2,7 +2,7 @@
 id: T216
 title: Show-o2 compute-matched alternating-protocol diagnostic
 parent: T200
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T300, T310]
 allowed_paths: ["tasks/T216-showo2-alternating-protocol-diagnostic.md", "configs/alternating/showo2/", "runs/alternating-showo2-v1/", "reports/T216/", "src/comppareto/adapters/showo2_alternating/", "tests/adapters/showo2_alternating/"]
 source_revision: "2358267c14dddc3754e7a80e9b681308c6bcd0f7"
 created_at: 2026-09-15
-updated_at: 2026-09-15
+updated_at: 2026-09-28
 ---
 
 # T216: Show-o2 compute-matched alternating-protocol diagnostic
