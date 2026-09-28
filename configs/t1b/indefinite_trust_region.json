@@ -1,0 +1,7 @@
+{
+  "task_id": "T130",
+  "description": "Indefinite curvature and trust-region rejection: counterexample suite and acceptance contract evaluation.",
+  "acceptance_tolerance": 1e-9,
+  "attempt_reduction": true,
+  "counterexample_suite": "comppareto.trust_region_counterexamples.build_counterexample_suite"
+}

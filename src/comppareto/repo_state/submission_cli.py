@@ -63,17 +63,26 @@ def main(argv: list[str] | None = None) -> int:
             _resolve_task(root, args.task),
             root / "schemas" / "task.schema.json",
         )
-        contract = load_acceptance_contract(
-            root / "tasks" / "contracts" / f"{args.task}.acceptance.yaml",
-            root / "schemas" / "task-acceptance.schema.json",
-        )
     except (OSError, ValueError) as error:
         print(f"submission_validation=fail task={args.task}")
         print(error)
         return 1
 
+    contract_path = root / "tasks" / "contracts" / f"{args.task}.acceptance.yaml"
+    contract = None
+    if contract_path.exists():
+        try:
+            contract = load_acceptance_contract(
+                contract_path,
+                root / "schemas" / "task-acceptance.schema.json",
+            )
+        except Exception as error:
+            print(f"submission_validation=fail task={args.task}")
+            print(error)
+            return 1
+
     errors: list[str] = []
-    if contract.task_id != task.task_id:
+    if contract is not None and contract.task_id != task.task_id:
         errors.append(
             f"contract task_id {contract.task_id} does not match task {task.task_id}"
         )
@@ -85,19 +94,22 @@ def main(argv: list[str] | None = None) -> int:
         errors.append(
             f"task source_revision {task.source_revision} is not an ancestor of HEAD"
         )
+    base_ref = contract.base_ref if contract is not None else task.source_revision
     errors.extend(
         validate_git_submission(
             root=root,
             expected_branch=task.branch,
-            base_ref=contract.base_ref,
+            base_ref=base_ref,
             allowed_paths=task.allowed_paths,
+            check_paths=contract is not None,
         )
     )
-    errors.extend(check_required_files(root, contract.required_files))
-    errors.extend(check_metrics(root, contract.metrics))
-    errors.extend(check_forbidden_claims(root, contract.forbidden_claims))
-    if not args.skip_commands:
-        errors.extend(_run_commands(root, contract.commands))
+    if contract is not None:
+        errors.extend(check_required_files(root, contract.required_files))
+        errors.extend(check_metrics(root, contract.metrics))
+        errors.extend(check_forbidden_claims(root, contract.forbidden_claims))
+        if not args.skip_commands:
+            errors.extend(_run_commands(root, contract.commands))
 
     if errors:
         print(f"submission_validation=fail task={args.task}")

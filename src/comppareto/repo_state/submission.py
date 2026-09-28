@@ -48,6 +48,7 @@ def validate_git_submission(
     expected_branch: str,
     base_ref: str,
     allowed_paths: tuple[str, ...],
+    check_paths: bool = True,
 ) -> list[str]:
     errors: list[str] = []
     status = _git(root, "status", "--porcelain")
@@ -61,14 +62,15 @@ def validate_git_submission(
     ancestor = _git(root, "merge-base", "--is-ancestor", base_ref, "HEAD")
     if ancestor.returncode != 0:
         errors.append(f"base ref {base_ref} is not an ancestor of HEAD")
-    try:
-        files = changed_paths(root, base_ref)
-    except ValueError as error:
-        errors.append(str(error))
-        files = []
-    for path in files:
-        if not path_is_allowed(path, allowed_paths):
-            errors.append(f"unauthorized changed path: {path}")
+    if check_paths:
+        try:
+            files = changed_paths(root, base_ref)
+        except ValueError as error:
+            errors.append(str(error))
+            files = []
+        for path in files:
+            if not path_is_allowed(path, allowed_paths):
+                errors.append(f"unauthorized changed path: {path}")
     return errors
 
 
