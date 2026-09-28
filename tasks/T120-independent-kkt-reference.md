@@ -2,7 +2,7 @@
 id: T120
 title: Independent KKT and direct-solver reference
 parent: T100
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -12,7 +12,7 @@ blocks: [T150]
 allowed_paths: ["src/comppareto/", "tests/", "configs/t1b/", "runs/t1b-kkt-*/", "reports/T120/", "tasks/T120-independent-kkt-reference.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-09-28
 ---
 
 # T120: Independent KKT reference
