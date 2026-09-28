@@ -168,9 +168,16 @@ It is unbiased for the coupled estimand, with variance
 \right).
 \]
 
-Independent randomness removes the covariance term and targets a difference
-of marginal expectations. The coupled and independent estimands are not
-operationally identical when randomness is part of the response protocol.
+If treatment and control preserve the same marginal laws, independent
+randomness targets the same expectation
+
+\[
+\mathbb E[Z_1-Z_0]=\mathbb E Z_1-\mathbb E Z_0,
+\]
+
+but loses the covariance-based variance reduction. A different estimand arises
+only when the marginal response, evaluator, conditioning, or selection
+protocol itself changes; common random numbers alone do not change the mean.
 
 Same-batch adaptation/evaluation estimates a same-batch operational value, not
 held-out post-adaptation performance. Direction selection also creates
@@ -204,4 +211,3 @@ F^1(x;0)=\frac{29}{90}x^2,
 
 For \(x\neq0\), commit and rerun point in opposite directions. Stable private
 optimization alone does not guarantee commit descent for the rerun value.
-

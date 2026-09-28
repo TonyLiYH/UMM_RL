@@ -44,18 +44,27 @@ proposed shared/private response gate.
 ## Child sequence
 
 ```text
-T710 CoRL assets/code/admission + GPU optimizer smoke
-  ├── T730 Official Unified-RL exploratory reproduction
-  ├── T740 Single-task GRPO oracle wave
-  └── T750 Per-task gradient/update instrumentation
-T720 Janus-Pro-R1 reusable training-stack audit + GPU smoke
-T730 + T740 + T750
-  └── T760 Traditional negotiator wave
-       └── T770 Shared/private response-gated wave
+T710 bounded CoRL smoke and defect ledger
+        ↓
+T711 semantic correctness + fixed-anchor admission
+        ↓
+T755 real CoRL instrumentation
+   ┌────┴─────────┐
+   ↓              ↓
+T730 joint/private-enabled headroom pilots
+T740 U-only/G-only reference pilots
+   └────┬─────────┘
+        ↓
+T756 same-snapshot response-opportunity probes
+        ↓
+T760 compact conventional-versus-response method screen
+        ↓
+T770 locked multi-seed response-method confirmation
+
+T720 Janus-Pro-R1 reusable SFT/GRPO stack audit is an engineering sidecar.
 ```
 
 ## Successor policy
 
-Only the local review side opens T730/T740/T760/T770 after prerequisites and
-comparison budgets are frozen.
-
+Only the local review side opens T730/T740/T756/T760/T770 after prerequisites,
+practical-effect margins, and comparison budgets are frozen.

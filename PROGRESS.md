@@ -25,9 +25,12 @@ Current authorized remote entries:
 - T250 post-training starting-checkpoint selection — accepted 2026-09-16;
 - T260 joint post-training dataset admission — accepted 2026-09-16;
 - T270 selected-model training-interface smoke — planned pending T250/T260.
-- T710 CoRL assets/code admission and bounded GPU optimizer smoke — ready;
-- T720 Janus-Pro-R1 reusable SFT/GRPO stack smoke — ready;
-- T750 per-task gradient and realized-update instrumentation — ready.
+- T710 CoRL assets/code admission — revision needed after hard semantic review;
+- T711 CoRL semantic correctness and fixed-anchor admission — ready;
+- T720 Janus-Pro-R1 reusable SFT/GRPO stack smoke — accepted as engineering evidence;
+- T750 framework-neutral gradient/update instrumentation — accepted for mock scope;
+- T755 real CoRL gradient/update instrumentation — planned after T711.
+- T756 same-snapshot response-opportunity probes — planned after P1 pilots.
 
 These tasks do not authorize joint post-training. T300 remains closed until
 T100, T170, T210, and T215 are accepted.
@@ -82,21 +85,25 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 4. T220, T230, and T240 have completed local review. Preserve their accepted
    limitations: UniDDT is read-only, SenseNova mixed-token forward is
    unsupported, and UniAR pixel-decoder training is unreleased.
-5. Execute T710, T720, and T750 in parallel. T710 and T720 include asset
-   downloads, local-SSD execution, real GPU optimizer steps, checkpoint
-   save/reload, and resource evidence.
-6. After T710 is accepted, freeze and open T730 official Unified-RL
-   reproduction and T740 single-task GRPO oracles.
-7. Open T760 only after T730, T740, and T750 are accepted. Open T770 only if
-   T760 records preregistered negative transfer, stagnation, or a harmful
-   shared-update condition.
-8. T270 remains a later SenseNova cross-architecture smoke and is no longer on
+5. Execute T711 before persistent CoRL training. It validates causal image
+   scoring, behavior/scoring identity, QA dispatch, padding-sensitive rewards,
+   full-state resume, and fixed-anchor response semantics.
+6. Open T755 after T711, then integrate real PyTorch per-task gradients,
+   clipping, optimizer membership, and realized updates.
+7. After T711/T755, run short U-only, G-only, frozen-private joint, and
+   private-enabled joint pilots. T756 then tests same-snapshot response
+   opportunity with equal-private and equal-total-compute controls.
+8. Freeze the next method screen only if headroom and a differential response
+   signal are both observed.
+9. T720 is a reusable Janus-Pro-R1 engineering reference, not a scientific
+   baseline on the first-paper critical path.
+10. T270 remains a later SenseNova cross-architecture smoke and is no longer on
    the first Janus/CoRL paper critical path.
-9. Open T140/T150 only after their declared prerequisites are accepted.
-10. Accept T100, T170, and at least one valid real-model response diagnostic
+11. Open T140/T150 only after their declared prerequisites are accepted.
+12. Accept T100, T170, and at least one valid real-model response diagnostic
    before changing T300 to `ready`.
-11. Complete the planned T160 finite-response posterior-certificate and T170
+13. Complete the planned T160 finite-response posterior-certificate and T170
    graph-localized robust-certificate contracts after their dependencies are
    accepted; neither task is authorized yet.
-12. Freeze data-source, capability, split, and decontamination manifests before
+14. Freeze data-source, capability, split, and decontamination manifests before
    D0; do not attribute a data-scheduling gain to update geometry.

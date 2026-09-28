@@ -2,7 +2,7 @@
 id: T720
 title: Janus-Pro-R1 reusable SFT and GRPO stack smoke
 parent: T700
-status: awaiting_review
+status: accepted
 priority: P1
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -65,6 +65,13 @@ is blocking.
 ```bash
 bash scripts/validate_task_submission.sh T720
 ```
+
+## Review history
+
+- 2026-09-28 — Integrated local review accepted T720 as a reusable SFT/GRPO
+  engineering-stack reference. It is not evidence for symmetric
+  understanding-generation joint training and is outside the first-paper
+  scientific critical path. Accepted by: local-research-agent.
 
 ## Review history
 

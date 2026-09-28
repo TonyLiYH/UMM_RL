@@ -14,7 +14,7 @@ Standard multi-task learning treats the losses as simultaneous functions of one 
 
 Optimizing a local model of each task *after private adaptation* yields shared updates that preserve more single-task improvement and produce fewer negative-transfer capability slices than raw-gradient surgery or loss scalarization.
 
-The decisive controlled question uses the same finite response \(A_i^K\) for every method: at equal compute, does retaining optimizer state and normalizing by attainable single-task gain improve prediction or joint optimization over general MOBLO/MGDA, normalized Chebyshev, and Nash negotiation? This prevents gains from being attributed merely to giving CompPareto extra inner updates.
+The decisive controlled question uses the same finite response \(A_i^K\) for every method: at equal compute, does response information identify shared updates whose incremental value is misjudged by current-state gradients, and does acting on it improve independently evaluated joint outcomes beyond tuned alternating optimization and a strong conventional negotiator? This prevents gains from being attributed merely to extra private updates, line search, or a different evaluation budget.
 
 Before promoting a response-aware method, the project must test the simpler
 shared-then-private alternating baseline: select a shared direction from current
@@ -24,6 +24,13 @@ scientifically justified only if it improves controlled post-adaptation
 outcomes after matching private steps, samples, gradient evaluations, and wall
 clock. The compute-matched private-only branch is mandatory so that ordinary
 private training gains are not attributed to the shared update.
+
+For GRPO response diagnostics, trajectories, behavior log probabilities, masks,
+advantages, evaluator state, private optimizer state, and RNG must remain
+fixed within every counterfactual window. Persistent training refreshes
+on-policy rollouts between windows. No finite-response theorem is applied to a
+surrogate whose behavior anchors are recomputed after every candidate
+perturbation.
 
 ## Initial scope
 

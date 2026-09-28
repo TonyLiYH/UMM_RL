@@ -1,0 +1,82 @@
+schema_version: 1
+task_id: T711
+base_ref: origin/main
+required_files:
+  - configs/corl/admission/source-lock.yaml
+  - configs/corl/admission/environment-lock.md
+  - configs/corl/admission/storage-preflight.json
+  - configs/corl/admission/artifact-verification.json
+  - configs/corl/admission/discrepancy-lock.yaml
+  - configs/corl/admission/corrected-protocol.yaml
+  - reports/T711/first-report.md
+  - reports/T711/semantic-correctness.md
+  - reports/T711/result-summary.md
+  - reports/T711/claim-check.md
+  - reports/T711/failure-ledger.md
+  - runs/corl-admission-v1/manifest.json
+  - runs/corl-admission-v1/metrics.json
+  - runs/corl-admission-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: artifact-hashes
+    command: .venv/bin/python scripts/verify_manifest_artifacts.py --manifest runs/corl-admission-v1/manifest.json --output /tmp/T711-artifact-verification.json
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/corl-admission-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/corl/admission/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/corl/admission/storage-preflight.json
+    path: filesystem_class
+    op: "=="
+    value: local
+  - file: configs/corl/admission/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.image_token_alignment.confirmed
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.behavior_scoring_identity.confirmed
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.qa_dispatch.confirmed
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.padding_invariant_tim.confirmed
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.full_state_resume.confirmed
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: checks.fixed_anchor_surrogate.confirmed
+    op: "=="
+    value: true
+  - file: runs/corl-admission-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 16
+forbidden_claims:
+  - file: reports/T711/result-summary.md
+    when:
+      file: runs/corl-admission-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, reproduces CoRL, improves both tasks]
+

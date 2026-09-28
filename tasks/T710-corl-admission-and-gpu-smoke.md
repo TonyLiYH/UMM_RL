@@ -2,7 +2,7 @@
 id: T710
 title: CoRL assets, implementation audit, and GPU optimizer smoke
 parent: T700
-status: awaiting_review
+status: revision_needed
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -89,6 +89,43 @@ T730 until a corrected protocol is locally frozen.
 ```bash
 bash scripts/validate_task_submission.sh T710
 ```
+
+## Local review requirements — 2026-09-28
+
+The bounded smoke is accepted as infrastructure and defect-discovery evidence,
+but it does not establish a correct research-training baseline. Revise before
+acceptance:
+
+1. Replace the circular-label likelihood probe with cached rollout versus
+   teacher-forced next-token distribution parity, prefix-position, and
+   token-perturbation causality tests.
+2. Repair question-type dispatch per completion, reject mismatched list
+   lengths/types, and test singleton, MC-only, OE-only, and mixed batches.
+3. Declare and test a behavior/scoring policy: a CFG=1 no-truncation
+   correctness baseline is mandatory; guided sampling may remain a separately
+   labeled upstream-surrogate path.
+4. Record actual per-group reward standard deviations, advantages, candidate
+   ordering, masks, behavior log probabilities, and separate U/G losses.
+5. Freeze four distinct labels: paper-described recipe, upstream executable,
+   correctness-repaired research protocol, and reduced smoke.
+6. Set the intended learning rate, group size, batch exposure, reward
+   configuration, and tokenizer/generation settings explicitly; do not inherit
+   framework defaults.
+7. Validate tensor-level authorized parameter and reference immutability,
+   actual optimizer membership, and pre-save/post-reload U/G log-probability
+   equality.
+8. Add padding-invariance tests for text-image matching reward.
+
+This revision remains a bounded correctness task. No benchmark-scale training
+is authorized.
+
+## Review history
+
+- 2026-09-28 — Local hard auto review set `revision_needed`. T710 established
+  executable components but causal image scoring, behavior-policy consistency,
+  batched MC dispatch, reduction semantics, and full-state integrity remain
+  unresolved. See
+  `review-stage/unified-grpo-fast-path-20260928/AUTO_REVIEW.md`.
 
 ## Review history
 

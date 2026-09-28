@@ -51,11 +51,14 @@ T000  CompPareto / UMM_RL research [root]  running
 ├── T500  E2 cross-architecture validation  planned
 ├── T600  E3 heterogeneous preference/RL validation  planned
 └── T700  Unified understanding-generation GRPO programme  running
-    ├── T710  CoRL assets, implementation audit, and GPU optimizer smoke  ready
-    ├── T720  Janus-Pro-R1 reusable SFT and GRPO stack smoke  ready
+    ├── T710  CoRL assets, implementation audit, and GPU optimizer smoke  revision_needed
+    ├── T711  CoRL semantic correctness and fixed-anchor admission  ready
+    ├── T720  Janus-Pro-R1 reusable SFT and GRPO stack smoke  accepted
     ├── T730  Official CoRL Unified-RL exploratory reproduction  planned
     ├── T740  CoRL single-task GRPO oracles  planned
-    ├── T750  Per-task gradient/update instrumentation  ready
+    ├── T750  Per-task gradient/update instrumentation  accepted (mock scope)
+    ├── T755  Real CoRL gradient/update instrumentation  planned
+    ├── T756  CoRL same-snapshot response-opportunity probes  planned
     ├── T760  Traditional multi-task negotiator wave  planned
     └── T770  Response-gated Unified GRPO wave  planned
 ```
@@ -69,9 +72,8 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
 | [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
 | [T216](T216-showo2-alternating-protocol-diagnostic.md) | P0 | `agent/T216-showo2-alternating-protocol-diagnostic` | Compute-matched SP vs PS/commit reversible diagnostics |
-| [T710](T710-corl-admission-and-gpu-smoke.md) | P0 | `agent/T710-corl-admission-gpu-smoke` | Download CoRL assets and run bounded Unified-GRPO optimizer smoke |
+| [T711](T711-corl-semantic-correctness-admission.md) | P0 | `agent/T711-corl-semantic-correctness-admission` | Validate causal GRPO semantics and freeze corrected research protocol |
 | [T720](T720-janus-pro-r1-stack-smoke.md) | P1 | `agent/T720-janus-pro-r1-stack-smoke` | Download Janus-Pro-R1 assets and run SFT+GRPO stack smokes |
-| [T750](T750-corl-gradient-update-instrumentation.md) | P0 | `agent/T750-corl-gradient-update-instrumentation` | Per-task gradients, clipping, AdamW update and cost instrumentation |
 
 Only the bounded optimizer smokes in T710 and T720 are newly authorized.
 T730/T740/T760/T770 remain closed. T215/T216 remain legacy reversible
@@ -100,10 +102,13 @@ diagnostics and are no longer the first-paper critical path.
 | T160 | T100 | planned | P0 | unassigned | local-research-agent |
 | T170 | T100 | planned | P0 | unassigned | local-research-agent |
 | T700 | T000 | running | P0 | local-research-agent | user |
-| T710 | T700 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T720 | T700 | ready | P1 | remote-gpu-agent | local-research-agent |
+| T710 | T700 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
+| T711 | T700 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T720 | T700 | accepted | P1 | remote-gpu-agent | local-research-agent |
 | T730 | T700 | planned | P0 | unassigned | local-research-agent |
 | T740 | T700 | planned | P0 | unassigned | local-research-agent |
-| T750 | T700 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T750 | T700 | accepted | P0 | remote-gpu-agent | local-research-agent |
+| T755 | T700 | planned | P0 | unassigned | local-research-agent |
+| T756 | T700 | planned | P0 | unassigned | local-research-agent |
 | T760 | T700 | planned | P0 | unassigned | local-research-agent |
 | T770 | T700 | planned | P0 | unassigned | local-research-agent |
