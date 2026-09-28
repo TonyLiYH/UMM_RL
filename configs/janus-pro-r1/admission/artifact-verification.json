@@ -1,0 +1,97 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 9988183802,
+      "actual_sha256": "4c90acffa3b3eeea5dff0451f4752d2cddca14a50f906ba1eaa7591895c197ec",
+      "artifact_id": "janus-pro-7b-pytorch-model-00001",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/Janus-Pro-7B/pytorch_model-00001-of-00002.bin",
+      "expected_bytes": 9988183802,
+      "expected_sha256": "4c90acffa3b3eeea5dff0451f4752d2cddca14a50f906ba1eaa7591895c197ec",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4853013705,
+      "actual_sha256": "1cb7c7d12c16933f519f4959cbc8514bb50561f2945069f6d3b5827aadaac800",
+      "artifact_id": "janus-pro-7b-pytorch-model-00002",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/Janus-Pro-7B/pytorch_model-00002-of-00002.bin",
+      "expected_bytes": 4853013705,
+      "expected_sha256": "1cb7c7d12c16933f519f4959cbc8514bb50561f2945069f6d3b5827aadaac800",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4939944336,
+      "actual_sha256": "c9815f2a1c042cb4b6db939063a7b3ea6533c2ed0ffa3b4d79ac3c7d5cb5be9c",
+      "artifact_id": "internvl2_5-8b-model-00001",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/InternVL2_5-8B/model-00001-of-00004.safetensors",
+      "expected_bytes": 4939944336,
+      "expected_sha256": "c9815f2a1c042cb4b6db939063a7b3ea6533c2ed0ffa3b4d79ac3c7d5cb5be9c",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4915914584,
+      "actual_sha256": "fbc4b8d534056f7b700276ddc2e52a407767a7803d788144c620a357df799d6f",
+      "artifact_id": "internvl2_5-8b-model-00002",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/InternVL2_5-8B/model-00002-of-00004.safetensors",
+      "expected_bytes": 4915914584,
+      "expected_sha256": "fbc4b8d534056f7b700276ddc2e52a407767a7803d788144c620a357df799d6f",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4915914592,
+      "actual_sha256": "0b5544a5021413d7b7e16f3a53800806474293df5c705101926634122c6c4103",
+      "artifact_id": "internvl2_5-8b-model-00003",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/InternVL2_5-8B/model-00003-of-00004.safetensors",
+      "expected_bytes": 4915914592,
+      "expected_sha256": "0b5544a5021413d7b7e16f3a53800806474293df5c705101926634122c6c4103",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1379026920,
+      "actual_sha256": "304352082d3656f355ccac2833ab1faef475788e1d14973c5629d5721bd09b72",
+      "artifact_id": "internvl2_5-8b-model-00004",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/InternVL2_5-8B/model-00004-of-00004.safetensors",
+      "expected_bytes": 1379026920,
+      "expected_sha256": "304352082d3656f355ccac2833ab1faef475788e1d14973c5629d5721bd09b72",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 1477754,
+      "actual_sha256": "f868398fc4e05ee1e8aeba95ddf18ddcc45b8bce55d5093bead5bbf80429b48b",
+      "artifact_id": "internvl2_5-8b-tokenizer-model",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/InternVL2_5-8B/tokenizer.model",
+      "expected_bytes": 1477754,
+      "expected_sha256": "f868398fc4e05ee1e8aeba95ddf18ddcc45b8bce55d5093bead5bbf80429b48b",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 875432539,
+      "actual_sha256": "941a38bb445b67bbdca905aeb51ecb87c30cef7330c78db7ca16a747ffb66c11",
+      "artifact_id": "janus-pro-r1-data-shard-0000-of-0524",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/data/janus-pro-r1/train-0000-of-0524.parquet",
+      "expected_bytes": 875432539,
+      "expected_sha256": "941a38bb445b67bbdca905aeb51ecb87c30cef7330c78db7ca16a747ffb66c11",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 2366,
+      "actual_sha256": "9346beae679b87b83f8a737fe4a7a882bac31f4809e94e98f9a3e369f3a79630",
+      "artifact_id": "sft-smoke-summary",
+      "canonical_uri": "runs/janus-pro-r1-stack-v1/evidence/sft-smoke-summary.json",
+      "expected_bytes": 2366,
+      "expected_sha256": "9346beae679b87b83f8a737fe4a7a882bac31f4809e94e98f9a3e369f3a79630",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 4681,
+      "actual_sha256": "d50b73d8693b190879095fc6bc6aad64b34df57993746c59df8ca4afa766e556",
+      "artifact_id": "grpo-smoke-summary",
+      "canonical_uri": "runs/janus-pro-r1-stack-v1/evidence/grpo-smoke-summary.json",
+      "expected_bytes": 4681,
+      "expected_sha256": "d50b73d8693b190879095fc6bc6aad64b34df57993746c59df8ca4afa766e556",
+      "status": "pass"
+    }
+  ],
+  "checked": 10,
+  "failed": 0,
+  "passed": 10
+}
