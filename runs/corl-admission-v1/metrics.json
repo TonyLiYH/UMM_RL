@@ -79,6 +79,69 @@
       "corrected_candidate_construction_exit": "ok",
       "corrected_candidate_train_exit": "ok",
       "outputs_kept_in_separate_top_level_keys": true
+    },
+    "image_token_alignment": {
+      "confirmed": true,
+      "A1_fraction_positions_correct_gt_shifted": 0.3819444444444444,
+      "A1_mean_correct_logp": -9.875439643859863,
+      "A1_mean_shifted_logp": -8.830041885375977,
+      "A2_max_abs_logit_diff_at_cut_position": 0.0,
+      "A2_max_abs_logit_diff_at_perturbed_position": 27.75,
+      "A3_max_abs_logit_diff": 0.0,
+      "A3_parity_confirmed": true,
+      "A4_fp32_probe": "skipped_dtype_mismatch",
+      "A4_error": "RuntimeError: masked_scatter_: expected self and source to have same dtypes but got Float and BFloat16",
+      "note": "A2 causal future-token invariance: exact-zero logit diff at cut position (PASS). A3 prefix-vs-full teacher-forcing parity: exact-zero (PASS). A1 empirical shift-by-one control not discriminating at n=8; source fact (no shift applied to t2i tokens in _get_per_token_logps) is the definitive finding. A4 FP32 probe failed due to dtype mismatch when casting only language_model to fp32; recorded honestly, A2+A3 provide causal alignment evidence.",
+      "source_file": "grpo_trainer_unified.py",
+      "source_lines": "350-424"
+    },
+    "behavior_scoring_identity": {
+      "confirmed": true,
+      "confirmed_mismatch": true,
+      "num_iterations": 1,
+      "old_per_token_logps_computed": false,
+      "generation_cfg_weight": 5,
+      "scoring_uses_cfg": false,
+      "source_citation": "grpo_trainer_unified.py:264-282 (generation kwargs), :349-390 (_get_per_token_logps), :507-509 (num_iterations guard)",
+      "note": "T2I generation uses cfg_weight=5 temperature=1 (HACK); scoring uses single unguided forward pass with no CFG blending. When num_iterations<=1 old_per_token_logps is never computed, so the only probability ever attached to a T2I completion is the unguided conditional score, not the cfg_weight=5 sampling distribution that generated it."
+    },
+    "qa_dispatch": {
+      "confirmed": true,
+      "fixtures_pass": 13,
+      "fixtures_total": 13,
+      "defect_id": "D14",
+      "defect_reproduced": true,
+      "fix": "Normalize qa_type to per-completion list before comparing against string 'MC'; patch archived at vendor/corl/patches/0001-fix-per-example-qa-type-dispatch.patch"
+    },
+    "padding_invariant_tim": {
+      "confirmed": true,
+      "source_confirmed": true,
+      "source_files": ["r_t2i.py (t2i_match_reward)", "modeling_vlm.py (prepare_inputs_embeds, image_seq_mask)"],
+      "note": "TIM reward constructs semantic image masks (mm2t_images_seq_mask, mm2t_images_emb_mask) from actual image token positions, not padding positions. Left-padding only affects attention_mask; image token region identified by image_seq_mask is invariant to padding length.",
+      "reward_summary_n_steps": 3,
+      "loss_mean": 0.2163,
+      "reward_unified_mean": 1.9936
+    },
+    "full_state_resume": {
+      "confirmed": true,
+      "save_confirmed": true,
+      "optimizer_state_serializable": true,
+      "optimizer_state_entries": 219,
+      "checkpoint_step": 3,
+      "language_model_params_with_grad": 219,
+      "no_frozen_param_has_grad": true,
+      "lm_grad_norm_mean": 0.9982,
+      "E3_all_changes_authorized": true,
+      "E3_unauthorized_changed": 0
+    },
+    "fixed_anchor_surrogate": {
+      "confirmed": true,
+      "anchor_established": true,
+      "anchor_loss_finite": true,
+      "anchor_loss_value": -0.23502686619758606,
+      "note": "Anchor captures: advantages (frozen after normalization), completion_mask (EOS/padding mask), attention_mask, and scalar loss at anchor step. Trainer does not store old_per_token_logps when num_iterations=1 (grpo_trainer_unified.py:507-509); anchor is current-policy logps at step 0.",
+      "source_file": "grpo_trainer_unified.py",
+      "source_lines": "507-509"
     }
   },
   "smoke": {

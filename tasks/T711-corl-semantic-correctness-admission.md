@@ -2,7 +2,7 @@
 id: T711
 title: CoRL semantic correctness and fixed-anchor admission
 parent: T700
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
