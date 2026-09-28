@@ -1,0 +1,57 @@
+{
+  "shard_count": 7,
+  "shard_max_bytes": 40000000,
+  "shards": [
+    {
+      "bytes": 39999850,
+      "index": 0,
+      "path": "pilot_train.jsonl",
+      "record_count": 64048,
+      "sha256": "2000b2516524350706fd656efe3289ae309d2e54b484f97a59be60fea75b9bea"
+    },
+    {
+      "bytes": 39999516,
+      "index": 1,
+      "path": "pilot_train.shard1.jsonl",
+      "record_count": 53555,
+      "sha256": "9901ca3e8d403f277f0f8beb0f02d7c6b39dc1cb00ac014728ec182353fe3c5f"
+    },
+    {
+      "bytes": 39999125,
+      "index": 2,
+      "path": "pilot_train.shard2.jsonl",
+      "record_count": 30746,
+      "sha256": "c4afd50ae7474f00019be5e07bc804c9b97647a025182b48476c35edd3dfde51"
+    },
+    {
+      "bytes": 39999116,
+      "index": 3,
+      "path": "pilot_train.shard3.jsonl",
+      "record_count": 30747,
+      "sha256": "75ddc261217b66c0f01d7b3f4b962127b615ccc142a6752f2e918f0f8abda941"
+    },
+    {
+      "bytes": 39999373,
+      "index": 4,
+      "path": "pilot_train.shard4.jsonl",
+      "record_count": 30743,
+      "sha256": "3ace73ce9ed025ff23f2371fc395c544243984e6a4b4028ec6e477a82e299e7e"
+    },
+    {
+      "bytes": 39998951,
+      "index": 5,
+      "path": "pilot_train.shard5.jsonl",
+      "record_count": 30731,
+      "sha256": "a0c8690544d7d503d5dca024271872eade28c5a05302b0f54e9ed915a1f41f20"
+    },
+    {
+      "bytes": 32058540,
+      "index": 6,
+      "path": "pilot_train.shard6.jsonl",
+      "record_count": 29637,
+      "sha256": "8c337131b2f1f5af060b059b221a6420a3395889042bbc0734716d7fd9292d6b"
+    }
+  ],
+  "split": "pilot_train",
+  "total_records": 270207
+}

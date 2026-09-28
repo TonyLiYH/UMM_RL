@@ -1,0 +1,41 @@
+{
+  "run_id": "admission-uniddt-v1",
+  "smoke": {
+    "build_pipeline": {
+      "exit_code": 0,
+      "elapsed_seconds": 35.60449814796448,
+      "error": null
+    },
+    "understanding": {
+      "exit_code": 0,
+      "elapsed_seconds": 19.950443029403687,
+      "num_images": 1,
+      "text_len": 1,
+      "error": null
+    },
+    "generation": {
+      "exit_code": 0,
+      "elapsed_seconds": 78.71589350700378,
+      "num_images": 1,
+      "error": null
+    }
+  },
+  "block_registry": {
+    "total_params": 5653001792,
+    "total_trainable_params": 1064238144,
+    "unassigned_trainable_parameters": 0
+  },
+  "resources": {
+    "gpu_name": "NVIDIA H20",
+    "gpu_count_used": 1,
+    "peak_vram_bytes": 21455294464,
+    "total_smoke_wallclock_seconds": 134.27085399627686,
+    "gpu_hours": 0.0373,
+    "gpu_hours_note": "Sum of build_pipeline+understanding+generation elapsed_seconds (134.271s) / 3600, single H20 device (CUDA_VISIBLE_DEVICES=0). Venv build, checkpoint/asset download, and hash verification are CPU/network/disk-bound and do not consume this GPU's compute; they are excluded from this figure, consistent with the T210 precedent's total_gpu_hours definition."
+  },
+  "artifacts": {
+    "checked": 9,
+    "passed": 9,
+    "failed": 0
+  }
+}

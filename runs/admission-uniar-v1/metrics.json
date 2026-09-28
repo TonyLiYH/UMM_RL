@@ -1,0 +1,54 @@
+{
+  "run_id": "admission-uniar-v1",
+  "smoke": {
+    "understanding": {
+      "exit_code": 0,
+      "entry_point": "inference/chat.py",
+      "official_defaults": true,
+      "run_evidence": "runs/admission-uniar-v1 manifest artifact understanding-smoke-run-bundle (t240_smoke_chat.log)",
+      "notes": "Single-image VQA/captioning smoke on the demo.jpeg URL from the README, default prompt-equivalent question, generated a coherent multi-sentence description; exit code captured directly from $? of the python process, no indirect evidence needed."
+    },
+    "generation": {
+      "exit_code": 0,
+      "entry_point": "inference/generate.py",
+      "official_defaults": true,
+      "run_evidence": "runs/admission-uniar-v1 manifest artifact generation-smoke-run-bundle (t240_smoke_gen2.log + generated.png)",
+      "output_image_sha256": "ec73a92e64e1b71fa3320e34908546b4f81dbfb5df884d8a91fee1cb2aedff43",
+      "output_image_bytes": 1629106,
+      "ar_rollout_tokens": 900,
+      "notes": "AR visual-token rollout (900/900 tokens) followed by the frozen SD3 pixel decode, exactly the README-documented default invocation (960x960, prompt 'A cute anime girl.', no CLI overrides). Required 4 environment-defect fix cycles before succeeding (torch-downgrade reassertion, flash-attn ABI rebuild, dropping --system-site-packages, purging mixed CUDA12/CUDA13 nvidia packages) -- see configs/admission/uniar/environment-lock.md for full detail. Exit code captured directly from $? of the python process."
+    }
+  },
+  "scope": {
+    "unreleased_decoder_training_recorded": true,
+    "released_understanding_inference": true,
+    "released_generation_inference": true,
+    "released_ar_rl_training": true,
+    "released_ar_rl_training_executed": false,
+    "unreleased_component": "visual-decoder (SD3 pixel decoder, UniARVisualDecoder) training code -- confirmed absent from the official repository (README's sole open TODO item: 'Release visual decoder training code.'); no training script, config, or trainer touches sd3_transformer/SD3Transformer2DModelWithSigLIP/StableDiffusion3PipelineWithSigLIP anywhere in the tree.",
+    "notes": "Per the frozen protocol, this admission does not attempt, patch around, or claim support for the unreleased visual-decoder-training path. See reports/T240/first-report.md 'Released vs. unreleased scope' and reports/T240/failure-ledger.md for full derivation."
+  },
+  "parameter_blocks": {
+    "total_params": 9627074032,
+    "shared_llm_backbone_params": 8190735360,
+    "understanding_private_params": 656160240,
+    "generation_private_params": 780178432,
+    "sum_check_matches_total": true,
+    "source": "configs/admission/uniar/parameter-block-registry.yaml"
+  },
+  "resources": {
+    "gpu_hours": 0.69,
+    "gpu_hours_methodology": "sum of per-cjob wall-clock durations (START to END timestamps) across every GPU-container job run for this admission (download, env setup x2, torch/flash-attn/venv fix cycles x6, understanding smoke, generation smoke x6 attempts, parameter-block enumeration x2), all on 1x H20 GPU 0; total 2453 seconds = 0.6814 GPU-hours, rounded up to 0.69 for reporting margin",
+    "gpu_model": "NVIDIA H20",
+    "gpus_used": 1,
+    "gpu_hour_cap": 8,
+    "within_cap": true,
+    "checkpoint_download_bytes": 46895768687,
+    "storage_free_bytes_at_preflight": 9761259622400
+  },
+  "artifacts": {
+    "checked": 28,
+    "passed": 28,
+    "failed": 0
+  }
+}

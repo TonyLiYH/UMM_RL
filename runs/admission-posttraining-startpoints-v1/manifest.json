@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "run_id": "admission-posttraining-startpoints-v1",
+  "task_id": "T250",
+  "run_kind": "formal",
+  "source_revision": "45c54ba403a2b5c95985a49206243449436717c8",
+  "execution_revision": "445dc71a763704023194e6bc7decd36e1b7e7e58",
+  "dirty": false,
+  "config_sha256": "a260822a961ad82125d62c502cc9e13d9b562c14e5caa9a1a0594fe6bfc87d45",
+  "environment": {
+    "audit_mode": "gpu_smoke",
+    "gpu_used": true,
+    "gpu_hours": 0.01,
+    "gpu_model": "NVIDIA H20",
+    "gpu_count_used": 1,
+    "python": "3.11.6",
+    "host": "cq9-worktree+h20-gpu-container"
+  },
+  "status": "pass",
+  "result_files": [
+    "reports/T250/first-report.md",
+    "reports/T250/checkpoint-stage-evidence.md",
+    "reports/T250/training-interface-audit.md",
+    "reports/T250/decision-matrix.md",
+    "reports/T250/result-summary.md",
+    "reports/T250/claim-check.md",
+    "reports/T250/failure-ledger.md",
+    "configs/admission/posttraining-startpoints/candidates.yaml",
+    "configs/admission/posttraining-startpoints/storage-preflight.json",
+    "configs/admission/posttraining-startpoints/artifact-verification.json",
+    "configs/admission/posttraining-startpoints/checkpoint-hashes.json",
+    "runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json",
+    "runs/admission-posttraining-startpoints-v1/metrics.json",
+    "runs/admission-posttraining-startpoints-v1/notes.md"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "t250-first-report",
+      "kind": "report",
+      "canonical_uri": "reports/T250/first-report.md",
+      "sha256": "d274434093069e5de490b702fa4adf9ba4ad89dc8a7878464088b3f61733e39b",
+      "bytes": 15773
+    },
+    {
+      "artifact_id": "t250-checkpoint-stage-evidence",
+      "kind": "report",
+      "canonical_uri": "reports/T250/checkpoint-stage-evidence.md",
+      "sha256": "b0e5f90e9aee24ce63514538f70f83f0382b419952dbded0c19d050e2640cbf6",
+      "bytes": 7684
+    },
+    {
+      "artifact_id": "t250-training-interface-audit",
+      "kind": "report",
+      "canonical_uri": "reports/T250/training-interface-audit.md",
+      "sha256": "4e9f0f31ceaaa7f417f75b4833cb8927ee2fe8cc62b8a71a0eaf1ce8e48dd9ff",
+      "bytes": 19955
+    },
+    {
+      "artifact_id": "t250-decision-matrix",
+      "kind": "report",
+      "canonical_uri": "reports/T250/decision-matrix.md",
+      "sha256": "5660657c2215154f43440b0f702e106a0ce2bbbf71266dc0d1b6a2649f67b1d6",
+      "bytes": 7441
+    },
+    {
+      "artifact_id": "t250-result-summary",
+      "kind": "report",
+      "canonical_uri": "reports/T250/result-summary.md",
+      "sha256": "30a01afca3d635564fe72b962903905e98540fab2444beca03bc7ef8636e386a",
+      "bytes": 5927
+    },
+    {
+      "artifact_id": "t250-claim-check",
+      "kind": "report",
+      "canonical_uri": "reports/T250/claim-check.md",
+      "sha256": "05079e377aaabf10d42da271630818026a59a14dea291538bffe62cc1dd1eb01",
+      "bytes": 9493
+    },
+    {
+      "artifact_id": "t250-failure-ledger",
+      "kind": "report",
+      "canonical_uri": "reports/T250/failure-ledger.md",
+      "sha256": "906a2ba1c41a5cd4a4da0c0d04c4514178b48ab74e1b32c2a0b28e6ca25b97d3",
+      "bytes": 8837
+    },
+    {
+      "artifact_id": "t250-candidates-config",
+      "kind": "config",
+      "canonical_uri": "configs/admission/posttraining-startpoints/candidates.yaml",
+      "sha256": "a260822a961ad82125d62c502cc9e13d9b562c14e5caa9a1a0594fe6bfc87d45",
+      "bytes": 18696
+    },
+    {
+      "artifact_id": "t250-storage-preflight",
+      "kind": "config",
+      "canonical_uri": "configs/admission/posttraining-startpoints/storage-preflight.json",
+      "sha256": "1f8a21488aecfc0c5d8605d412ab261d8c111595b2c7975ef2be9c329f4b37a2",
+      "bytes": 397
+    },
+    {
+      "artifact_id": "t250-checkpoint-hashes",
+      "kind": "evidence",
+      "canonical_uri": "configs/admission/posttraining-startpoints/checkpoint-hashes.json",
+      "sha256": "540494cf3524c24e29874aced291eebdc6629e759393b02ac19225fcd9c62c84",
+      "bytes": 35647
+    },
+    {
+      "artifact_id": "t250-gpu-smoke-result",
+      "kind": "evidence",
+      "canonical_uri": "runs/admission-posttraining-startpoints-v1/gpu-smoke-result.json",
+      "sha256": "24cb05095a13350b9adc79953f6683329582934e2e056e344325f90c3e7d27fa",
+      "bytes": 2122
+    }
+  ],
+  "retry": null
+}

@@ -1,0 +1,103 @@
+{
+  "n_steps": 4,
+  "batch_size": 2,
+  "lr": 1e-05,
+  "checkpoint_path": "/dockerdata/t720-janus-pro-r1/models/Janus-Pro-7B",
+  "load_seconds": 5.500750541687012,
+  "train_seconds": 4.532858848571777,
+  "peak_memory_bytes": 67653477376,
+  "steps": [
+    {
+      "step": 0,
+      "loss": 6.503299236297607,
+      "loss_finite": true,
+      "grad_norm": 3.375
+    },
+    {
+      "step": 1,
+      "loss": 6.04794979095459,
+      "loss_finite": true,
+      "grad_norm": 2.84375
+    },
+    {
+      "step": 2,
+      "loss": 5.346297264099121,
+      "loss_finite": true,
+      "grad_norm": 3.4375
+    },
+    {
+      "step": 3,
+      "loss": 6.079559326171875,
+      "loss_finite": true,
+      "grad_norm": 3.390625
+    }
+  ],
+  "all_losses_finite": true,
+  "param_inventory": {
+    "trainable": {
+      "n_tensors": 286,
+      "n_elements": 7032201216
+    },
+    "frozen": {
+      "n_tensors": 649,
+      "n_elements": 388167307
+    },
+    "total_elements": 7420368523,
+    "trainable_fraction": 0.9476889448553875,
+    "requires_grad_mismatches": []
+  },
+  "authorized_param_change": {
+    "trainable_param_name": "gen_aligner.layers.0.weight",
+    "trainable_changed": true,
+    "trainable_probe_grad_norms_per_step": [
+      0.07562902569770813,
+      0.07431251555681229,
+      0.07156156748533249,
+      0.087058424949646
+    ],
+    "frozen_param_name": "vision_model.vision_tower.pos_embed",
+    "frozen_unchanged": true
+  },
+  "checkpoint_roundtrip": {
+    "checkpoint_path": "/dockerdata/t720-janus-pro-r1/runs/sft-smoke/sft_smoke_trainable_state.pt",
+    "checkpoint_bytes": 14064505098,
+    "n_missing_outside_trainable": 0,
+    "n_unexpected": 0,
+    "reload_ok": true,
+    "reload_matches_trained_values": true
+  },
+  "examples_used": [
+    {
+      "source_jsonl": "flux_0.7.jsonl",
+      "candidate_id": 0
+    },
+    {
+      "source_jsonl": "flux_0.7.jsonl",
+      "candidate_id": 1
+    },
+    {
+      "source_jsonl": "flux_0.7.jsonl",
+      "candidate_id": 2
+    },
+    {
+      "source_jsonl": "flux_0.7.jsonl",
+      "candidate_id": 3
+    },
+    {
+      "source_jsonl": "janus_0.7.jsonl",
+      "candidate_id": 0
+    },
+    {
+      "source_jsonl": "janus_0.7.jsonl",
+      "candidate_id": 1
+    },
+    {
+      "source_jsonl": "janus_0.7.jsonl",
+      "candidate_id": 2
+    },
+    {
+      "source_jsonl": "janus_0.7.jsonl",
+      "candidate_id": 3
+    }
+  ]
+}

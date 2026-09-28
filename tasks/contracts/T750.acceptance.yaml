@@ -1,0 +1,58 @@
+schema_version: 1
+task_id: T750
+base_ref: origin/main
+required_files:
+  - configs/instrumentation/corl/resolved-config.yaml
+  - reports/T750/first-report.md
+  - reports/T750/result-summary.md
+  - reports/T750/claim-check.md
+  - reports/T750/failure-ledger.md
+  - runs/instrumentation-corl-v1/manifest.json
+  - runs/instrumentation-corl-v1/metrics.json
+  - runs/instrumentation-corl-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/instrumentation-corl-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: runs/instrumentation-corl-v1/metrics.json
+    path: equivalence.gradient_max_abs_error
+    op: "<="
+    value: 1.0e-6
+  - file: runs/instrumentation-corl-v1/metrics.json
+    path: equivalence.parameter_update_max_abs_error
+    op: "<="
+    value: 1.0e-6
+  - file: runs/instrumentation-corl-v1/metrics.json
+    path: ownership.unassigned_trainable_parameters
+    op: "=="
+    value: 0
+  - file: runs/instrumentation-corl-v1/metrics.json
+    path: reconstruction.combined_gradient_pass
+    op: "=="
+    value: true
+  - file: runs/instrumentation-corl-v1/metrics.json
+    path: reconstruction.realized_update_pass
+    op: "=="
+    value: true
+  - file: runs/instrumentation-corl-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 1
+forbidden_claims:
+  - file: reports/T750/result-summary.md
+    when:
+      file: runs/instrumentation-corl-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, proves conflict, proves stagnation]
+

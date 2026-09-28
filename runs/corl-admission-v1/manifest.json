@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "corl-admission-v1",
+  "task_id": "T710",
+  "run_kind": "formal",
+  "source_revision": "448c5177c28f9222f4114b8016623e2e586d5e1b",
+  "execution_revision": "e64addb6f51e41496e00221d1a80ea64509ee381",
+  "dirty": false,
+  "config_sha256": "198cdf1329fba0c1a4ed8dab28e1bf293edf20304cd9a4a202af44281d0441a3",
+  "environment": {
+    "container": "H20-FoldUMM",
+    "gpu_model": "NVIDIA H20",
+    "gpu_count": 8,
+    "gpus_used": 1,
+    "torch": "2.6.0",
+    "transformers": "4.50.0",
+    "huggingface_hub": "0.36.2",
+    "trl": "0.18.1",
+    "deepspeed": "0.16.4",
+    "datasets": "3.2.0",
+    "timm": "1.0.14",
+    "open_clip_torch": "2.31.0",
+    "sentence_transformers": "3.0.1",
+    "flash_attn": "not_installed_architecturally_irrelevant_for_janus_path",
+    "hf_home": "/dockerdata/t710-corl/hf_cache",
+    "hf_hub_offline": true,
+    "transformers_offline": true
+  },
+  "status": "pass",
+  "result_files": [
+    "configs/corl/admission/source-lock.yaml",
+    "configs/corl/admission/environment-lock.md",
+    "configs/corl/admission/storage-preflight.json",
+    "configs/corl/admission/artifact-verification.json",
+    "configs/corl/admission/micro-split.jsonl",
+    "configs/corl/admission/discrepancy-lock.yaml",
+    "reports/T710/first-report.md",
+    "reports/T710/result-summary.md",
+    "reports/T710/claim-check.md",
+    "reports/T710/failure-ledger.md",
+    "runs/corl-admission-v1/metrics.json",
+    "runs/corl-admission-v1/notes.md"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "final-evidence-raw",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T710-corl-admission/final_evidence.json",
+      "sha256": "7df844c120f1939da0f64c062488342b453a8afc95ca435346c07caf88c815ca",
+      "bytes": 8803
+    },
+    {
+      "artifact_id": "dryrun-evidence-raw",
+      "kind": "run_evidence_dryrun",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/T710-corl-admission/dryrun_evidence.json",
+      "sha256": "f9ba29f39e246cd28b7dbc56a34302f25541a949b1f2d05c0479b652d63e28ba",
+      "bytes": 7280
+    },
+    {
+      "artifact_id": "final-run-log-raw",
+      "kind": "run_log_raw",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/outputs/cjobs/t710_final.log",
+      "sha256": "878680e59e5baa64d9ff65dad000b5529c4f07011361244ccfa997f30b57725e",
+      "bytes": 6236
+    },
+    {
+      "artifact_id": "micro-split-jsonl",
+      "kind": "dataset_micro_split",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T710/configs/corl/admission/micro-split.jsonl",
+      "sha256": "b9e7c1d211ae509a57a3adbddccd14ca15d1dfadd83f20b5817542b59bafa8cd",
+      "bytes": 56675
+    },
+    {
+      "artifact_id": "storage-preflight-report",
+      "kind": "storage_preflight_report",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T710/configs/corl/admission/storage-preflight.json",
+      "sha256": "ded13156c95c35dd45a03d505edff4df3bb9ff31cee7fcc5aa16d1b240619a5d",
+      "bytes": 368
+    }
+  ],
+  "retry": null
+}

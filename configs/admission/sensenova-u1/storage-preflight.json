@@ -1,0 +1,15 @@
+{
+  "capacity_bytes": 9895604649984,
+  "environment": {
+    "HF_HOME": "/dockerdata/t230-sensenova/hf_cache",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "errors": [],
+  "filesystem_class": "local",
+  "filesystem_type": "xfs",
+  "free_bytes": 9879503024128,
+  "minimum_free_bytes": 60000000000,
+  "path": "/dockerdata/t230-sensenova/hf_cache",
+  "status": "pass"
+}

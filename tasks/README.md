@@ -31,9 +31,13 @@ T000  CompPareto / UMM_RL research [root]  running
 ├── T200  Public-model admission programme  running
 │   ├── T210  Show-o2 admission  accepted
 │   ├── T215  Show-o2 finite-response diagnostic feasibility  ready
-│   ├── T220  UniDDT admission  ready
-│   ├── T230  SenseNova-U1 admission  ready
-│   └── T240  UniAR boundary-control admission  ready
+│   ├── T216  Show-o2 compute-matched alternating-protocol diagnostic  ready
+│   ├── T220  UniDDT admission  accepted (read-only scope)
+│   ├── T230  SenseNova-U1 admission  accepted
+│   ├── T240  UniAR boundary-control admission  accepted
+│   ├── T250  Post-training starting-checkpoint selection audit  accepted
+│   └── T270  Selected-checkpoint post-training interface smoke  planned
+├── T260  Joint post-training dataset admission and frozen manifests  accepted
 ├── T300  D0 compensation-aware conflict diagnostics  planned
 │   ├── T310  Shared/private parameter-block registry  planned
 │   ├── T320  Identical-A_i^K hypergradient cache  planned
@@ -45,7 +49,18 @@ T000  CompPareto / UMM_RL research [root]  running
 │   ├── T430  CompPareto estimator/negotiation wave  planned
 │   └── T440  Confirmatory seeds and capability slices  planned
 ├── T500  E2 cross-architecture validation  planned
-└── T600  E3 heterogeneous preference/RL validation  planned
+├── T600  E3 heterogeneous preference/RL validation  planned
+└── T700  Unified understanding-generation GRPO programme  running
+    ├── T710  CoRL assets, implementation audit, and GPU optimizer smoke  revision_needed
+    ├── T711  CoRL semantic correctness and fixed-anchor admission  ready
+    ├── T720  Janus-Pro-R1 reusable SFT and GRPO stack smoke  accepted
+    ├── T730  Official CoRL Unified-RL exploratory reproduction  planned
+    ├── T740  CoRL single-task GRPO oracles  planned
+    ├── T750  Per-task gradient/update instrumentation  accepted (mock scope)
+    ├── T755  Real CoRL gradient/update instrumentation  planned
+    ├── T756  CoRL same-snapshot response-opportunity probes  planned
+    ├── T760  Traditional multi-task negotiator wave  planned
+    └── T770  Response-gated Unified GRPO wave  planned
 ```
 
 ## Current remote execution entry points
@@ -56,13 +71,13 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T120](T120-independent-kkt-reference.md) | P0 | `agent/T120-independent-kkt-reference` | CPU independent reference solver |
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
 | [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
-| [T220](T220-uniddt-admission.md) | P1 | `agent/T220-uniddt-admission` | UniDDT dual-path admission |
-| [T230](T230-sensenova-u1-admission.md) | P1 | `agent/T230-sensenova-u1-admission` | SenseNova-U1 admission and routed-overlap audit |
-| [T240](T240-uniar-admission.md) | P1 | `agent/T240-uniar-admission` | UniAR boundary-control admission |
+| [T216](T216-showo2-alternating-protocol-diagnostic.md) | P0 | `agent/T216-showo2-alternating-protocol-diagnostic` | Compute-matched SP vs PS/commit reversible diagnostics |
+| [T711](T711-corl-semantic-correctness-admission.md) | P0 | `agent/T711-corl-semantic-correctness-admission` | Validate causal GRPO semantics and freeze corrected research protocol |
+| [T720](T720-janus-pro-r1-stack-smoke.md) | P1 | `agent/T720-janus-pro-r1-stack-smoke` | Download Janus-Pro-R1 assets and run SFT+GRPO stack smokes |
 
-No persistent real-model training task is authorized. T215 requires accepted
-T210 and is limited to reversible diagnostic feasibility. T300 requires
-accepted T100, T170, T210, and T215; T400 requires accepted T300.
+Only the bounded optimizer smokes in T710 and T720 are newly authorized.
+T730/T740/T760/T770 remain closed. T215/T216 remain legacy reversible
+diagnostics and are no longer the first-paper critical path.
 
 ## Active task table
 
@@ -77,8 +92,23 @@ accepted T100, T170, T210, and T215; T400 requires accepted T300.
 | T200 | T000 | running | P0 | local-research-agent | user |
 | T210 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
 | T215 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T220 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
-| T230 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
-| T240 | T200 | ready | P1 | remote-gpu-agent | local-research-agent |
+| T216 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T220 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T230 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T240 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T250 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
+| T260 | T000 | accepted | P0 | remote-gpu-agent | local-research-agent |
+| T270 | T200 | planned | P0 | unassigned | local-research-agent |
 | T160 | T100 | planned | P0 | unassigned | local-research-agent |
 | T170 | T100 | planned | P0 | unassigned | local-research-agent |
+| T700 | T000 | running | P0 | local-research-agent | user |
+| T710 | T700 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
+| T711 | T700 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T720 | T700 | accepted | P1 | remote-gpu-agent | local-research-agent |
+| T730 | T700 | planned | P0 | unassigned | local-research-agent |
+| T740 | T700 | planned | P0 | unassigned | local-research-agent |
+| T750 | T700 | accepted | P0 | remote-gpu-agent | local-research-agent |
+| T755 | T700 | planned | P0 | unassigned | local-research-agent |
+| T756 | T700 | planned | P0 | unassigned | local-research-agent |
+| T760 | T700 | planned | P0 | unassigned | local-research-agent |
+| T770 | T700 | planned | P0 | unassigned | local-research-agent |

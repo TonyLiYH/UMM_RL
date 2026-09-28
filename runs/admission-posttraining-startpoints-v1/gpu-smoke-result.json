@@ -1,0 +1,67 @@
+{
+  "fingerprint_sample_names": [
+    "language_model.model.embed_tokens.weight",
+    "language_model.model.layers.21.self_attn.q_proj.weight",
+    "language_model.model.layers.0.self_attn.q_proj_mot_gen.weight",
+    "language_model.model.layers.21.mlp_mot_gen.gate_proj.weight",
+    "vision_model.embeddings.patch_embedding.weight",
+    "vision_model.embeddings.dense_embedding.weight"
+  ],
+  "fp_after_opt": "79efdf9257c805710d0ccd92f4fed56512f6fd5e05db5cbba6965a4116b646b9",
+  "fp_before_opt": "79efdf9257c805710d0ccd92f4fed56512f6fd5e05db5cbba6965a4116b646b9",
+  "generation_loss": 5.4360198974609375,
+  "generation_smoke_grad_nonzero_by_group": {
+    "generation_private": true,
+    "shared_backbone": false,
+    "vision_shared_understanding": false
+  },
+  "gpu_memory_bytes": {
+    "after_generation_backward": {
+      "allocated": 51594826752,
+      "max_allocated": 59478750720,
+      "reserved": 60089696256
+    },
+    "after_load": {
+      "allocated": 35107999744,
+      "max_allocated": 35107999744,
+      "reserved": 35452354560
+    },
+    "after_optimizer_build": {
+      "allocated": 35107999744,
+      "max_allocated": 37597319168,
+      "reserved": 37941673984
+    },
+    "after_understanding_backward": {
+      "allocated": 53877246976,
+      "max_allocated": 53877337600,
+      "reserved": 54488203264
+    }
+  },
+  "gpu_name": "NVIDIA H20",
+  "gpu_total_memory_bytes": 102010781696,
+  "load_seconds": 4.914026498794556,
+  "param_group_counts": {
+    "generation_private": 563,
+    "shared_backbone": 549,
+    "vision_shared_understanding": 4
+  },
+  "resume_metadata_keys": [
+    "global_step",
+    "epoch",
+    "optimizer_state_dict_keys",
+    "scheduler_state_dict",
+    "rng_state_cpu_len",
+    "rng_state_cuda_len"
+  ],
+  "status": "pass",
+  "step": "generation_smoke",
+  "total_param_count": 17552340992,
+  "total_seconds": 18.261597156524658,
+  "understanding_loss": 9.830007553100586,
+  "understanding_smoke_grad_nonzero_by_group": {
+    "generation_private": false,
+    "shared_backbone": true,
+    "vision_shared_understanding": false
+  },
+  "weights_unmutated_by_optimizer_construction": true
+}

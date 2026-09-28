@@ -1,0 +1,65 @@
+schema_version: 1
+task_id: T260
+base_ref: origin/main
+required_files:
+  - configs/data/posttraining-v1/sources.yaml
+  - configs/data/posttraining-v1/diagnostic.jsonl
+  - configs/data/posttraining-v1/pilot_train.jsonl
+  - configs/data/posttraining-v1/pilot_validation.jsonl
+  - configs/data/posttraining-v1/pilot_meta.jsonl
+  - configs/data/posttraining-v1/evaluation_only.yaml
+  - reports/T260/first-report.md
+  - reports/T260/source-license-audit.md
+  - reports/T260/split-and-decontamination.md
+  - reports/T260/mixture-and-accounting.md
+  - reports/T260/result-summary.md
+  - reports/T260/claim-check.md
+  - reports/T260/failure-ledger.md
+  - runs/data-admission-posttraining-v1/manifest.json
+  - runs/data-admission-posttraining-v1/metrics.json
+  - runs/data-admission-posttraining-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/data-admission-posttraining-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: runs/data-admission-posttraining-v1/metrics.json
+    path: provenance.admitted_sources_without_terms
+    op: "=="
+    value: 0
+  - file: runs/data-admission-posttraining-v1/metrics.json
+    path: splits.cross_split_duplicate_groups
+    op: "=="
+    value: 0
+  - file: runs/data-admission-posttraining-v1/metrics.json
+    path: splits.evaluation_records_in_training
+    op: "=="
+    value: 0
+  - file: runs/data-admission-posttraining-v1/metrics.json
+    path: paired_core.bidirectional_mapping_verified
+    op: "=="
+    value: true
+  - file: runs/data-admission-posttraining-v1/metrics.json
+    path: pilot.usable_task_records
+    op: ">="
+    value: 100000
+  - file: runs/data-admission-posttraining-v1/metrics.json
+    path: resources.gpu_hours
+    op: "=="
+    value: 0
+forbidden_claims:
+  - file: reports/T260/result-summary.md
+    when:
+      file: runs/data-admission-posttraining-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, training data ready, license cleared]

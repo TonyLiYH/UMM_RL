@@ -1,0 +1,65 @@
+schema_version: 1
+task_id: T250
+base_ref: origin/main
+required_files:
+  - configs/admission/posttraining-startpoints/candidates.yaml
+  - configs/admission/posttraining-startpoints/storage-preflight.json
+  - configs/admission/posttraining-startpoints/artifact-verification.json
+  - reports/T250/first-report.md
+  - reports/T250/checkpoint-stage-evidence.md
+  - reports/T250/training-interface-audit.md
+  - reports/T250/decision-matrix.md
+  - reports/T250/result-summary.md
+  - reports/T250/claim-check.md
+  - reports/T250/failure-ledger.md
+  - runs/admission-posttraining-startpoints-v1/manifest.json
+  - runs/admission-posttraining-startpoints-v1/metrics.json
+  - runs/admission-posttraining-startpoints-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: artifact-hashes
+    command: .venv/bin/python scripts/verify_manifest_artifacts.py --manifest runs/admission-posttraining-startpoints-v1/manifest.json --output /tmp/T250-artifact-verification.json
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/admission-posttraining-startpoints-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/admission/posttraining-startpoints/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/admission-posttraining-startpoints-v1/metrics.json
+    path: candidates.stage_labels_complete
+    op: "=="
+    value: true
+  - file: runs/admission-posttraining-startpoints-v1/metrics.json
+    path: candidates.training_readiness_separated_from_inference
+    op: "=="
+    value: true
+  - file: runs/admission-posttraining-startpoints-v1/metrics.json
+    path: selection.primary_recommendation_recorded
+    op: "=="
+    value: true
+  - file: runs/admission-posttraining-startpoints-v1/metrics.json
+    path: persistent_updates
+    op: "=="
+    value: 0
+  - file: runs/admission-posttraining-startpoints-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 4
+forbidden_claims:
+  - file: reports/T250/result-summary.md
+    when:
+      file: runs/admission-posttraining-startpoints-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, training ready, selected for training]
+

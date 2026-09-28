@@ -18,9 +18,19 @@ Current authorized remote entries:
 - T155 exact finite-response oracle benchmark — accepted 2026-09-01;
 - T210 Show-o2 admission audit and smoke — accepted with recorded limitations 2026-09-01;
 - T215 Show-o2 reversible finite-response diagnostics — ready;
-- T220 UniDDT admission — ready;
-- T230 SenseNova-U1 admission and routed-overlap audit — ready;
-- T240 UniAR boundary-control admission — ready.
+- T216 Show-o2 compute-matched alternating-protocol diagnostic — ready;
+- T220 UniDDT admission — accepted for read-only architecture/inference scope;
+- T230 SenseNova-U1 admission and routed-overlap audit — accepted;
+- T240 UniAR boundary-control admission — accepted for AR boundary-control scope;
+- T250 post-training starting-checkpoint selection — accepted 2026-09-16;
+- T260 joint post-training dataset admission — accepted 2026-09-16;
+- T270 selected-model training-interface smoke — planned pending T250/T260.
+- T710 CoRL assets/code admission — revision needed after hard semantic review;
+- T711 CoRL semantic correctness and fixed-anchor admission — ready;
+- T720 Janus-Pro-R1 reusable SFT/GRPO stack smoke — accepted as engineering evidence;
+- T750 framework-neutral gradient/update instrumentation — accepted for mock scope;
+- T755 real CoRL gradient/update instrumentation — planned after T711.
+- T756 same-snapshot response-opportunity probes — planned after P1 pilots.
 
 These tasks do not authorize joint post-training. T300 remains closed until
 T100, T170, T210, and T215 are accepted.
@@ -69,12 +79,31 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 1. Continue T110, T120, and T130 under their task contracts.
 2. Execute T215 on the accepted Show-o2 revision under the reversible,
    no-persistent-update protocol.
-3. Execute T220, T230, and T240 independently under the common admission
-   contract and local-SSD preflight.
-4. Open T140/T150 only after their declared prerequisites are accepted.
-5. Accept T100, T170, and T215 before changing T300 to `ready`.
-6. Complete the planned T160 finite-response posterior-certificate and T170
+3. Execute T216 independently from accepted `main` to compare simultaneous,
+   shared-then-private, private-only control, and private-then-shared commit
+   protocols. T216 does not depend on T215's failed full-rerun implementation.
+4. T220, T230, and T240 have completed local review. Preserve their accepted
+   limitations: UniDDT is read-only, SenseNova mixed-token forward is
+   unsupported, and UniAR pixel-decoder training is unreleased.
+5. Execute T711 before persistent CoRL training. It validates causal image
+   scoring, behavior/scoring identity, QA dispatch, padding-sensitive rewards,
+   full-state resume, and fixed-anchor response semantics.
+6. Open T755 after T711, then integrate real PyTorch per-task gradients,
+   clipping, optimizer membership, and realized updates.
+7. After T711/T755, run short U-only, G-only, frozen-private joint, and
+   private-enabled joint pilots. T756 then tests same-snapshot response
+   opportunity with equal-private and equal-total-compute controls.
+8. Freeze the next method screen only if headroom and a differential response
+   signal are both observed.
+9. T720 is a reusable Janus-Pro-R1 engineering reference, not a scientific
+   baseline on the first-paper critical path.
+10. T270 remains a later SenseNova cross-architecture smoke and is no longer on
+   the first Janus/CoRL paper critical path.
+11. Open T140/T150 only after their declared prerequisites are accepted.
+12. Accept T100, T170, and at least one valid real-model response diagnostic
+   before changing T300 to `ready`.
+13. Complete the planned T160 finite-response posterior-certificate and T170
    graph-localized robust-certificate contracts after their dependencies are
    accepted; neither task is authorized yet.
-7. Freeze data-source, capability, split, and decontamination manifests before
+14. Freeze data-source, capability, split, and decontamination manifests before
    D0; do not attribute a data-scheduling gain to update geometry.

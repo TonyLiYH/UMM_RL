@@ -1,5 +1,9 @@
 # Research plan
 
+> 2026-09-16 scope update: the first paper route is unified
+> understanding-generation GRPO on Janus-Pro-1B. SFT is a diagnostic setting,
+> DPO is a bounded mechanism control, and OPD is deferred.
+
 ## Objective
 
 Establish whether compensation-aware shared updates improve joint post-training of image understanding and image generation, and whether the effect transfers across unified-model architectures without pretraining.

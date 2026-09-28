@@ -1,0 +1,85 @@
+schema_version: 1
+task_id: T720
+base_ref: origin/main
+required_files:
+  - configs/janus-pro-r1/admission/source-lock.yaml
+  - configs/janus-pro-r1/admission/environment-sft-lock.md
+  - configs/janus-pro-r1/admission/environment-rl-lock.md
+  - configs/janus-pro-r1/admission/storage-preflight.json
+  - configs/janus-pro-r1/admission/artifact-verification.json
+  - reports/T720/first-report.md
+  - reports/T720/reuse-map.md
+  - reports/T720/result-summary.md
+  - reports/T720/claim-check.md
+  - reports/T720/failure-ledger.md
+  - runs/janus-pro-r1-stack-v1/manifest.json
+  - runs/janus-pro-r1-stack-v1/metrics.json
+  - runs/janus-pro-r1-stack-v1/notes.md
+commands:
+  - name: repository-state
+    command: .venv/bin/python -m comppareto.repo_state.cli --root .
+  - name: full-tests
+    command: .venv/bin/python -m pytest -q
+  - name: compile
+    command: .venv/bin/python -m compileall -q src tests
+  - name: artifact-hashes
+    command: .venv/bin/python scripts/verify_manifest_artifacts.py --manifest runs/janus-pro-r1-stack-v1/manifest.json --output /tmp/T720-artifact-verification.json
+  - name: whitespace
+    command: git diff --check origin/main...HEAD
+metrics:
+  - file: runs/janus-pro-r1-stack-v1/manifest.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/janus-pro-r1/admission/storage-preflight.json
+    path: status
+    op: "=="
+    value: pass
+  - file: configs/janus-pro-r1/admission/artifact-verification.json
+    path: failed
+    op: "=="
+    value: 0
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: sft.loss_finite
+    op: "=="
+    value: true
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: sft.optimizer_steps
+    op: ">="
+    value: 1
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: sft.optimizer_steps
+    op: "<="
+    value: 4
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: sft.checkpoint_reload_pass
+    op: "=="
+    value: true
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: grpo.loss_finite
+    op: "=="
+    value: true
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: grpo.optimizer_steps
+    op: ">="
+    value: 1
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: grpo.optimizer_steps
+    op: "<="
+    value: 4
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: grpo.checkpoint_reload_pass
+    op: "=="
+    value: true
+  - file: runs/janus-pro-r1-stack-v1/metrics.json
+    path: resources.gpu_hours
+    op: "<="
+    value: 12
+forbidden_claims:
+  - file: reports/T720/result-summary.md
+    when:
+      file: runs/janus-pro-r1-stack-v1/manifest.json
+      path: status
+      equals: fail
+    phrases: [supports gate, reproduces CoRL, improves understanding]
+

@@ -1,0 +1,18 @@
+{
+  "run_id": "unified-grpo-fast-path-20260928",
+  "status": "completed",
+  "difficulty": "hard",
+  "max_rounds": 1,
+  "current_round": 1,
+  "score": 3,
+  "verdict": "not ready",
+  "started_at": "2026-09-28T00:00:00+08:00",
+  "completed_at": "2026-09-28T00:00:00+08:00",
+  "pending_experiments": [
+    "T711 semantic correctness admission",
+    "T755 real CoRL instrumentation",
+    "P1 short matched training pilots",
+    "same-snapshot response-opportunity probes"
+  ]
+}
+
