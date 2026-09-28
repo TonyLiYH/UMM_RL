@@ -58,26 +58,25 @@ def _pcgrad_pair(g_a: torch.Tensor, g_b: torch.Tensor) -> torch.Tensor:
 
 
 def pcgrad(grads: Sequence[torch.Tensor], *, order: Sequence[int] | None = None) -> torch.Tensor:
-    """Two-task PCGrad with an explicit, frozen task order.
+    """Two-task PCGrad with an explicit, frozen task order (one-sided projection).
 
     ``order`` is a permutation of ``range(len(grads))`` declaring which task's
-    gradient is projected against which; the default order is the identity
-    (task 0 first). Callers must pass an explicit reversed order separately
-    for the declared sensitivity check, per the task file's "PCGrad with a
-    frozen task order and a separately declared reversed-order sensitivity
-    check."
+    gradient is the "primary" (projected) and which is the "reference" (used
+    as-is). The primary gradient is projected to remove any component that
+    conflicts with the reference gradient; the reference gradient is unchanged.
+    This one-sided projection makes the result order-sensitive, which is required
+    by the task spec's "PCGrad with a frozen task order and a separately declared
+    reversed-order sensitivity check."
+
+    order=[0, 1] → project grads[0] against grads[1]; return projected_0 + grads[1]
+    order=[1, 0] → project grads[1] against grads[0]; return projected_1 + grads[0]
     """
     if len(grads) != 2:
         raise NotImplementedError("pcgrad() here implements the mandatory two-task case only")
     idx = list(order) if order is not None else [0, 1]
     a, b = idx
     g_a_proj = _pcgrad_pair(grads[a], grads[b])
-    g_b_proj = _pcgrad_pair(grads[b], grads[a])
-    out = torch.zeros_like(grads[0])
-    out_terms = {a: g_a_proj, b: g_b_proj}
-    for k in sorted(out_terms):
-        out = out + out_terms[k]
-    return out
+    return g_a_proj + grads[b]
 
 
 def mgda_two_task(g1: torch.Tensor, g2: torch.Tensor) -> torch.Tensor:
