@@ -1,0 +1,15 @@
+{
+  "capacity_bytes": 9895604649984,
+  "environment": {
+    "HF_HOME": "/dockerdata/t710-corl/hf_cache",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "errors": [],
+  "filesystem_class": "local",
+  "filesystem_type": "xfs",
+  "free_bytes": 9634571710464,
+  "minimum_free_bytes": 21474836480,
+  "path": "/dockerdata/t710-corl",
+  "status": "pass"
+}
