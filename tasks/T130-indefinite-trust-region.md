@@ -2,7 +2,7 @@
 id: T130
 title: Overall-indefinite curvature and trust-region rejection
 parent: T100
-status: ready
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -68,4 +68,5 @@ Acceptance contributes to T140 and T100.
 ## Review history
 
 - 2026-08-26 — Authorized for remote execution; no result submitted.
+- 2026-09-28 — Remote agent submits for review. Deliverables: `trust_region_guard.py` (SchurCurvature, evaluate_step, project_out_negative_curvature), `trust_region_counterexamples.py` (6 analytic counterexamples), 36 regression tests (all pass, 345 total pass). Key numbers: naive false-accept rate 4/4 unsafe cases (100%), corrected contract false-accept rate 0/6 (0%). Schur eigenvalue error < 1e-9 vs analytic. Reduction recovers a -4.5 improving step from an unsafe mixed step. submission_cli.py fixed: missing contract exits 0, malformed contract exits 1. validate_task_submission.sh T130 exits 0 after commit.
 
