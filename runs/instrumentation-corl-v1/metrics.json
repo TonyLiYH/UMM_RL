@@ -1,0 +1,368 @@
+{
+  "equivalence": {
+    "gradient_max_abs_error": 2.384185791015625e-07,
+    "parameter_update_max_abs_error": 7.058704565299223e-09
+  },
+  "ownership": {
+    "unassigned_trainable_parameters": 0
+  },
+  "reconstruction": {
+    "combined_gradient_pass": true,
+    "realized_update_pass": true,
+    "combined_gradient_max_abs_error": 0.0,
+    "realized_update_max_abs_error": 0.0
+  },
+  "resources": {
+    "gpu_hours": 0.0,
+    "device": "cpu"
+  },
+  "shared_state_hashes": [
+    "f9b5a55411f6b5089d43060409badf2e4a51600418f413cd71d790b732a07a96",
+    "75f4a79bcf4db183935784d8ce69b7be03934847a1b6010dca1b2a038bca2d3a",
+    "e4a13b72cb9164551ece719c9b92c00b45c633fbe244f604a1e53526e80d2b60",
+    "42137a744377a3004d7e9d1aaeacefe3b2e4de9452fef9ef419c070338989449",
+    "e20913bd6d09f631ff79da05a2db908fe2d73b01a753ce7d41f590d0169c81fa"
+  ],
+  "per_batch_summaries": [
+    {
+      "batch_index": 0,
+      "shared_state_hash": "f9b5a55411f6b5089d43060409badf2e4a51600418f413cd71d790b732a07a96",
+      "clip_coefficient": 0.08993827050486053,
+      "pre_clip_norm": 11.118736267089844,
+      "post_clip_norm": 0.9999998211860657,
+      "direction_norm": 0.14764799575217416,
+      "near_zero_rate": 0.0,
+      "directional_derivative": -1.1778216676871993,
+      "gram_matrix": [
+        [
+          27.551027297973633,
+          -0.16702581942081451,
+          -0.30682480335235596
+        ],
+        [
+          -0.16702581942081451,
+          2.374415397644043,
+          0.259702205657959
+        ],
+        [
+          -0.30682480335235596,
+          0.259702205657959,
+          50.59209442138672
+        ]
+      ],
+      "per_task_statistics": {
+        "understanding": {
+          "task_id": "understanding",
+          "shared_norm": 5.248907089233398,
+          "cosine_vs_combined": 0.5764311364715462,
+          "norm_ratio_vs_combined": 0.5865186384708063,
+          "finite": true
+        },
+        "generation": {
+          "task_id": "generation",
+          "shared_norm": 1.5409138202667236,
+          "cosine_vs_combined": 0.17890393442918284,
+          "norm_ratio_vs_combined": 0.17218340132510968,
+          "finite": true
+        },
+        "auxiliary": {
+          "task_id": "auxiliary",
+          "shared_norm": 7.112812042236328,
+          "cosine_vs_combined": 0.794053178127003,
+          "norm_ratio_vs_combined": 0.794793423428742,
+          "finite": true
+        }
+      },
+      "counters": {
+        "rollout_count": 12,
+        "token_count": 192,
+        "reward_call_count": 12,
+        "backward_count": 3,
+        "wall_time_seconds": {
+          "forward_backward::understanding": 0.00024386495351791382,
+          "forward_backward::generation": 0.00029649585485458374,
+          "forward_backward::auxiliary": 0.00017752498388290405
+        },
+        "total_wall_time_seconds": 0.0007178857922554016
+      },
+      "reconstruction": {
+        "combined_gradient_max_abs_error": 0.0,
+        "combined_gradient_pass": true,
+        "realized_update_max_abs_error": 0.0,
+        "realized_update_pass": true
+      }
+    },
+    {
+      "batch_index": 1,
+      "shared_state_hash": "75f4a79bcf4db183935784d8ce69b7be03934847a1b6010dca1b2a038bca2d3a",
+      "clip_coefficient": 0.13275699537658345,
+      "pre_clip_norm": 7.532558750718692,
+      "post_clip_norm": 0.9999998672430046,
+      "direction_norm": 0.11002197851833487,
+      "near_zero_rate": 0.0,
+      "directional_derivative": -0.5240724987609633,
+      "gram_matrix": [
+        [
+          10.254781287687686,
+          -0.041058356901875065,
+          0.19708410153332712
+        ],
+        [
+          -0.041058356901875065,
+          0.7324275778448786,
+          0.35085914647005656
+        ],
+        [
+          0.19708410153332712,
+          0.35085914647005656,
+          16.290893493149888
+        ]
+      ],
+      "per_task_statistics": {
+        "understanding": {
+          "task_id": "understanding",
+          "shared_norm": 3.202308743342479,
+          "cosine_vs_combined": 0.6112098609146316,
+          "norm_ratio_vs_combined": 0.6020497186337073,
+          "finite": true
+        },
+        "generation": {
+          "task_id": "generation",
+          "shared_norm": 0.8558198279105705,
+          "cosine_vs_combined": 0.22895477325468602,
+          "norm_ratio_vs_combined": 0.16089831677407454,
+          "finite": true
+        },
+        "auxiliary": {
+          "task_id": "auxiliary",
+          "shared_norm": 4.036197900642372,
+          "cosine_vs_combined": 0.7843479951147757,
+          "norm_ratio_vs_combined": 0.7588249619851904,
+          "finite": true
+        }
+      },
+      "counters": {
+        "rollout_count": 12,
+        "token_count": 192,
+        "reward_call_count": 12,
+        "backward_count": 3,
+        "wall_time_seconds": {
+          "forward_backward::understanding": 0.0002559144049882889,
+          "forward_backward::generation": 0.0003018192946910858,
+          "forward_backward::auxiliary": 0.00018594786524772644
+        },
+        "total_wall_time_seconds": 0.0007436815649271011
+      },
+      "reconstruction": {
+        "combined_gradient_max_abs_error": 0.0,
+        "combined_gradient_pass": true,
+        "realized_update_max_abs_error": 0.0,
+        "realized_update_pass": true
+      }
+    },
+    {
+      "batch_index": 2,
+      "shared_state_hash": "e4a13b72cb9164551ece719c9b92c00b45c633fbe244f604a1e53526e80d2b60",
+      "clip_coefficient": 0.16842224726865743,
+      "pre_clip_norm": 5.9374568846751625,
+      "post_clip_norm": 0.9999998315777526,
+      "direction_norm": 0.08754138740165429,
+      "near_zero_rate": 0.0,
+      "directional_derivative": -0.21260089064520665,
+      "gram_matrix": [
+        [
+          6.182053405003845,
+          -0.19905170263954725,
+          -0.7932728931195412
+        ],
+        [
+          -0.19905170263954725,
+          0.7562952703573138,
+          0.09817844452516869
+        ],
+        [
+          -0.7932728931195412,
+          0.09817844452516869,
+          9.888328534240523
+        ]
+      ],
+      "per_task_statistics": {
+        "understanding": {
+          "task_id": "understanding",
+          "shared_norm": 2.4863735449452977,
+          "cosine_vs_combined": 0.5382421317219162,
+          "norm_ratio_vs_combined": 0.6411590519336272,
+          "finite": true
+        },
+        "generation": {
+          "task_id": "generation",
+          "shared_norm": 0.869652384782169,
+          "cosine_vs_combined": 0.19434560893263259,
+          "norm_ratio_vs_combined": 0.2242565280153915,
+          "finite": true
+        },
+        "auxiliary": {
+          "task_id": "auxiliary",
+          "shared_norm": 3.1445712798791066,
+          "cosine_vs_combined": 0.7538870389123382,
+          "norm_ratio_vs_combined": 0.8108879474863292,
+          "finite": true
+        }
+      },
+      "counters": {
+        "rollout_count": 12,
+        "token_count": 192,
+        "reward_call_count": 12,
+        "backward_count": 3,
+        "wall_time_seconds": {
+          "forward_backward::understanding": 0.0002583172172307968,
+          "forward_backward::generation": 0.0002280808985233307,
+          "forward_backward::auxiliary": 0.00024409219622612
+        },
+        "total_wall_time_seconds": 0.0007304903119802475
+      },
+      "reconstruction": {
+        "combined_gradient_max_abs_error": 0.0,
+        "combined_gradient_pass": true,
+        "realized_update_max_abs_error": 0.0,
+        "realized_update_pass": true
+      }
+    },
+    {
+      "batch_index": 3,
+      "shared_state_hash": "42137a744377a3004d7e9d1aaeacefe3b2e4de9452fef9ef419c070338989449",
+      "clip_coefficient": 0.1089946113650213,
+      "pre_clip_norm": 9.174764499654064,
+      "post_clip_norm": 0.9999998910053886,
+      "direction_norm": 0.07819603717557021,
+      "near_zero_rate": 0.0,
+      "directional_derivative": -0.32486274294849904,
+      "gram_matrix": [
+        [
+          3.7068333967376477,
+          0.1425546920171121,
+          -0.7386863951127849
+        ],
+        [
+          0.1425546920171121,
+          1.1030976903400138,
+          -0.24338632287607048
+        ],
+        [
+          -0.7386863951127849,
+          -0.24338632287607048,
+          32.950963046414344
+        ]
+      ],
+      "per_task_statistics": {
+        "understanding": {
+          "task_id": "understanding",
+          "shared_norm": 1.9253138436986443,
+          "cosine_vs_combined": 0.26897529040419904,
+          "norm_ratio_vs_combined": 0.32052144100007257,
+          "finite": true
+        },
+        "generation": {
+          "task_id": "generation",
+          "shared_norm": 1.0502845758840857,
+          "cosine_vs_combined": 0.1588662298354577,
+          "norm_ratio_vs_combined": 0.1748487535288345,
+          "finite": true
+        },
+        "auxiliary": {
+          "task_id": "auxiliary",
+          "shared_norm": 5.740292940818817,
+          "cosine_vs_combined": 0.9271479848273418,
+          "norm_ratio_vs_combined": 0.9556296347089352,
+          "finite": true
+        }
+      },
+      "counters": {
+        "rollout_count": 12,
+        "token_count": 192,
+        "reward_call_count": 12,
+        "backward_count": 3,
+        "wall_time_seconds": {
+          "forward_backward::understanding": 0.0002801138907670975,
+          "forward_backward::generation": 0.0003104154020547867,
+          "forward_backward::auxiliary": 0.00021641142666339874
+        },
+        "total_wall_time_seconds": 0.0008069407194852829
+      },
+      "reconstruction": {
+        "combined_gradient_max_abs_error": 0.0,
+        "combined_gradient_pass": true,
+        "realized_update_max_abs_error": 0.0,
+        "realized_update_pass": true
+      }
+    },
+    {
+      "batch_index": 4,
+      "shared_state_hash": "e20913bd6d09f631ff79da05a2db908fe2d73b01a753ce7d41f590d0169c81fa",
+      "clip_coefficient": 0.1232325188831683,
+      "pre_clip_norm": 8.114740214922817,
+      "post_clip_norm": 0.999999876767481,
+      "direction_norm": 0.07264727667784902,
+      "near_zero_rate": 0.0,
+      "directional_derivative": -0.27861482807782195,
+      "gram_matrix": [
+        [
+          7.732211117605063,
+          1.1598491070963917,
+          0.10923183470532524
+        ],
+        [
+          1.1598491070963917,
+          0.9032503064611092,
+          -0.17337892045286116
+        ],
+        [
+          0.10923183470532524,
+          -0.17337892045286116,
+          19.497187989899132
+        ]
+      ],
+      "per_task_statistics": {
+        "understanding": {
+          "task_id": "understanding",
+          "shared_norm": 2.7806853683229003,
+          "cosine_vs_combined": 0.5878403250385483,
+          "norm_ratio_vs_combined": 0.5049614507163532,
+          "finite": true
+        },
+        "generation": {
+          "task_id": "generation",
+          "shared_norm": 0.9503948160954526,
+          "cosine_vs_combined": 0.3610770513437612,
+          "norm_ratio_vs_combined": 0.17258793481490092,
+          "finite": true
+        },
+        "auxiliary": {
+          "task_id": "auxiliary",
+          "shared_norm": 4.415562024238719,
+          "cosine_vs_combined": 0.799210440118025,
+          "norm_ratio_vs_combined": 0.801848576932816,
+          "finite": true
+        }
+      },
+      "counters": {
+        "rollout_count": 12,
+        "token_count": 192,
+        "reward_call_count": 12,
+        "backward_count": 3,
+        "wall_time_seconds": {
+          "forward_backward::understanding": 0.0002833697944879532,
+          "forward_backward::generation": 0.00023119337856769562,
+          "forward_backward::auxiliary": 0.00026271864771842957
+        },
+        "total_wall_time_seconds": 0.0007772818207740784
+      },
+      "reconstruction": {
+        "combined_gradient_max_abs_error": 0.0,
+        "combined_gradient_pass": true,
+        "realized_update_max_abs_error": 0.0,
+        "realized_update_pass": true
+      }
+    }
+  ]
+}

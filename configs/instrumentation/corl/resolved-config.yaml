@@ -1,0 +1,93 @@
+# T750: resolved instrumentation-corl configuration.
+#
+# This is the exact, fully-resolved configuration used to produce
+# `runs/instrumentation-corl-v1/{manifest.json,metrics.json,notes.md}`.
+# Every value below is either a literal used directly by
+# `src/comppareto/instrumentation/{equivalence,experiment,mock_corl}.py`, or
+# documents a design decision (framework, dtype, device) that those modules
+# hard-code. There is no separate "unresolved" config for this task --
+# tolerances and hyperparameters were fixed from the task file's own gate,
+# not tuned against the observed result.
+
+task_id: T750
+run_id: instrumentation-corl-v1
+
+# --- Framework -------------------------------------------------------------
+# PyTorch is not installed anywhere in this execution environment (checked
+# every worktree venv, the main repo's `.venv`, and all system-wide
+# site-packages locations -- no torch build for the system's cp311
+# interpreter exists, and installing a fresh one was judged unnecessary
+# scope creep for a task explicitly framed as "framework-neutral"). The
+# entire instrumentation layer and its mock model are implemented in pure
+# NumPy: hand-derived backpropagation for the toy model's Linear+tanh
+# chains, and a hand-implemented AdamW (decoupled weight decay,
+# Loshchilov & Hutter 2019) and gradient-norm clip that exactly replicate
+# `torch.optim.AdamW` / `torch.nn.utils.clip_grad_norm_`'s formulas. See
+# `runs/instrumentation-corl-v1/notes.md` for the full rationale.
+framework: numpy
+dtype: float32
+device: cpu  # only supported device (src/comppareto/instrumentation/device.py);
+             # requesting anything else raises DeviceUnavailableError, never
+             # silently falls back.
+
+# --- Toy CoRL-shaped model (src/comppareto/instrumentation/mock_corl.py) ---
+model:
+  task_ids: [understanding, generation, auxiliary]
+  core_dim: 8       # core_shared block's hidden width
+  junction_dim: 6   # ug_shared block's hidden width
+  output_dim: 4
+  rollouts_per_task: 4
+  tokens_per_rollout: 16
+  blocks:
+    - block_id: core_shared
+      overlap_tasks: [understanding, generation, auxiliary]
+    - block_id: ug_shared
+      overlap_tasks: [understanding, generation]
+    - block_id: private_understanding
+      overlap_tasks: [understanding]
+    - block_id: private_generation
+      overlap_tasks: [generation]
+    - block_id: private_auxiliary
+      overlap_tasks: [auxiliary]
+
+# --- Optimizer (src/comppareto/instrumentation/optim.py, AdamWOptimizer) --
+optimizer:
+  name: adamw
+  lr: 0.01
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+  weight_decay: 0.0
+
+# --- Gradient negotiation / clipping ---------------------------------------
+clipping:
+  max_grad_norm: 1.0
+
+# --- Sequential batches -----------------------------------------------------
+schedule:
+  seed: 20260916
+  num_batches: 5
+  batches_per_task_per_step: 1
+  # Every task in a batch observes exactly one shared-state hash
+  # (src/comppareto/instrumentation/recorder.py::GradientUpdateRecorder,
+  # begin_batch/check_shared_state); the recorder raises
+  # RecorderProtocolError on any mid-batch shared-parameter mutation.
+
+# --- Pass/fail gate thresholds (mirrors tasks/contracts/T750.acceptance.yaml)
+thresholds:
+  gradient_max_abs_error: 1.0e-6
+  parameter_update_max_abs_error: 1.0e-6
+  unassigned_trainable_parameters: 0
+  reconstruction_tolerance: 1.0e-6
+  gpu_hours_cap: 1
+
+# --- Stage 5 (optional real T710 diagnostic batch) --------------------------
+stage_5:
+  attempted: false
+  reason: >
+    T710 (agent/T710-corl-admission-gpu-smoke) was still status: running at
+    the time this run was produced, with no runs/corl-admission-v1/ present
+    yet -- already recorded in tasks/T750-corl-gradient-update-instrumentation.md's
+    review history. Stages 1-4 (toy tests, sequential-batch shared-state
+    protocol, instrumented-vs-uninstrumented equivalence proof, mock
+    CoRL-compatible model integration) are this submission's sole and
+    sufficient evidence path.
