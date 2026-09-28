@@ -2,7 +2,7 @@
 id: T110
 title: Random disjoint, partial, and full overlap quadratic families
 parent: T100
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -112,4 +112,19 @@ Acceptance contributes to T140 and T100.
   - **CPU estimate**: pure CPU, no GPU/network. A 1200-case smoke sweep (400 cases/regime, up to
     5 tasks/case, dims 2-32) ran in well under a minute on a single core. The formal run
     (>=100 seeds/regime = >=300 cases) is expected to take well under one minute total.
+- 2026-09-28 — Remote agent: formal sweep executed on resolved config
+  `configs/t1b/overlap-family.yaml` (`config_seed=20260928110`, 100 seeds/regime = 300 cases
+  total, `global_dim` cycling [2, 32] inclusive, all 31 dimensions realized >=3x per regime).
+  Result: **300/300 cases passed, 0 failures, failure ledger empty.** Full local test suite
+  (729 tests, including the 300-case frozen-protocol parametrized gate in
+  `tests/overlap/test_verify.py`) passes. Pass/fail gate met: zero unexplained selector or
+  objective mismatches across block-lifting, objective-change (Schur identity + independent
+  linear-CG cross-check), and safe-set support-locality checks, for all three overlap regimes at
+  every dimension 2-32. Artifacts: `runs/t1b-overlap-20260928/{manifest,summary,case-records,
+  failure_ledger}.json`; report at `reports/T110/sweep-results.md` with full per-regime breakdown,
+  environment snapshot, and artifact SHA-256 provenance. **Known infrastructure gap (not a task
+  defect)**: `tasks/contracts/T110.acceptance.yaml` does not exist in this worktree, so
+  `scripts/validate_task_submission.sh T110` is expected to exit 1. `tasks/contracts/` is outside
+  T110's `allowed_paths`, so this agent cannot create the missing contract file; flagging for the
+  reviewer/infrastructure owner rather than working around it. Status set to `awaiting_review`.
 

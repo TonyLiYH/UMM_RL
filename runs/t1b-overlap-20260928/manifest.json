@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "t1b-overlap-20260928",
+  "task_id": "T110",
+  "run_kind": "diagnostic",
+  "source_revision": "d82adf4ffd83c013900e7125d10f5a5d5231addc",
+  "execution_revision": "d82adf4ffd83c013900e7125d10f5a5d5231addc",
+  "dirty": true,
+  "config_sha256": "996359c7fc402cf12600d12c95acd4015553fa969b5b6256afc98084113ea6a6",
+  "environment": {
+    "python_version": "3.11.6",
+    "numpy_version": "2.4.6",
+    "scipy_version": "1.17.1",
+    "platform": "Linux-6.6.119-49.20.tl4.x86_64-x86_64-with-glibc2.38",
+    "executable": "/usr/bin/python3"
+  },
+  "status": "pass",
+  "result_files": [
+    "runs/t1b-overlap-20260928/case-records.json",
+    "runs/t1b-overlap-20260928/summary.json",
+    "runs/t1b-overlap-20260928/failure_ledger.json"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "case-records",
+      "kind": "overlap-run-artifact",
+      "canonical_uri": "runs/t1b-overlap-20260928/case-records.json",
+      "sha256": "f43df022b503fc6907e313be31a308e552f0d5dd575ebdcc45c931c60d014a7d",
+      "bytes": 1992743
+    },
+    {
+      "artifact_id": "summary",
+      "kind": "overlap-run-artifact",
+      "canonical_uri": "runs/t1b-overlap-20260928/summary.json",
+      "sha256": "b5a58f6024b9e6d078a97e50fe1665be743bb7e46d10927ad94dd99a8bccee91",
+      "bytes": 1681
+    },
+    {
+      "artifact_id": "failure_ledger",
+      "kind": "overlap-run-artifact",
+      "canonical_uri": "runs/t1b-overlap-20260928/failure_ledger.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    }
+  ],
+  "retry": null
+}

@@ -15,13 +15,17 @@ from comppareto.overlap.regimes import (
 )
 from comppareto.overlap.verify import (
     CaseResult,
+    CheckOutcome,
     DEFAULT_TOLERANCES,
     OverlapCase,
     TaskCheckResult,
     SafeSetPairResult,
+    TaskSpec,
     generate_case,
     verify_case,
 )
+from comppareto.overlap.manifest import build_run_manifest, case_record, config_hash
+from comppareto.overlap.sweep import enumerate_case_keys, run_sweep
 
 __all__ = [
     "OverlapRegime",
@@ -30,10 +34,17 @@ __all__ = [
     "sample_num_tasks",
     "sample_supports",
     "CaseResult",
+    "CheckOutcome",
     "DEFAULT_TOLERANCES",
     "OverlapCase",
     "TaskCheckResult",
     "SafeSetPairResult",
+    "TaskSpec",
     "generate_case",
     "verify_case",
+    "build_run_manifest",
+    "case_record",
+    "config_hash",
+    "enumerate_case_keys",
+    "run_sweep",
 ]

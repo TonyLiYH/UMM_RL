@@ -1,0 +1,27 @@
+# T110 overlap-family sweep config. Resolved values for the run recorded in
+# tasks/T110-overlap-family.md's frozen protocol: ">=100 seeded cases per
+# overlap regime, dimensions 2-32, store every failing seed."
+config_seed: 20260928110
+
+# 100 seeded cases per regime (disjoint/partial/full) = 300 cases total,
+# meeting the frozen protocol's ">=100 seeded cases per overlap regime".
+seeds_per_regime: 100
+
+# global_dim cycles through [global_dim_floor, global_dim_floor +
+# global_dim_cycle] = [2, 32] as case_index increases, so 100 seeds/regime
+# realizes every dimension in [2, 32] more than 3 times.
+global_dim_floor: 2
+global_dim_cycle: 30
+
+# num_tasks per case is sampled in [2, min(max_tasks, global_dim)].
+max_tasks: 5
+
+# Per-task generation ranges (comppareto.overlap.verify.generate_case).
+private_dim_range: [1, 6]
+mu_range: [0.05, 2.0]
+condition_number_range: [1.0, 1000.0]
+gradient_scale_range: [0.1, 10.0]
+
+# Overrides merged onto comppareto.overlap.verify.DEFAULT_TOLERANCES; empty
+# means the run uses the module defaults verbatim.
+tolerance_overrides: {}
