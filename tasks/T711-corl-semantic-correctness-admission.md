@@ -2,7 +2,7 @@
 id: T711
 title: CoRL semantic correctness and fixed-anchor admission
 parent: T700
-status: ready
+status: running
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -121,4 +121,39 @@ before GPU execution.
 ```bash
 bash scripts/validate_task_submission.sh T711
 ```
+
+## Review history
+
+- 2026-09-28 — Remote executor entered the pre-created worktree/branch
+  `agent/T711-corl-semantic-correctness-admission`. The branch's base commit
+  (created by local planning from this task's declared `source_revision`)
+  predated the commit that added this very task file and its acceptance
+  contract to `origin/main`; local planning fast-forward-merged the branch to
+  `origin/main` HEAD `e001548976ede8c8dd9805e5602fc2ab9ac6274b` (clean
+  fast-forward, zero prior agent commits lost) before executor work began.
+  Setting `status: running` now. **Integrity note, recorded rather than
+  silently corrected**: this task file's own front-matter
+  `source_revision` field (`1fcb9e9964c678a330f32514f211828d551dc48c`) is not
+  a resolvable git object in this repository at all (`git cat-file -t`
+  fails). The real commit sharing its 7-character short-hash prefix,
+  `1fcb9e9b8aace32594eb89db83d4ab5f3aaf3d71` ("theory: derive alternating
+  quadratic dynamics and commit bounds", 2026-09-16 17:25:13+0800), *is* a
+  genuine ancestor of both this branch's HEAD and `origin/main`, and is
+  almost certainly the intended value (looks like a transcription/generation
+  defect in the front matter, not a real divergent-history problem). Treating
+  that resolved full hash as the operative ancestry baseline for this
+  session's governance check, per AGENTS.md's "confirm the current branch
+  contains the task's `source_revision` as an ancestor" — since the literal
+  front-matter string cannot be checked at all, and correcting a frozen
+  task-identity field is outside a remote executor's authority, this is
+  flagged for local review to fix at the source rather than silently patched
+  here. Read T710's full evidence base
+  (`tasks/T710-corl-admission-and-gpu-smoke.md`, all of `reports/T710/*.md`,
+  `configs/corl/admission/{source-lock.yaml,environment-lock.md,discrepancy-lock.yaml,storage-preflight.json,artifact-verification.json}`,
+  `runs/corl-admission-v1/{manifest.json,metrics.json,notes.md}`, and
+  `src/comppareto/adapters/corl/{run_smoke.py,param_policy.py,micro_split.py,paths.py}`)
+  plus the local hard-review verdict at
+  `review-stage/unified-grpo-fast-path-20260928/AUTO_REVIEW.md` that sent
+  T710 to `revision_needed`. Proceeding to GPU/container reconnaissance and
+  the mandatory first report next, before any GPU execution.
 
