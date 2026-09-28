@@ -1,0 +1,31 @@
+{
+  "description": "T120 independent KKT/direct-solve reference comparison suite configuration. See tasks/T120-independent-kkt-reference.md and src/comppareto/kkt_compare.py.",
+  "seed": 20260928,
+  "random_private_response_count": 40,
+  "random_trust_region_count": 40,
+  "random_negotiation_count": 20,
+  "fixed_case_counts": {
+    "private_response_schur": 5,
+    "trust_region": 4,
+    "negotiation": 2
+  },
+  "thresholds": {
+    "private_response_param": 1e-08,
+    "schur_param": 1e-08,
+    "exact_rational_param": 1e-08,
+    "trust_region_eigen_param": 1e-06,
+    "trust_region_eigen_objective": 1e-08,
+    "trust_region_eigen_kkt_stationarity": 1e-06,
+    "trust_region_eigen_kkt_complementarity": 1e-06,
+    "trust_region_blackbox_param": 5e-03,
+    "trust_region_blackbox_objective": 1e-03,
+    "trust_region_blackbox_kkt_stationarity": 1e-04,
+    "trust_region_blackbox_kkt_complementarity": 5e-04,
+    "negotiation_param": 5e-03,
+    "negotiation_tau": 5e-03,
+    "negotiation_retained_gain": 5e-03,
+    "negotiation_kkt_stationarity": 1e-04,
+    "negotiation_kkt_complementarity": 1e-04
+  },
+  "notes": "Thresholds are tiered by algorithm-family independence: the Cholesky private-response/Schur path and the exact-rational path solve the same linear system as production through a different LAPACK routine (or no floating point at all), so they are held to a near-machine-precision bar. The generalized-eigenvalue trust-region secular solve is the same secular equation as production viewed in a different basis, so it is held to a tight-but-not-machine-precision bar. The trust-constr black-box solves (trust-region subproblem and negotiation max-min problem) are a fully separate interior-point/SQP algorithm family with looser default solver tolerances, so they are held to a visibly looser bar. Actual achieved maxima across the full run are always recorded in runs/t1b-kkt-*/summary.json alongside these thresholds -- see that file for the true numbers, not just pass/fail."
+}
