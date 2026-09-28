@@ -1,0 +1,56 @@
+--- /dockerdata/t710-corl/ULM-R1/corl/open_r1/rewards/r_base.py.t710-upstream-orig	2026-09-28 21:03:10.044973405 +0800
++++ /dockerdata/t710-corl/ULM-R1/corl/open_r1/rewards/r_base.py	2026-09-28 21:03:10.044973405 +0800
+@@ -37,6 +37,34 @@
+ def common_qa_accuracy_reward(completions, qa_solution, **kwargs):
+     mcq_extractor = MCQAnswerExtractor()
+ 
++    # --- T711 D14 fix: per-completion qa_type dispatch -------------------
++    # Upstream compared the *whole batch list* `kwargs['qa_type']` against
++    # the string 'MC' (`if kwargs['qa_type'] == 'MC':`), which is always
++    # False for any real batch (a list is never == a str), so the MC branch
++    # was structurally unreachable whenever qa_type was passed as a
++    # per-example list (the normal batched-training case, and the T711
++    # Group C mixed-batch fixture below). Fixed to dispatch per completion
++    # by index, and to explicitly reject a qa_type/qa_solution length
++    # mismatch instead of silently misaligning examples.
++    qa_type_list = kwargs.get('qa_type')
++    if qa_type_list is None:
++        qa_type_list = ['OE'] * len(completions)
++    elif isinstance(qa_type_list, str):
++        qa_type_list = [qa_type_list] * len(completions)
++    else:
++        qa_type_list = list(qa_type_list)
++        if len(qa_type_list) != len(completions):
++            raise ValueError(
++                "common_qa_accuracy_reward: qa_type length (%d) != "
++                "completions length (%d)" % (len(qa_type_list), len(completions))
++            )
++    if len(qa_solution) != len(completions):
++        raise ValueError(
++            "common_qa_accuracy_reward: qa_solution length (%d) != "
++            "completions length (%d)" % (len(qa_solution), len(completions))
++        )
++    # -----------------------------------------------------------------------
++
+     rewards = []
+     for idx, (content, sol) in enumerate(zip(completions, qa_solution)):
+         content = str(content).strip()
+@@ -48,13 +76,17 @@
+         sol_match = re.search(r"<answer>(.*?)</answer>", sol)
+         ground_truth = sol_match.group(1).strip() if sol_match else sol.strip()
+ 
+-        if kwargs['qa_type'] == 'MC':  # FIXME:
++        qa_type = str(qa_type_list[idx]).strip().upper()
++        if qa_type == 'MC':
+             student_answer = mcq_extractor.extract_answer(content)
+ 
+             if student_answer is not None:
+                 if safe_string_equal(student_answer, ground_truth):
+                     reward = 1.0
+         else:
++            # OE, and any invalid/missing/unrecognized qa_type value, falls
++            # back to the generic OE scoring path (explicit, documented
++            # default; see reports/T711/semantic-correctness.md Group C).
+             content_match = re.search(r"<answer>(.*?)</answer>", content)
+             student_answer = content_match.group(1).strip() if content_match else content.strip()
+             student_answer = student_answer.replace(
