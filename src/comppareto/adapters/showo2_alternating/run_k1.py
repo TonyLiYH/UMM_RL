@@ -144,13 +144,14 @@ def load_model(hf_cache: str) -> Any:
     the loss functions construct inputs directly via random token IDs and do not
     require tokenization or processor functionality.
     """
-    os.environ.setdefault("HF_HOME", hf_cache)
-    os.environ.setdefault("HF_HUB_OFFLINE", "1")
-    os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
     from transformers import AutoModelForCausalLM
-    print(f"[run_k1] loading Show-o2-1.5B from {hf_cache}", flush=True)
+    # Construct direct snapshot path to bypass hub resolution in offline mode
+    snapshot_path = (
+        f"{hf_cache}/hub/models--showlab--show-o2-1.5B/snapshots/{CHECKPOINT_REVISION}"
+    )
+    print(f"[run_k1] loading Show-o2-1.5B from {snapshot_path}", flush=True)
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID, cache_dir=hf_cache, local_files_only=True,
+        snapshot_path, local_files_only=True,
         trust_remote_code=True, torch_dtype=torch.bfloat16,
     )
     model = model.cuda()
