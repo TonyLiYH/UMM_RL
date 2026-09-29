@@ -236,8 +236,18 @@ Measured numbers (all from `metrics.json` / `raw_rows.json`, 62 rows = 60 mandat
 - P2 vs P3: 11/12 comparable cells agree; 1 disagreement `(mgda, eta=5e-6, und)`
 - resources: `gpu_hours: 0.0075`, `elapsed_seconds: 26.9`, `gpu_index: 3`,
   torch 2.5.1+cu124, container H20-FoldUMM
-- artifact verification: `failed: 0`, 2/2 artifacts pass (checkpoint blob
-  sha256 `a596cbc3…`, 5,661,862,314 bytes)
+- artifact verification: `failed: 0`, 2/2 artifacts pass — weights blob
+  sha256 `a596cbc3…` (5,661,862,314 bytes) at the shared-storage canonical path
+  `/apdcephfs_cq7/.../models--showlab--show-o2-1.5B/blobs/a596cbc3…`, plus
+  `runs/alternating-showo2-v1/metrics.json`
+
+Provenance correction recorded 2026-09-29: the manifest's weights artifact originally
+pointed at the execution container's local SSD path `/dockerdata/t210-showo2/...`,
+which is not mounted outside the container and therefore could not be hash-verified by
+the contract's `artifact-hashes` command. It now points at the byte-identical
+shared-storage copy (re-hashed on the reporting host: same size, same sha256); the SSD
+path is preserved as prose in `runs/alternating-showo2-v1/notes.md`. No measurement
+changed — `raw_rows.json` and `metrics.json` are untouched.
 
 Gate position: **K=1 is reported as a mandatory gate, not a gate pass.** No negotiator
 is claimed to support the gate; that requires K=3. Known confound carried forward: the

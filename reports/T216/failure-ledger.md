@@ -45,6 +45,30 @@ silently dropped or replaced.
 | RUN-META-REV | manifest `execution_revision: "unknown"` | Repo-state CLI: `'execution_revision' is a required property` / not 40-hex | Hard-coded `28b8df0700d9b6abd97e73dc03cee4e7a63b367f` (HEAD at code-freeze) with an explicit comment that git is unavailable at runtime |
 | RUN-META-CFG | manifest missing `config_sha256` | Repo-state CLI: `'config_sha256' is a required property` | `resolved-config.yaml` is now written and hashed into the manifest |
 
+## Corrections
+
+### [CORRECTION] 2026-09-29 — manifest artifact URI (provenance metadata only)
+
+The manifest as first committed recorded the model-weights artifact as
+`showo2-1.5b-checkpoint-ssd-execution` / `model_weights_ssd_execution_copy` with
+`canonical_uri` = the execution container's local SSD path
+`/dockerdata/t210-showo2/hf_cache/.../a596cbc3…`. That path is not mounted outside the
+H20-FoldUMM container, so the contract's `artifact-hashes` command could not verify it
+on the reporting host (status `missing`, `failed: 1`).
+
+Correction: `artifacts[0]` now records the byte-identical copy on shared storage —
+`showo2-1.5b-checkpoint` / `model_weights` at
+`/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc3…`
+— verified on the reporting host 2026-09-29 as 5,661,862,314 bytes, sha256
+`a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c` (identical to the
+SSD copy the run actually used, and to the entry in
+`runs/admission-showo2-2026-08-28/manifest.json`). The SSD path is preserved as prose
+provenance in `runs/alternating-showo2-v1/notes.md`.
+
+Only artifact provenance changed. `raw_rows.json`, `metrics.json`, and every measured
+number are untouched; the earlier in-container verification of both artifacts
+(`failed: 0`) is superseded by a host-side verification of the canonical copy.
+
 ## Open issue carried forward (not a failure of this run)
 
 | ID | Issue | Impact | Where documented |

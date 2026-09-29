@@ -27,9 +27,9 @@
   ],
   "artifacts": [
     {
-      "artifact_id": "showo2-1.5b-checkpoint-ssd-execution",
-      "kind": "model_weights_ssd_execution_copy",
-      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "artifact_id": "showo2-1.5b-checkpoint",
+      "kind": "model_weights",
+      "canonical_uri": "/apdcephfs_cq7/share_1447896/yihangli/models/pretrained/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
       "sha256": "a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
       "bytes": 5661862314
     },
