@@ -89,4 +89,22 @@ Acceptance contributes to T150 and T100.
     allowed_paths; `validate_task_submission.sh T120` exits 1 solely due to this missing
     contract. This is an upstream sequencing gap (all existing contracts were added on the
     local-review track, not by agent branches) — it is not a deficiency in the deliverables.
+- 2026-09-29 — Local review: the sequencing gap above is confirmed by direct evidence and is
+  now recorded as an infrastructure defect. The acceptance-contract mechanism was introduced
+  on 2026-08-28 (`d7106f5 feat: enforce task submission acceptance gates`); this task file was
+  created on 2026-08-26, two days earlier, so the task predates the mechanism and was never
+  backfilled. `tasks/contracts/` lies outside this task's `allowed_paths`, so the contract
+  cannot be authored on the executor branch; per AGENTS.md the local planning/review side owns
+  Gates, and the executor only *reads* the contract from authorized `main`.
+  - **Escalated consequence.** Local review has now accepted the T130 change to
+    `src/comppareto/repo_state/submission_cli.py`, under which a missing contract exits 0
+    instead of 1. Once that change reaches `main`, this task will satisfy
+    `scripts/validate_task_submission.sh` with **zero substantive checks**: required_files,
+    metrics, forbidden_claims and commands are all skipped, leaving only branch-name,
+    clean-tree and ancestry checks. The gate result would be vacuous — so the backfill is now
+    strictly more urgent than when the executor flagged it.
+  - **Required action (local review side).** Backfill `tasks/contracts/T120.acceptance.yaml`
+    derived from this task's own Frozen protocol / Pass/fail gate / Required deliverables
+    sections — explicitly *not* from the observed 111/111 result. Required before this task
+    may be set to `accepted`.
 
