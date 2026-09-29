@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "alternating-showo2-v1",
+  "task_id": "T216",
+  "run_kind": "formal",
+  "source_revision": "2358267c14dddc3754e7a80e9b681308c6bcd0f7",
+  "execution_revision": "28b8df0700d9b6abd97e73dc03cee4e7a63b367f",
+  "dirty": false,
+  "config_sha256": "d1c7f3804949cfe255c7f4ffbe7a6ef01797c65fb5582e006167315539729761",
+  "environment": {
+    "container": "H20-FoldUMM",
+    "gpu_model": "NVIDIA H20",
+    "gpu_count": 8,
+    "gpus_used": 1,
+    "gpu_index": 3,
+    "torch": "2.5.1+cu124",
+    "hf_home": "/dockerdata/t210-showo2/hf_cache",
+    "hf_hub_offline": true,
+    "transformers_offline": true
+  },
+  "status": "pass",
+  "result_files": [
+    "configs/alternating/showo2/storage-preflight.json",
+    "configs/alternating/showo2/resolved-config.yaml",
+    "runs/alternating-showo2-v1/raw_rows.json",
+    "runs/alternating-showo2-v1/metrics.json"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "showo2-1.5b-checkpoint-ssd-execution",
+      "kind": "model_weights_ssd_execution_copy",
+      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "sha256": "a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "bytes": 5661862314
+    },
+    {
+      "artifact_id": "T216-metrics-json",
+      "kind": "run_evidence",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T216/runs/alternating-showo2-v1/metrics.json",
+      "sha256": "1ba5fdc8f092f250227ae916bb42d6e421632cf4f248b78496b3df626252a592",
+      "bytes": 757
+    }
+  ],
+  "retry": null
+}

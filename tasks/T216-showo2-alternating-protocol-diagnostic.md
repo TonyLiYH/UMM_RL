@@ -2,7 +2,7 @@
 id: T216
 title: Show-o2 compute-matched alternating-protocol diagnostic
 parent: T200
-status: running
+status: awaiting_review
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -213,4 +213,41 @@ bash scripts/validate_task_submission.sh T216
 
 Only the local review side can mark this task accepted. Report negative and
 indeterminate rows without replacement or post-hoc tuning.
+
+## Review history
+
+### 2026-09-28 — K=1 sweep submitted for review (remote-gpu-agent)
+
+Deliverables: `runs/alternating-showo2-v1/{manifest,metrics,raw_rows}.json`,
+`configs/alternating/showo2/{storage-preflight,resolved-config,artifact-verification}.json|yaml`,
+`reports/T216/{first-report,result-summary,claim-check,failure-ledger}.md`.
+
+Measured numbers (all from `metrics.json` / `raw_rows.json`, 62 rows = 60 mandatory +
+2 P1 control):
+
+- `status: pass`, `persistent_updates: 0`, `snapshot_restore.failed: 0`
+- `numerical.total_rows: 60`, `numerical.nonfinite_mandatory_rows: 0`
+- `attribution.mandatory_rows_missing_control: 0`; attribution identity violations 0/60
+  (algebraic identity, consistency check only)
+- all four `protocols.*_measured: true`
+- `delta_controlled` non-zero counts: P0 und 0/12, P0 gen 0/12, P2 und 8/12, P2 gen 0/12,
+  P3 und 3/6, P3 gen 0/6; every non-zero value is -0.03125 = exactly 1 bf16 ULP at 7.59375
+- gen `loss_after` is bit-identical (0.08642578125) in all 62 rows
+- P2 vs P3: 11/12 comparable cells agree; 1 disagreement `(mgda, eta=5e-6, und)`
+- resources: `gpu_hours: 0.0075`, `elapsed_seconds: 26.9`, `gpu_index: 3`,
+  torch 2.5.1+cu124, container H20-FoldUMM
+- artifact verification: `failed: 0`, 2/2 artifacts pass (checkpoint blob
+  sha256 `a596cbc3…`, 5,661,862,314 bytes)
+
+Gate position: **K=1 is reported as a mandatory gate, not a gate pass.** No negotiator
+is claimed to support the gate; that requires K=3. Known confound carried forward: the
+step-scale grid `[5e-6, 5e-5, 5e-4]` on a unit-normalized direction over 46,797,824 shared
+params gives per-parameter displacements of 7.3e-10 … 7.3e-8, below bf16 parameter
+resolution, so P0's all-zero result is not interpretable as "shared gradient has no
+effect". Recommendation: raise `eta` or use fp32 master weights before spending K=3
+budget, and record the count of changed shared elements as a run metric.
+
+9 failed pre-sweep attempts and 2 run-metadata defects (manifest missing
+`config_sha256`; `execution_revision: "unknown"` because git is unavailable inside the
+container) are recorded in `reports/T216/failure-ledger.md`.
 

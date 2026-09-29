@@ -1,0 +1,35 @@
+K: 1
+checkpoint_revision: 07ec16589d4fc5422a74dddbbc4b2cd11e551039
+gpu_index: 3
+hf_cache: /dockerdata/t210-showo2/hf_cache
+master_seed: 216
+model_id: showlab/show-o2-1.5B
+negotiators:
+- raw_sum
+- normalized_sum
+- pcgrad
+- mgda
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  create_graph: false
+  eps: 1.0e-08
+  fresh_per_row: true
+  lr: 5.0e-05
+  type: AdamW
+  weight_decay: 0.0
+protocols:
+- P0
+- P1
+- P2
+- P3
+step_scales:
+- 5.0e-06
+- 5.0e-05
+- 0.0005
+subspaces:
+  gen_private: diffusion_head_a.9
+  shared: showo.model.layers.27
+  und_private: und_trans.layers.7
+task_id: T216
+torch_dtype: bfloat16

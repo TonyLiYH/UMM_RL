@@ -1,0 +1,25 @@
+{
+  "artifacts": [
+    {
+      "actual_bytes": 5661862314,
+      "actual_sha256": "a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "artifact_id": "showo2-1.5b-checkpoint-ssd-execution",
+      "canonical_uri": "/dockerdata/t210-showo2/hf_cache/hub/models--showlab--show-o2-1.5B/blobs/a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "expected_bytes": 5661862314,
+      "expected_sha256": "a596cbc305c1df987c125d4f218e78f39b681621904cccfb2a3bf0ca0327f92c",
+      "status": "pass"
+    },
+    {
+      "actual_bytes": 757,
+      "actual_sha256": "1ba5fdc8f092f250227ae916bb42d6e421632cf4f248b78496b3df626252a592",
+      "artifact_id": "T216-metrics-json",
+      "canonical_uri": "/apdcephfs_cq9/share_1447896/yihangli/workspace/UMM_RL/.worktrees/T216/runs/alternating-showo2-v1/metrics.json",
+      "expected_bytes": 757,
+      "expected_sha256": "1ba5fdc8f092f250227ae916bb42d6e421632cf4f248b78496b3df626252a592",
+      "status": "pass"
+    }
+  ],
+  "checked": 2,
+  "failed": 0,
+  "passed": 2
+}

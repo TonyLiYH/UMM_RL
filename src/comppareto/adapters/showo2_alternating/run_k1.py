@@ -33,7 +33,7 @@ import sys
 import time
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 import numpy as np
 import torch
@@ -57,6 +57,7 @@ from comppareto.adapters.showo2_alternating.protocols import (
     TaskModel, run_p1_control, run_p0, run_p2, run_p3,
     raw_shared_gradient,
 )
+from comppareto.adapters.showo2_alternating import real_batches
 
 # ---------------------------------------------------------------------------
 # Constants matching T210 acceptance facts
@@ -67,15 +68,13 @@ MODEL_ID = "showlab/show-o2-1.5B"
 MASTER_SEED = 216
 STEP_SCALES = [5e-6, 5e-5, 5e-4]
 
-# Subspace parameter name prefixes (one per subspace)
-SHARED_PREFIX = "model.layers.27"          # last Qwen2.5 decoder layer
-UND_PRIVATE_PREFIX = "und_trans.layers.7"  # last understanding transformer layer
-GEN_PRIVATE_PREFIX = "diffusion_head_a.9"  # last generation diffusion head block
-
-# Toy batch construction constants
-MMU_PROMPT = "Describe this image briefly."
-T2I_PROMPT = "A photo of a dog on a grassy field."
-IMAGE_SIZE = 384   # SigLIP spatial resolution
+# Subspace parameter name prefixes (one per subspace); verified directly
+# against the real checkpoint state-dict keys (see reports/T216 discussion):
+# "showo.model.layers.27" -> 12 keys, "und_trans.layers.7" -> 16 keys,
+# "diffusion_head_a.9" -> 13 keys.
+SHARED_PREFIX = "showo.model.layers.27"     # last Qwen2.5 decoder layer
+UND_PRIVATE_PREFIX = "und_trans.layers.7"   # last understanding transformer layer
+GEN_PRIVATE_PREFIX = "diffusion_head_a.9"   # last generation diffusion head block
 
 
 # ---------------------------------------------------------------------------
@@ -138,23 +137,29 @@ def run_storage_preflight(hf_cache: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def load_model(hf_cache: str) -> Any:
-    """Load Show-o2-1.5B from local SSD cache.
+    """Load the real Show-o2-1.5B (``Showo2Qwen2_5``) from local SSD cache.
 
-    Note: processor is not loaded because the snapshot only contains model weights;
-    the loss functions construct inputs directly via random token IDs and do not
-    require tokenization or processor functionality.
+    Show-o2 is a custom, self-contained model class (``ModelMixin``/
+    ``ConfigMixin`` are locally reimplemented in the library's
+    ``models/modeling_utils.py`` -- NOT the ``diffusers`` package, which is
+    not installed and not needed). The audited library source is used only
+    as a read-only ``sys.path`` dependency (see
+    ``reports/T216/first-report.md``); nothing from it is copied into this
+    repo.
     """
-    from transformers import AutoModelForCausalLM
+    if real_batches.SHOWO2_LIB not in sys.path:
+        sys.path.insert(0, real_batches.SHOWO2_LIB)
+    from models import Showo2Qwen2_5
+
     # Construct direct snapshot path to bypass hub resolution in offline mode
     snapshot_path = (
         f"{hf_cache}/hub/models--showlab--show-o2-1.5B/snapshots/{CHECKPOINT_REVISION}"
     )
-    print(f"[run_k1] loading Show-o2-1.5B from {snapshot_path}", flush=True)
-    model = AutoModelForCausalLM.from_pretrained(
-        snapshot_path, local_files_only=True,
-        trust_remote_code=True, torch_dtype=torch.bfloat16,
+    print(f"[run_k1] loading Show-o2-1.5B (Showo2Qwen2_5) from {snapshot_path}", flush=True)
+    model = Showo2Qwen2_5.from_pretrained(
+        snapshot_path, use_safetensors=False, local_files_only=True,
     )
-    model = model.cuda()
+    model = model.to(torch.bfloat16).cuda()
     model.eval()
     print(f"[run_k1] model loaded; {sum(p.numel() for p in model.parameters()):,} params", flush=True)
     return model
@@ -190,46 +195,35 @@ def extract_subspaces(model: Any) -> tuple[
 
 
 # ---------------------------------------------------------------------------
-# Minimal MMU and T2I loss functions on real model
+# Real MMU and T2I loss functions on the real model, real fixed batches
 # ---------------------------------------------------------------------------
+#
+# Per reports/T216/first-report.md section 7 ("fixed batches throughout"),
+# ``mmu_batch``/``t2i_batch`` are each built exactly once (see
+# real_batches.build_fixed_batches, called from main() before any row loop)
+# and reused unmodified across every P0/P1/P2/P3 row. ``shared_params``/
+# ``private_params`` are not read inside the closures below: they are the
+# *same* tensor objects already wired into the model's autograd graph via
+# named_parameters(), so gradients flow into them automatically as soon as
+# model(**batch) is called -- the TaskModel.loss_fn contract only requires
+# the two arguments to be accepted, not consulted.
 
-def make_mmu_loss_fn(model: Any, processor: Any) -> Any:
-    """Return a callable(shared, private) -> scalar loss for MMU task."""
-    device = next(model.parameters()).device
+def make_mmu_loss_fn(model: Any, mmu_batch: Dict[str, Any]) -> Any:
+    """Return callable(shared, private) -> scalar loss_ntp for the MMU task."""
 
     def loss_fn(shared_params: list, private_params: list) -> torch.Tensor:
-        # Construct a minimal MMU input: random token ids as a proxy for an
-        # image+text pair. We just need real gradient flow through the subspace.
-        batch_size = 1
-        seq_len = 64
-        vocab_size = model.config.vocab_size if hasattr(model, "config") else 32000
-        input_ids = torch.randint(0, vocab_size, (batch_size, seq_len), device=device)
-        labels = input_ids.clone()
-        labels[:, :-1] = input_ids[:, 1:]
-        labels[:, -1] = -100
-        with torch.cuda.amp.autocast(dtype=torch.bfloat16):
-            out = model(input_ids=input_ids, labels=labels)
-        return out.loss
+        _logits, loss_ntp = model(**mmu_batch)
+        return loss_ntp
 
     return loss_fn
 
 
-def make_t2i_loss_fn(model: Any, processor: Any) -> Any:
-    """Return a callable(shared, private) -> scalar loss for T2I task."""
-    device = next(model.parameters()).device
+def make_t2i_loss_fn(model: Any, t2i_batch: Dict[str, Any]) -> Any:
+    """Return callable(shared, private) -> scalar loss_flow for the T2I task."""
 
     def loss_fn(shared_params: list, private_params: list) -> torch.Tensor:
-        batch_size = 1
-        seq_len = 48
-        vocab_size = model.config.vocab_size if hasattr(model, "config") else 32000
-        # Offset input ids to a different region to probe T2I head
-        input_ids = torch.randint(vocab_size // 2, vocab_size, (batch_size, seq_len), device=device)
-        labels = input_ids.clone()
-        labels[:, :-1] = input_ids[:, 1:]
-        labels[:, -1] = -100
-        with torch.cuda.amp.autocast(dtype=torch.bfloat16):
-            out = model(input_ids=input_ids, labels=labels)
-        return out.loss
+        _logits, loss_flow = model(**t2i_batch)
+        return loss_flow
 
     return loss_fn
 
@@ -325,11 +319,16 @@ def main() -> int:
         print(f"[run_k1] FATAL: storage preflight failed: {preflight['errors']}", flush=True)
         return 1
 
-    # 2. Write resolved config
+    # 2. Write resolved config and hash it
     import yaml as _yaml
-    (cfg_dir / "resolved-config.yaml").write_text(_yaml.dump(RESOLVED_CONFIG, sort_keys=True))
+    cfg_path = cfg_dir / "resolved-config.yaml"
+    cfg_path.write_text(_yaml.dump(RESOLVED_CONFIG, sort_keys=True))
+    config_sha256 = sha256_file(cfg_path)
 
-    # 3. Set master seed
+    # 3. Execution revision (captured outside container; git unavailable at runtime)
+    execution_revision = "28b8df0700d9b6abd97e73dc03cee4e7a63b367f"
+
+    # 4. Set master seed
     torch.manual_seed(MASTER_SEED)
     random.seed(MASTER_SEED)
     np.random.seed(MASTER_SEED)
@@ -338,15 +337,25 @@ def main() -> int:
     model = load_model(HF_CACHE)
     model.requires_grad_(True)
 
-    # 5. Capture master RNG snapshot after model load
+    # 5. Build the fixed MMU/T2I batches exactly once (real image through
+    # the frozen Wan2.1 VAE, real transport noise/timestep sampling). This
+    # is done *before* the RNG snapshot below is captured, so restoring to
+    # snap0_rng before every protocol run never replays/redraws batch
+    # content -- the batches are plain fixed tensors from here on, per
+    # first-report.md section 7 ("fixed batches throughout").
+    device = str(next(model.parameters()).device)
+    print("[run_k1] building fixed MMU/T2I batches...", flush=True)
+    mmu_batch, t2i_batch = real_batches.build_fixed_batches(device)
+
+    # 6. Capture master RNG snapshot after model load + batch construction
     snap0_rng = snapshot_rng()
 
-    # 6. Extract subspaces
+    # 7. Extract subspaces
     shared, und_private, gen_private = extract_subspaces(model)
 
-    # 7. Build TaskModel instances
-    mmu_loss_fn = make_mmu_loss_fn(model, None)
-    t2i_loss_fn = make_t2i_loss_fn(model, None)
+    # 8. Build TaskModel instances
+    mmu_loss_fn = make_mmu_loss_fn(model, mmu_batch)
+    t2i_loss_fn = make_t2i_loss_fn(model, t2i_batch)
 
     task_und = TaskModel(
         shared_params=shared,
@@ -560,7 +569,9 @@ def main() -> int:
         "task_id": "T216",
         "run_kind": "formal",
         "source_revision": "2358267c14dddc3754e7a80e9b681308c6bcd0f7",
+        "execution_revision": execution_revision,
         "dirty": False,
+        "config_sha256": config_sha256,
         "environment": {
             "container": "H20-FoldUMM",
             "gpu_model": "NVIDIA H20",
