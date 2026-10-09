@@ -21,6 +21,7 @@ method-level overview.
 4. [`03-reduced-space-compensation.md`](03-reduced-space-compensation.md)
 5. [`04-common-descent-and-stagnation.md`](04-common-descent-and-stagnation.md)
 6. [`05-proof-obligations.md`](05-proof-obligations.md)
+7. [`06-selective-finite-response-certificate.md`](06-selective-finite-response-certificate.md)
 
 Detailed proofs live in [`proofs/`](proofs/).
 

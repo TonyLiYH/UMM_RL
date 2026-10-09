@@ -12,6 +12,21 @@ Standard multi-task learning treats the losses as simultaneous functions of one 
 
 ## Primary hypothesis
 
+The UMM post-training programme now centers on **shared parameter ownership
+and plasticity**: intervention-defined groups may selectively support image
+understanding, image generation, both, or neither under a specified test.
+The project tests whether this map predicts pruning damage and cross-task
+effects of restricted post-training, and whether acting on it improves joint
+outcomes at matched compute. The analysis units, definitions, controls, and
+decision gates are in
+[`docs/plans/2026-10-09-umm-parameter-ownership.md`](docs/plans/2026-10-09-umm-parameter-ownership.md).
+
+Janus-Pro-1B is the first base model; the CoRL framework and data support the
+main joint-GRPO setting. A faithful, semantically admitted CoRL reproduction
+remains a P0 objective before ownership-guided training claims.
+
+### Earlier optimizer hypothesis (conditional follow-up)
+
 Optimizing a local model of each task *after private adaptation* yields shared updates that preserve more single-task improvement and produce fewer negative-transfer capability slices than raw-gradient surgery or loss scalarization.
 
 The decisive controlled question uses the same finite response \(A_i^K\) for every method: at equal compute, does response information identify shared updates whose incremental value is misjudged by current-state gradients, and does acting on it improve independently evaluated joint outcomes beyond tuned alternating optimization and a strong conventional negotiator? This prevents gains from being attributed merely to extra private updates, line search, or a different evaluation budget.

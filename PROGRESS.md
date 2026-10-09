@@ -2,7 +2,7 @@
 
 ## Current phase
 
-**Phase T1b + model admission preparation.** No real-model training has started.
+**Phase T1b + CoRL semantic admission.** No complete real-model training run has started. The active UMM post-training hypothesis is intervention-defined shared-parameter ownership and plasticity. The protocol is in [the ownership plan](docs/plans/2026-10-09-umm-parameter-ownership.md); compensation-aware optimization is a conditional follow-up.
 
 The 2026-08-27 theory/data/model audit is captured in [the research-state handoff](docs/handoffs/2026-08-27-research-state.md). It keeps the current execution Gates unchanged while recording the next recommended theory target: a data-aware, finite-response robust Pareto certificate with explicit inner, curvature, sampling, and distribution-shift errors.
 
@@ -27,7 +27,9 @@ Current authorized remote entries:
 - T270 selected-model training-interface smoke — planned pending T250/T260.
 - T710 CoRL assets/code admission — revision needed after hard semantic review;
 - T711 CoRL semantic correctness and fixed-anchor admission — ready;
+- T712 first complete corrected CoRL training run — planned after T711;
 - T720 Janus-Pro-R1 reusable SFT/GRPO stack smoke — accepted as engineering evidence;
+- T725 CoRL Unified-only reference reproduction — planned after T712;
 - T750 framework-neutral gradient/update instrumentation — accepted for mock scope;
 - T755 real CoRL gradient/update instrumentation — planned after T711.
 - T756 same-snapshot response-opportunity probes — planned after P1 pilots.
@@ -88,22 +90,27 @@ Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates determinis
 5. Execute T711 before persistent CoRL training. It validates causal image
    scoring, behavior/scoring identity, QA dispatch, padding-sensitive rewards,
    full-state resume, and fixed-anchor response semantics.
-6. Open T755 after T711, then integrate real PyTorch per-task gradients,
-   clipping, optimizer membership, and realized updates.
-7. After T711/T755, run short U-only, G-only, frozen-private joint, and
-   private-enabled joint pilots. T756 then tests same-snapshot response
-   opportunity with equal-private and equal-total-compute controls.
-8. Freeze the next method screen only if headroom and a differential response
-   signal are both observed.
-9. T720 is a reusable Janus-Pro-R1 engineering reference, not a scientific
+6. After T711 is accepted, run T712 to completion with held-out U/G evaluation
+   and resume evidence, then freeze and reproduce the T725 Unified-only reference.
+7. Build a structured shared-group registry and pilot reversible perturbations
+   on disjoint U/G calibration splits. Freeze practical-effect thresholds and
+   random/conventional-importance controls before interpreting an ownership map.
+8. If the map is stable, test matched pruning and restricted post-training on
+   held-out data. Match parameter count, task exposure, and compute; retain
+   U-only, G-only, full-shared, random-group, and private-only controls.
+9. Open T755 for real PyTorch per-task gradients, clipping, optimizer membership,
+   and realized updates after T711. Traditional negotiators and T756/T770
+   response-aware trials require a separate gate after a measured interference
+   pattern in the ownership pilot.
+10. T720 is a reusable Janus-Pro-R1 engineering reference, not a scientific
    baseline on the first-paper critical path.
-10. T270 remains a later SenseNova cross-architecture smoke and is no longer on
+11. T270 remains a later SenseNova cross-architecture smoke and is no longer on
    the first Janus/CoRL paper critical path.
-11. Open T140/T150 only after their declared prerequisites are accepted.
-12. Accept T100, T170, and at least one valid real-model response diagnostic
+12. Open T140/T150 only after their declared prerequisites are accepted.
+13. Accept T100, T170, and at least one valid real-model response diagnostic
    before changing T300 to `ready`.
-13. Complete the planned T160 finite-response posterior-certificate and T170
+14. Complete the planned T160 finite-response posterior-certificate and T170
    graph-localized robust-certificate contracts after their dependencies are
    accepted; neither task is authorized yet.
-14. Freeze data-source, capability, split, and decontamination manifests before
+15. Freeze data-source, capability, split, and decontamination manifests before
    D0; do not attribute a data-scheduling gain to update geometry.

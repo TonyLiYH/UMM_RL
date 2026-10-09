@@ -7,7 +7,7 @@ priority: P0
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T755-real-corl-instrumentation
-depends_on: [T711, T750]
+depends_on: [T711, T712, T750]
 blocks: [T730, T740, T760, T770]
 allowed_paths: ["tasks/T755-real-corl-instrumentation.md", "configs/instrumentation/corl-real/", "runs/instrumentation-corl-real-v1/", "reports/T755/", "src/comppareto/adapters/corl/", "src/comppareto/instrumentation/", "tests/adapters/corl/", "tests/instrumentation/"]
 source_revision: "1fcb9e9964c678a330f32514f211828d551dc48c"
@@ -36,6 +36,6 @@ actual real-model update.
 
 ## Authorization boundary
 
-Planned until T711 passes semantic correctness. This task remains bounded to
+Planned until T711 passes semantic correctness and T712 demonstrates a
+complete corrected run. This task remains bounded to
 instrumentation and diagnostic batches; it does not claim task-level learning.
-

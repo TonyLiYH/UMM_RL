@@ -7,8 +7,8 @@ priority: P0
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T756-corl-same-snapshot-response-probes
-depends_on: [T711, T755, T730, T740]
-blocks: [T760, T770]
+depends_on: [T730, T740, T755, T760]
+blocks: [T770]
 allowed_paths: ["tasks/T756-corl-same-snapshot-response-probes.md", "configs/corl/response-probes-v1/", "runs/corl-response-probes-v1/", "reports/T756/", "src/comppareto/response_probe/", "tests/response_probe/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-28
@@ -71,4 +71,3 @@ insufficient.
 
 Planned until P1 pilot checkpoints, frozen counterfactual semantics, practical
 margins, and resource budget are accepted.
-

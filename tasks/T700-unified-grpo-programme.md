@@ -19,6 +19,14 @@ updated_at: 2026-09-16
 
 ## Research claim
 
+The active UMM PT claim is that intervention-defined ownership of shared
+backbone groups predicts pruning damage and cross-task transfer or
+interference under restricted CoRL post-training. See
+[`docs/plans/2026-10-09-umm-parameter-ownership.md`](../docs/plans/2026-10-09-umm-parameter-ownership.md)
+for the proposed measurement protocol and gates. CoRL reproduction remains
+the required platform and reference result. The following optimizer claim is
+a conditional follow-up rather than the core paper hypothesis.
+
 The success or failure of joint understanding-generation reinforcement
 learning depends on data/reward coupling, normalization, trainable parameter
 ownership, and the realized shared update. A response-aware intervention is
@@ -28,9 +36,11 @@ is observed.
 ## Objective
 
 Use Janus-Pro-1B and the public CoRL stack as the first training platform.
-Reproduce the official Unified-RL path, establish single-task oracles and
-training-dynamics instrumentation, then test conventional negotiators and the
-proposed shared/private response gate.
+Reproduce the semantically admitted Unified-RL path and establish single-task
+oracles. Map shared structured groups, then test selective pruning and
+restricted post-training under matched budgets. Only a measured interference
+pattern may motivate conventional negotiators or the shared/private response
+gate.
 
 ## Frozen scope
 
@@ -38,8 +48,10 @@ proposed shared/private response gate.
 - SFT is an implementation/headroom diagnostic, not a second full paper track.
 - DPO is a bounded mechanism control, not a co-equal main setting.
 - OPD is related/future work.
-- No response-aware comparison starts before the official CoRL path and
-  single-task controls are reproducible.
+- No ownership-guided training comparison starts before the corrected CoRL
+  path, stable importance map, and single-task controls are reproducible.
+- Gradient negotiators and response-aware methods require a separate gate
+  after the ownership intervention pilot.
 
 ## Child sequence
 
@@ -48,23 +60,22 @@ T710 bounded CoRL smoke and defect ledger
         ↓
 T711 semantic correctness + fixed-anchor admission
         ↓
-T755 real CoRL instrumentation
-   ┌────┴─────────┐
-   ↓              ↓
-T730 joint/private-enabled headroom pilots
-T740 U-only/G-only reference pilots
-   └────┬─────────┘
+T712 complete corrected CoRL run → T725 Unified-only reproduction
+   ├── T740 U-only/G-only reference pilots
+   └── shared-group registry and intervention-map pilot (task proposed)
         ↓
-T756 same-snapshot response-opportunity probes
+matched pruning + restricted post-training (tasks proposed)
         ↓
-T760 compact conventional-versus-response method screen
-        ↓
-T770 locked multi-seed response-method confirmation
+locked confirmation and second-architecture test, if gates pass
+
+T755 real CoRL instrumentation supports update attribution.
+T730/T760/T756/T770 are conditional mechanism follow-ups.
 
 T720 Janus-Pro-R1 reusable SFT/GRPO stack audit is an engineering sidecar.
 ```
 
 ## Successor policy
 
-Only the local review side opens T730/T740/T756/T760/T770 after prerequisites,
-practical-effect margins, and comparison budgets are frozen.
+Only the local review side opens successor tasks after prerequisites,
+practical-effect margins, and comparison budgets are frozen. Existing task
+statuses are unchanged by this research reprioritization.
