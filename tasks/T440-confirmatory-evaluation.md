@@ -3,7 +3,7 @@ id: T440
 title: Confirmatory seeds and capability-slice evaluation
 parent: T400
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T440-confirmatory-evaluation
@@ -12,7 +12,7 @@ blocks: [T500, T600]
 allowed_paths: ["src/comppareto/", "tests/", "configs/e1/", "runs/e1-confirm-*/", "reports/T440/", "tasks/T440-confirmatory-evaluation.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T440: Confirmatory evaluation

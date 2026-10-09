@@ -1,121 +1,39 @@
 # UMM_RL authoritative task tree
 
-Task files are the unique source of truth for task status. `PROGRESS.md` summarizes milestones; GitHub Issues or Projects may mirror active tasks but never override these files.
+Task files are the unique source of truth for task status. `PROGRESS.md` summarizes milestones. `ready` authorizes the stated work; `planned` requires a later local gate; `revision_needed` requires repair and review; `accepted` means locally reviewed and merged; `stopped` records a deliberate end to that task. Remote executors may submit evidence but may not accept their own work.
 
-Status legend:
+## Current mainline: parameter ownership and plasticity
 
-- `planned`: defined, not executable;
-- `ready`: locally authorized;
-- `running`: executor or local coordinator is actively working;
-- `awaiting_review`: remote result submitted;
-- `revision_needed`: local review requires repair;
-- `blocked`: exact external blocker recorded;
-- `accepted`: locally reviewed and merged;
-- `stopped`: local Gate failure or deliberate termination.
-
-Remote executors may set `running`, `awaiting_review`, or `blocked` on their task branch. Only the local review side may set `ready`, `revision_needed`, `accepted`, or `stopped` on `main`.
-
-## Task tree
-
-```text
-T000  CompPareto / UMM_RL research [root]  running
-├── T100  T1b independent solver and approximation validation  running
-│   ├── T110  Random overlap quadratic families  ready
-│   ├── T120  Independent KKT/direct reference  ready
-│   ├── T130  Indefinite curvature and trust-region rejection  ready
-│   ├── T140  CG/unroll/diagonal/low-rank error curves  planned
-│   ├── T150  Negotiation feasibility and KKT audit  planned
-│   ├── T155  Exact finite-response oracle benchmark  accepted
-│   ├── T160  Finite-horizon optimizer-response posterior certificate  planned
-│   ├── T165  Anytime-valid selective finite-response controller  planned
-│   └── T170  Graph-localized robust descent and resource allocation  planned
-├── T200  Public-model admission programme  running
-│   ├── T210  Show-o2 admission  accepted
-│   ├── T215  Show-o2 finite-response diagnostic feasibility  ready
-│   ├── T216  Show-o2 compute-matched alternating-protocol diagnostic  ready
-│   ├── T220  UniDDT admission  accepted (read-only scope)
-│   ├── T230  SenseNova-U1 admission  accepted
-│   ├── T240  UniAR boundary-control admission  accepted
-│   ├── T250  Post-training starting-checkpoint selection audit  accepted
-│   └── T270  Selected-checkpoint post-training interface smoke  planned
-├── T260  Joint post-training dataset admission and frozen manifests  accepted
-├── T300  D0 compensation-aware conflict diagnostics  planned
-│   ├── T310  Shared/private parameter-block registry  planned
-│   ├── T320  Identical-A_i^K hypergradient cache  planned
-│   ├── T330  Raw Taylor and compensated predictor comparison  planned
-│   └── T340  Held-out calibration and certificate audit  planned
-├── T400  E1 Show-o2 controlled pilot  planned
-│   ├── T410  Budget and search freeze  planned
-│   ├── T420  Strong baseline wave  planned
-│   ├── T430  CompPareto estimator/negotiation wave  planned
-│   └── T440  Confirmatory seeds and capability slices  planned
-├── T500  E2 cross-architecture validation  planned
-├── T600  E3 heterogeneous preference/RL validation  planned
-└── T700  Unified understanding-generation GRPO programme  running
-    ├── T710  CoRL assets, implementation audit, and GPU optimizer smoke  revision_needed
-    ├── T711  CoRL semantic correctness and fixed-anchor admission  revision_needed
-    ├── T712  First complete corrected CoRL training run  planned
-    ├── T720  Janus-Pro-R1 reusable SFT and GRPO stack smoke  accepted
-    ├── T725  CoRL Unified-only reference reproduction  planned
-    ├── T730  Official CoRL Unified-RL exploratory reproduction  planned
-    ├── T740  CoRL single-task GRPO oracles  planned
-    ├── T750  Per-task gradient/update instrumentation  accepted (mock scope)
-    ├── T755  Real CoRL gradient/update instrumentation  planned
-    ├── T756  CoRL same-snapshot response-opportunity probes  planned
-    ├── T760  Traditional multi-task negotiator wave  planned
-    └── T770  Response-gated Unified GRPO wave  planned
-```
-
-## Current remote execution entry points
-
-| Task | Priority | Branch | Scope |
+| Step | Task | Status | Role |
 |---|---|---|---|
-| [T110](T110-overlap-family.md) | P0 | `agent/T110-overlap-family` | CPU synthetic task families |
-| [T120](T120-independent-kkt-reference.md) | P0 | `agent/T120-independent-kkt-reference` | CPU independent reference solver |
-| [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
-| [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
-| [T216](T216-showo2-alternating-protocol-diagnostic.md) | P0 | `agent/T216-showo2-alternating-protocol-diagnostic` | Compute-matched SP vs PS/commit reversible diagnostics |
-| [T711](T711-corl-semantic-correctness-admission.md) | P0 | `agent/T711-corl-semantic-correctness-admission` | Repair missing semantic implementation, tests, and evidence before admission |
-| [T720](T720-janus-pro-r1-stack-smoke.md) | P1 | `agent/T720-janus-pro-r1-stack-smoke` | Download Janus-Pro-R1 assets and run SFT+GRPO stack smokes |
+| 0 | [T780](T780-ownership-protocol-freeze.md) | ready, P0 | Freeze Janus-Pro group units, U/G evaluators, splits, controls, thresholds, and pilot budget; CPU planning only |
+| 1 | [T711](T711-corl-semantic-correctness-admission.md) | revision_needed, P0 | Repair CoRL scoring, sampling/score relation, rewards, masks, parameter updates, and resume; no full training |
+| 2 | [T712](T712-corl-complete-training.md) | planned, P0 | Complete one corrected finite training run after T711 |
+| 3 | [T725](T725-corl-unified-reference.md) | planned, P0 | Freeze and reproduce the Unified-only reference after T712 |
+| 4 | [T781](T781-ownership-intervention-pilot.md) | planned, P0 | Map reversible shared-group U/G effects after T780 and T711 |
+| 5 | [T740](T740-corl-single-task-oracles.md) | planned, P0 | Establish U-only and G-only headroom and interference controls |
+| 6 | [T782](T782-ownership-pruning-test.md) | planned, P1 | Test held-out pruning predictions at matched removed capacity |
+| 7 | [T783](T783-ownership-restricted-posttraining.md) | planned, P1 | Test restricted U/G/joint training at matched budget |
+| 8 | [T784](T784-ownership-cross-architecture.md) | planned, P2 | Repeat decisive tests on a second admitted UMM if first-model gates pass |
 
-The bounded optimizer smokes in T710 and T720 are complete or under review;
-T711 needs revision after hard semantic review. T712 and T725 remain planned.
-T730/T740/T760/T770 remain closed. T215/T216 remain legacy reversible
-diagnostics and are no longer the first-paper critical path.
+[T700](T700-unified-grpo-programme.md) coordinates this sequence. [T755](T755-real-corl-instrumentation.md) is planned support for real update attribution and T740; [T750](T750-corl-gradient-update-instrumentation.md) is accepted for mock scope only. [T710](T710-corl-admission-and-gpu-smoke.md) is stopped as a separate task; its unresolved defects are owned by T711. [T720](T720-janus-pro-r1-stack-smoke.md) is accepted engineering evidence.
 
-## Active task table
+T780 is the only newly `ready` task. T711 is a bounded repair, not permission for persistent CoRL training. T712/T725 and T781–T784 remain closed until the dependencies and their written budgets pass local review. Source revisions and precise allowed paths are in each task file.
 
-| ID | Parent | Status | Priority | Owner | Reviewer |
-|---|---|---|---|---|---|
-| T000 | root | running | P0 | local-research-agent | user |
-| T100 | T000 | running | P0 | local-research-agent | user |
-| T110 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T120 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T130 | T100 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T155 | T100 | accepted | P0 | remote-gpu-agent | local-research-agent |
-| T200 | T000 | running | P0 | local-research-agent | user |
-| T210 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
-| T215 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T216 | T200 | ready | P0 | remote-gpu-agent | local-research-agent |
-| T220 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
-| T230 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
-| T240 | T200 | accepted | P1 | remote-gpu-agent | local-research-agent |
-| T250 | T200 | accepted | P0 | remote-gpu-agent | local-research-agent |
-| T260 | T000 | accepted | P0 | remote-gpu-agent | local-research-agent |
-| T270 | T200 | planned | P0 | unassigned | local-research-agent |
-| T160 | T100 | planned | P0 | unassigned | local-research-agent |
-| T165 | T100 | planned | P0 | unassigned | local-research-agent |
-| T170 | T100 | planned | P0 | unassigned | local-research-agent |
-| T700 | T000 | running | P0 | local-research-agent | user |
-| T710 | T700 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
-| T711 | T700 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
-| T712 | T700 | planned | P0 | unassigned | local-research-agent |
-| T720 | T700 | accepted | P1 | remote-gpu-agent | local-research-agent |
-| T725 | T700 | planned | P0 | unassigned | local-research-agent |
-| T730 | T700 | planned | P0 | unassigned | local-research-agent |
-| T740 | T700 | planned | P0 | unassigned | local-research-agent |
-| T750 | T700 | accepted | P0 | remote-gpu-agent | local-research-agent |
-| T755 | T700 | planned | P0 | unassigned | local-research-agent |
-| T756 | T700 | planned | P0 | unassigned | local-research-agent |
-| T760 | T700 | planned | P0 | unassigned | local-research-agent |
-| T770 | T700 | planned | P0 | unassigned | local-research-agent |
+## Conditional optimizer programme
+
+The earlier CompPareto theory and Show-o2 execution route remains in the repository for provenance and possible follow-up. It is outside the first parameter-ownership paper's critical path:
+
+- [T100](T100-t1b-validation.md) and T110–T170: finite-response and certificate theory; P2, planned except accepted T155.
+- [T200](T200-model-admission.md) retains accepted model/data admission evidence; [T215](T215-showo2-finite-response-feasibility.md), [T216](T216-showo2-alternating-protocol-diagnostic.md), and [T270](T270-selected-model-training-interface-smoke.md) are P2, planned.
+- [T300](T300-d0-conflict-diagnostics.md), [T400](T400-e1-showo2-pilot.md), [T500](T500-e2-architecture-transfer.md), and [T600](T600-e3-heterogeneous-posttraining.md), including their descendants, are P2, planned.
+- [T730](T730-corl-unified-exploratory-reproduction.md), [T756](T756-corl-same-snapshot-response-probes.md), [T760](T760-corl-traditional-negotiator-wave.md), and [T770](T770-corl-response-gated-wave.md) are P2, planned. Fixed-anchor finite-response validation belongs to T756 if that route opens.
+
+These tasks require an observed interference pattern that simpler ownership-guided restrictions do not resolve, plus a new budget and comparison gate before promotion. Accepted evidence remains accepted; lowering priority does not erase it.
+
+## Current execution entry points
+
+| Task | Owner | Next action |
+|---|---|---|
+| T780 | local-research-agent | Prepare the reviewable protocol and ambiguity ledger without GPU work |
+| T711 | remote-gpu-agent under local review | Rebase repair work on latest authorized `main`, implement and test A–E, submit evidence against the revised acceptance contract |

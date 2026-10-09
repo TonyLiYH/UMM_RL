@@ -2,8 +2,8 @@
 id: T200
 title: Public-model admission programme
 parent: T000
-status: running
-priority: P0
+status: planned
+priority: P2
 owner: local-research-agent
 reviewer: user
 branch: feature/model-admission
@@ -12,7 +12,7 @@ blocks: [T300, T500]
 allowed_paths: ["tasks/T2*.md", "docs/surveys/", "configs/admission/", "runs/admission-*/", "reports/T200/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T200: Public-model admission
@@ -70,3 +70,10 @@ admissions feed T500.
 ## Review history
 
 - 2026-08-26 — Local planner opened the model-admission programme.
+
+## Route update (2026-10-09)
+
+The user prioritized intervention-defined parameter ownership on Janus-Pro.
+This task is retained as P2 planned conditional optimizer work. Its previous
+`ready` or `running` label is no longer an execution authorization; accepted
+evidence from this programme remains available for later comparison.

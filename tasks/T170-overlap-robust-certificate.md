@@ -3,7 +3,7 @@ id: T170
 title: Graph-localized robust descent and resource allocation
 parent: T100
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T170-overlap-robust-certificate
@@ -12,7 +12,7 @@ blocks: [T300]
 allowed_paths: ["docs/theory/", "src/comppareto/", "tests/", "configs/t1c/", "runs/t1c-robust-*/", "reports/T170/", "tasks/T170-overlap-robust-certificate.md"]
 source_revision: "c481c0ee25245ebace0d6d50d881145a972046cf"
 created_at: 2026-08-27
-updated_at: 2026-08-27
+updated_at: 2026-10-09
 ---
 
 # T170: Graph-localized robust descent and resource allocation

@@ -3,7 +3,7 @@ id: T165
 title: Anytime-valid selective finite-response controller
 parent: T100
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T165-anytime-selective-certificate
@@ -12,7 +12,7 @@ blocks: [T300]
 allowed_paths: ["docs/math/", "docs/theory/", "src/comppareto/", "tests/", "configs/t1c/", "runs/t1c-selective-*/", "reports/T165/", "tasks/T165-anytime-selective-certificate.md"]
 source_revision: "c481c0ee25245ebace0d6d50d881145a972046cf"
 created_at: 2026-10-05
-updated_at: 2026-10-05
+updated_at: 2026-10-09
 ---
 
 # T165: Anytime-valid selective finite-response controller

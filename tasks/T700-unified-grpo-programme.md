@@ -12,7 +12,7 @@ blocks: []
 allowed_paths: ["PROJECT.md", "PROGRESS.md", "tasks/", "docs/plans/", "reports/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-16
-updated_at: 2026-09-16
+updated_at: 2026-10-09
 ---
 
 # T700: Unified understanding-generation GRPO programme
@@ -56,20 +56,24 @@ gate.
 ## Child sequence
 
 ```text
-T710 bounded CoRL smoke and defect ledger
+T710 bounded CoRL smoke and defect ledger (historical; stopped)
         ↓
-T711 semantic correctness + fixed-anchor admission
+T711 baseline semantic and training admission (A–E repair)
         ↓
 T712 complete corrected CoRL run → T725 Unified-only reproduction
-   ├── T740 U-only/G-only reference pilots
-   └── shared-group registry and intervention-map pilot (task proposed)
-        ↓
-matched pruning + restricted post-training (tasks proposed)
-        ↓
-locked confirmation and second-architecture test, if gates pass
+   └── T740 U-only/G-only reference pilots
 
-T755 real CoRL instrumentation supports update attribution.
-T730/T760/T756/T770 are conditional mechanism follow-ups.
+T780 shared-group and U/G evaluation protocol freeze (ready; CPU planning)
+        ↓
+T781 reversible shared-group intervention pilot (after T711)
+        ↓
+T782 matched pruning + T783 restricted post-training (after reference gates)
+        ↓
+T784 second-architecture test, if first-model gates pass
+
+T755 real CoRL instrumentation supports single-task controls and update attribution.
+T730/T760/T756/T770 and finite-response theory are conditional optimizer
+follow-ups. Their prior `ready` or P0 labels do not open the ownership pilot.
 
 T720 Janus-Pro-R1 reusable SFT/GRPO stack audit is an engineering sidecar.
 ```

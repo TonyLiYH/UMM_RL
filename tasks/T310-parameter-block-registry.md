@@ -3,7 +3,7 @@ id: T310
 title: Show-o2 shared/private parameter-block registry
 parent: T300
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T310-parameter-block-registry
@@ -12,7 +12,7 @@ blocks: [T320, T330]
 allowed_paths: ["src/comppareto/adapters/showo2/", "tests/adapters/", "configs/d0/", "reports/T310/", "tasks/T310-parameter-block-registry.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T310: Parameter-block registry

@@ -2,8 +2,8 @@
 id: T120
 title: Independent KKT and direct-solver reference
 parent: T100
-status: ready
-priority: P0
+status: planned
+priority: P2
 owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T120-independent-kkt-reference
@@ -12,7 +12,7 @@ blocks: [T150]
 allowed_paths: ["src/comppareto/", "tests/", "configs/t1b/", "runs/t1b-kkt-*/", "reports/T120/", "tasks/T120-independent-kkt-reference.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T120: Independent KKT reference
@@ -69,3 +69,9 @@ Acceptance contributes to T150 and T100.
 
 - 2026-08-26 — Authorized for remote execution; no result submitted.
 
+## Route update (2026-10-09)
+
+The user prioritized intervention-defined parameter ownership on Janus-Pro.
+This task is retained as P2 planned conditional optimizer work. Its previous
+`ready` or `running` label is no longer an execution authorization; accepted
+evidence from this programme remains available for later comparison.

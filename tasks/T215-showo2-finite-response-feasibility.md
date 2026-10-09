@@ -2,8 +2,8 @@
 id: T215
 title: Show-o2 finite-response diagnostic feasibility
 parent: T200
-status: ready
-priority: P0
+status: planned
+priority: P2
 owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T215-showo2-finite-response-feasibility
@@ -12,7 +12,7 @@ blocks: [T300, T310]
 allowed_paths: ["tasks/T215-showo2-finite-response-feasibility.md", "configs/feasibility/showo2/", "runs/feasibility-showo2-v1/", "reports/T215/", "src/comppareto/adapters/showo2/", "tests/adapters/showo2/"]
 source_revision: "217d183473a14ad48852205ea3f2746301915729"
 created_at: 2026-08-27
-updated_at: 2026-09-01
+updated_at: 2026-10-09
 ---
 
 # T215: Show-o2 finite-response diagnostic feasibility
@@ -136,3 +136,10 @@ other declared dependencies.
 - 2026-08-27 — Planned after the Show-o2 first-attempt design; T210 is not yet accepted.
 - 2026-09-01 — T210 accepted with recorded limitations; T215 authorized for
   reversible diagnostic execution. No persistent training is authorized.
+
+## Route update (2026-10-09)
+
+The user prioritized intervention-defined parameter ownership on Janus-Pro.
+This task is retained as P2 planned conditional optimizer work. Its previous
+`ready` or `running` label is no longer an execution authorization; accepted
+evidence from this programme remains available for later comparison.

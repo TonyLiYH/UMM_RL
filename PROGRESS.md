@@ -2,50 +2,47 @@
 
 ## Current phase
 
-**Phase T1b + CoRL semantic admission.** No complete real-model training run has started. The active UMM post-training hypothesis is intervention-defined shared-parameter ownership and plasticity. The protocol is in [the ownership plan](docs/plans/2026-10-09-umm-parameter-ownership.md); compensation-aware optimization is a conditional follow-up.
+**Parameter ownership and plasticity is the first-paper mainline.** No complete
+real-model joint training run or stable ownership map has been accepted. The
+measurement protocol is [the ownership plan](docs/plans/2026-10-09-umm-parameter-ownership.md);
+task states are controlled by [tasks/README.md](tasks/README.md) and the task
+files.
 
-The 2026-08-27 theory/data/model audit is captured in [the research-state handoff](docs/handoffs/2026-08-27-research-state.md). It keeps the current execution Gates unchanged while recording the next recommended theory target: a data-aware, finite-response robust Pareto certificate with explicit inner, curvature, sampling, and distribution-shift errors.
+- T780 is `ready` for CPU-only protocol freeze: Janus-Pro group definitions,
+  U/G evaluators and splits, controls, uncertainty rules, and a pilot budget.
+- T711 remains `revision_needed`. The submitted CoRL branch contains reports
+  and a QA-dispatch patch, but it has not supplied committed A–E implementation,
+  executable tests, and complete evidence for semantic admission. Its report
+  marks some checks confirmed despite failed or incomplete probes. The
+  fixed-anchor finite-response check has moved to conditional T756.
+- T712, T725, T781, T740, T782, and T783 are planned gates. T781 is the first
+  parameter-intervention pilot; no ownership-guided training is authorized.
+- T720 is accepted reusable Janus-Pro-R1 engineering evidence. T750 is accepted
+  only for mock instrumentation. T250/T260 retain accepted model/data audits.
+- T710 is stopped as a separate smoke task; its semantic defects are carried
+  forward to T711. Older finite-response theory, Show-o2 experiments, D0/E1–E3,
+  and CoRL negotiator tasks are P2 conditional work, not first-paper gates.
 
-The follow-up mathematical audit is recorded in [the theory breakthrough audit](docs/theory/2026-08-27-theory-breakthrough-audit.md). It narrows the preferred contribution to a finite-horizon optimizer-state posterior error bound, graph-localized simultaneous descent certificate, and certificate-width-optimal sample/compute allocation. It also separates rerun-response finite unrolling from commit-response stop-gradient semantics.
+## Mainline decision sequence
 
-Authoritative task status: [tasks/README.md](tasks/README.md).
+1. Finish T780 without GPU execution. Freeze complete shared groups, U/G
+   evaluation definitions, disjoint calibration and held-out IDs, zero-gate
+   restoration tests, practical-effect thresholds, random/conventional
+   controls, and resource limits.
+2. Repair T711 checks A–E. A valid admission needs causal image scoring,
+   declared behavior/scoring semantics, mixed QA and generation rewards,
+   padding and reduction tests, actual parameter updates, and full-state
+   resume evidence. A `confirmed` JSON field alone is insufficient.
+3. After local acceptance and a frozen resource manifest, execute T712, then
+   T725. Establish U-only/G-only controls through T740 before training claims.
+4. Open T781 only after T780 and T711 pass. Advance to T782/T783 only if the
+   ownership map is stable across splits and predicts nontrivial U/G variation
+   under the frozen controls.
+5. Use T784 only after held-out first-model evidence supports the mechanism.
+   Open optimizer-response work only after a measured interference pattern
+   survives simpler restricted-update controls and a separate budget gate.
 
-Current authorized remote entries:
-
-- T110 random overlap families;
-- T120 independent KKT/direct reference;
-- T130 indefinite-curvature trust-region tests;
-- T155 exact finite-response oracle benchmark — accepted 2026-09-01;
-- T210 Show-o2 admission audit and smoke — accepted with recorded limitations 2026-09-01;
-- T215 Show-o2 reversible finite-response diagnostics — ready;
-- T216 Show-o2 compute-matched alternating-protocol diagnostic — ready;
-- T220 UniDDT admission — accepted for read-only architecture/inference scope;
-- T230 SenseNova-U1 admission and routed-overlap audit — accepted;
-- T240 UniAR boundary-control admission — accepted for AR boundary-control scope;
-- T250 post-training starting-checkpoint selection — accepted 2026-09-16;
-- T260 joint post-training dataset admission — accepted 2026-09-16;
-- T270 selected-model training-interface smoke — planned pending T250/T260.
-- T710 CoRL assets/code admission — revision needed after hard semantic review;
-- T711 CoRL semantic correctness and fixed-anchor admission — revision needed:
-  submitted branch contains task prose only, with no implementation, tests,
-  configs, run evidence, or report artifacts;
-- T712 first complete corrected CoRL training run — planned after T711;
-- T720 Janus-Pro-R1 reusable SFT/GRPO stack smoke — accepted as engineering evidence;
-- T725 CoRL Unified-only reference reproduction — planned after T712;
-- T750 framework-neutral gradient/update instrumentation — accepted for mock scope;
-- T755 real CoRL gradient/update instrumentation — planned after T711.
-- T756 same-snapshot response-opportunity probes — planned after P1 pilots.
-
-These tasks do not authorize joint post-training. T300 remains closed until
-T100, T170, T210, and T215 are accepted.
-
-The first Show-o2 execution plan is recorded in
-[`docs/plans/showo2-first-attempt.md`](docs/plans/showo2-first-attempt.md).
-T215 is now authorized for reversible finite-response diagnostics. T220–T240
-are authorized as independent model-admission tasks. None authorizes persistent
-joint training.
-
-## Decision gates
+## Conditional optimizer decision gates
 
 | Gate | Question | Pass condition | Status |
 |---|---|---|---|
@@ -60,7 +57,7 @@ joint training.
 
 Numerical thresholds in D0/E0/E1 will be frozen after T1b and a variance-only dry run, before method comparisons.
 
-## T1a minimum executable gate
+## Historical T1a executable gate
 
 The repository must provide the following before T0 can move beyond `In progress`:
 
@@ -78,41 +75,9 @@ Command: `bash scripts/run_t1.sh`. A nonzero exit blocks T1a.
 
 Latest evidence: `runs/t1_synthetic/t1_manifest.json`. This validates deterministic algebraic contracts only, not the complete T1b solver gate or any real-model hypothesis.
 
-## Immediate next actions
+## Current authorized work
 
-1. Continue T110, T120, and T130 under their task contracts.
-2. Execute T215 on the accepted Show-o2 revision under the reversible,
-   no-persistent-update protocol.
-3. Execute T216 independently from accepted `main` to compare simultaneous,
-   shared-then-private, private-only control, and private-then-shared commit
-   protocols. T216 does not depend on T215's failed full-rerun implementation.
-4. T220, T230, and T240 have completed local review. Preserve their accepted
-   limitations: UniDDT is read-only, SenseNova mixed-token forward is
-   unsupported, and UniAR pixel-decoder training is unreleased.
-5. Execute T711 before persistent CoRL training. It validates causal image
-   scoring, behavior/scoring identity, QA dispatch, padding-sensitive rewards,
-   full-state resume, and fixed-anchor response semantics.
-6. After T711 is accepted, run T712 to completion with held-out U/G evaluation
-   and resume evidence, then freeze and reproduce the T725 Unified-only reference.
-7. Build a structured shared-group registry and pilot reversible perturbations
-   on disjoint U/G calibration splits. Freeze practical-effect thresholds and
-   random/conventional-importance controls before interpreting an ownership map.
-8. If the map is stable, test matched pruning and restricted post-training on
-   held-out data. Match parameter count, task exposure, and compute; retain
-   U-only, G-only, full-shared, random-group, and private-only controls.
-9. Open T755 for real PyTorch per-task gradients, clipping, optimizer membership,
-   and realized updates after T711. Traditional negotiators and T756/T770
-   response-aware trials require a separate gate after a measured interference
-   pattern in the ownership pilot.
-10. T720 is a reusable Janus-Pro-R1 engineering reference, not a scientific
-   baseline on the first-paper critical path.
-11. T270 remains a later SenseNova cross-architecture smoke and is no longer on
-   the first Janus/CoRL paper critical path.
-12. Open T140/T150 only after their declared prerequisites are accepted.
-13. Accept T100, T170, and at least one valid real-model response diagnostic
-   before changing T300 to `ready`.
-14. Complete the planned T160 finite-response posterior-certificate and T170
-   graph-localized robust-certificate contracts after their dependencies are
-   accepted; neither task is authorized yet.
-15. Freeze data-source, capability, split, and decontamination manifests before
-   D0; do not attribute a data-scheduling gain to update geometry.
+T780 permits planning and source inspection without GPU use. T711 permits a
+bounded repair submission under its revised A–E contract; it does not permit
+full training. All new GPU tasks remain `planned` until local review freezes
+budgets, first reports, dependencies, and acceptance criteria.

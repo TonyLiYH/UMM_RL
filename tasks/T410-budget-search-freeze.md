@@ -3,7 +3,7 @@ id: T410
 title: E1 budget, search, and run-contract freeze
 parent: T400
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T410-budget-search-freeze
@@ -12,7 +12,7 @@ blocks: [T420, T430]
 allowed_paths: ["configs/e1/", "schemas/", "src/comppareto/repo_state/", "tests/repo_state/", "reports/T410/", "tasks/T410-budget-search-freeze.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T410: Budget and search freeze

@@ -3,7 +3,7 @@ id: T320
 title: Identical-A_i^K hypergradient cache
 parent: T300
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T320-hypergradient-cache
@@ -12,7 +12,7 @@ blocks: [T330]
 allowed_paths: ["src/comppareto/", "tests/", "configs/d0/", "runs/d0-cache-*/", "reports/T320/", "tasks/T320-hypergradient-cache.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T320: Identical finite-response cache

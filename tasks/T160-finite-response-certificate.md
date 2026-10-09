@@ -3,7 +3,7 @@ id: T160
 title: Finite-horizon optimizer-response posterior certificate
 parent: T100
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T160-finite-response-certificate
@@ -12,7 +12,7 @@ blocks: [T170]
 allowed_paths: ["docs/theory/", "src/comppareto/", "tests/", "configs/t1c/", "runs/t1c-response-*/", "reports/T160/", "tasks/T160-finite-response-certificate.md"]
 source_revision: "c481c0ee25245ebace0d6d50d881145a972046cf"
 created_at: 2026-08-27
-updated_at: 2026-08-27
+updated_at: 2026-10-09
 ---
 
 # T160: Finite-horizon optimizer-response posterior certificate

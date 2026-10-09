@@ -3,7 +3,7 @@ id: T150
 title: Negotiation feasibility, KKT, and independent-reference audit
 parent: T100
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T150-negotiation-audit
@@ -12,7 +12,7 @@ blocks: [T170]
 allowed_paths: ["src/comppareto/", "tests/", "configs/t1b/", "runs/t1b-negotiation-*/", "reports/T150/", "tasks/T150-negotiation-audit.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T150: Negotiation audit

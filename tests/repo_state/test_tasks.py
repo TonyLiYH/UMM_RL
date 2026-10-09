@@ -124,5 +124,6 @@ def test_rejects_terminal_acceptance_without_local_review(tmp_path: Path) -> Non
 def test_accepts_initial_repository_task_tree() -> None:
     tasks = load_tasks(Path("tasks"), SCHEMA)
 
-    assert len(tasks) == 46
+    assert len(tasks) == len(list(Path("tasks").glob("T[0-9][0-9][0-9]-*.md")))
+    assert {"T780", "T781", "T782", "T783", "T784"} <= set(tasks)
     assert validate_task_graph(tasks) == []

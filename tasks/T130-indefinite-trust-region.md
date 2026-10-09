@@ -2,8 +2,8 @@
 id: T130
 title: Overall-indefinite curvature and trust-region rejection
 parent: T100
-status: ready
-priority: P0
+status: planned
+priority: P2
 owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T130-indefinite-trust-region
@@ -12,7 +12,7 @@ blocks: [T140]
 allowed_paths: ["src/comppareto/", "tests/", "configs/t1b/", "runs/t1b-indefinite-*/", "reports/T130/", "tasks/T130-indefinite-trust-region.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T130: Indefinite curvature and trust-region rejection
@@ -69,3 +69,9 @@ Acceptance contributes to T140 and T100.
 
 - 2026-08-26 — Authorized for remote execution; no result submitted.
 
+## Route update (2026-10-09)
+
+The user prioritized intervention-defined parameter ownership on Janus-Pro.
+This task is retained as P2 planned conditional optimizer work. Its previous
+`ready` or `running` label is no longer an execution authorization; accepted
+evidence from this programme remains available for later comparison.

@@ -3,7 +3,7 @@ id: T600
 title: E3 heterogeneous preference and RL post-training
 parent: T000
 status: planned
-priority: P1
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T600-e3-heterogeneous-posttraining
@@ -12,7 +12,7 @@ blocks: []
 allowed_paths: ["src/comppareto/", "tests/", "configs/e3/", "runs/e3-*/", "reports/T600/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T600: E3 heterogeneous post-training

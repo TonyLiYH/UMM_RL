@@ -3,7 +3,7 @@ id: T330
 title: Raw Taylor and compensation-aware predictor comparison
 parent: T300
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T330-predictor-comparison
@@ -12,7 +12,7 @@ blocks: [T340]
 allowed_paths: ["src/comppareto/", "tests/", "configs/d0/", "runs/d0-predictor-*/", "reports/T330/", "tasks/T330-predictor-comparison.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T330: Predictor comparison

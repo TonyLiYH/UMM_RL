@@ -3,7 +3,7 @@ id: T140
 title: CG, unroll, diagonal, and low-rank approximation error curves
 parent: T100
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T140-approximation-error
@@ -12,7 +12,7 @@ blocks: []
 allowed_paths: ["src/comppareto/", "tests/", "configs/t1b/", "runs/t1b-approx-*/", "reports/T140/", "tasks/T140-approximation-error.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T140: Approximation error

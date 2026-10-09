@@ -3,7 +3,7 @@ id: T756
 title: CoRL same-snapshot response-opportunity probes
 parent: T700
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T756-corl-same-snapshot-response-probes
@@ -12,7 +12,7 @@ blocks: [T770]
 allowed_paths: ["tasks/T756-corl-same-snapshot-response-probes.md", "configs/corl/response-probes-v1/", "runs/corl-response-probes-v1/", "reports/T756/", "src/comppareto/response_probe/", "tests/response_probe/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-28
-updated_at: 2026-09-28
+updated_at: 2026-10-09
 ---
 
 # T756: CoRL same-snapshot response-opportunity probes

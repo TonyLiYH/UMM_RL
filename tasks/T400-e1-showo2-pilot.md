@@ -3,7 +3,7 @@ id: T400
 title: E1 Show-o2 controlled pilot
 parent: T000
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T400-e1-showo2-pilot
@@ -12,7 +12,7 @@ blocks: [T500, T600]
 allowed_paths: ["src/comppareto/", "tests/", "configs/e1/", "experiments/", "runs/e1-*/", "reports/T400/", "tasks/T4*.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T400: E1 Show-o2 pilot

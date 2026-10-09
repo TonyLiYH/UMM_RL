@@ -2,8 +2,8 @@
 id: T216
 title: Show-o2 compute-matched alternating-protocol diagnostic
 parent: T200
-status: ready
-priority: P0
+status: planned
+priority: P2
 owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T216-showo2-alternating-protocol-diagnostic
@@ -12,7 +12,7 @@ blocks: [T300, T310]
 allowed_paths: ["tasks/T216-showo2-alternating-protocol-diagnostic.md", "configs/alternating/showo2/", "runs/alternating-showo2-v1/", "reports/T216/", "src/comppareto/adapters/showo2_alternating/", "tests/adapters/showo2_alternating/"]
 source_revision: "2358267c14dddc3754e7a80e9b681308c6bcd0f7"
 created_at: 2026-09-15
-updated_at: 2026-09-15
+updated_at: 2026-10-09
 ---
 
 # T216: Show-o2 compute-matched alternating-protocol diagnostic
@@ -214,3 +214,9 @@ bash scripts/validate_task_submission.sh T216
 Only the local review side can mark this task accepted. Report negative and
 indeterminate rows without replacement or post-hoc tuning.
 
+## Route update (2026-10-09)
+
+The user prioritized intervention-defined parameter ownership on Janus-Pro.
+This task is retained as P2 planned conditional optimizer work. Its previous
+`ready` or `running` label is no longer an execution authorization; accepted
+evidence from this programme remains available for later comparison.

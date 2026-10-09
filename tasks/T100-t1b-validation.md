@@ -2,8 +2,8 @@
 id: T100
 title: T1b independent solver and approximation validation
 parent: T000
-status: running
-priority: P0
+status: planned
+priority: P2
 owner: local-research-agent
 reviewer: user
 branch: feature/t1b-validation
@@ -12,7 +12,7 @@ blocks: [T160, T300]
 allowed_paths: ["src/comppareto/", "tests/", "configs/", "runs/t1b-*/", "reports/T100/", "tasks/T1*.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T100: T1b validation
@@ -77,3 +77,10 @@ Accepted T100 and T210 jointly unblock T300.
 ## Review history
 
 - 2026-08-26 — Local planner opened T1b coordination; no terminal review decision.
+
+## Route update (2026-10-09)
+
+The user prioritized intervention-defined parameter ownership on Janus-Pro.
+This task is retained as P2 planned conditional optimizer work. Its previous
+`ready` or `running` label is no longer an execution authorization; accepted
+evidence from this programme remains available for later comparison.

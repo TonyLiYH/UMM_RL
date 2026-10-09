@@ -57,7 +57,10 @@ perturbation.
   mechanism comparison; OPD is outside the main experimental scope.
 - Training: post-training only; pretrained tokenizers and generative autoencoders remain frozen unless a named ablation changes this.
 - Parameters: shared-backbone full-parameter updates are required in the main pilot; LoRA is an efficiency ablation, not the only setting.
-- Models: Show-o2 for the first executable pilot; UniDDT and SenseNova-U1 for cross-architecture validation; UniAR as a more homogeneous-objective boundary control.
+- Models: Janus-Pro-1B is the first ownership-mapping and joint-training model;
+  a second admitted UMM is a later generality check. Show-o2, UniDDT,
+  SenseNova-U1, and UniAR retain their earlier admission evidence for
+  conditional optimizer or architecture studies.
 
 The formal cross-architecture starting checkpoint is selected separately from
 inference admission. Prefer a checkpoint that already supports understanding
@@ -82,26 +85,28 @@ method open only after those controls pass.
 
 ## Intended contributions
 
-1. A value-function formulation for heterogeneous post-training with partial parameter overlap and task-private best responses.
-2. A compensation-aware local surrogate based on implicit differentiation or finite unrolling.
-3. A conditionally loss-scale-invariant max-min retained-gain negotiation objective and a deterministic common-descent certificate when one exists.
-4. A diagnostic protocol testing whether the certificate predicts realized joint changes.
-5. Evidence across architectures with shallow, deep, and more homogeneous sharing.
+1. A reproducible, intervention-defined map of structured shared groups for
+   image understanding and generation, with uncertainty and unresolved cases.
+2. A test of whether that map predicts held-out pruning damage and the
+   direction of cross-task effects under restricted post-training.
+3. A matched-budget decision rule for selecting trainable groups, promoted
+   only if it improves a prespecified joint criterion over random and
+   conventional-importance controls.
+4. A later cross-architecture test of the decisive mechanism, if the first
+   model shows a reproducible effect.
 
-The optimizer contribution is staged: simultaneous raw training,
-shared-then-private alternating optimization, private-then-shared commit
-gradients, and only then explicit trajectory or reduced-space response models.
-The simplest stage that survives compute-matched controls is the preferred
-method.
-
-The first four mathematical ingredients overlap with multi-objective bilevel optimization and personalized-learning literature. Until a new overlap-specific complexity or approximation theorem is proved, the intended novelty is the optimizer-state-aware UMM method, diagnostic evidence, and compute-matched protocol—not the generic existence of a bilevel value function.
+The earlier compensation-aware value-function, finite-response, negotiation,
+and certificate contributions remain a separate conditional optimizer
+programme. They require a measured interference pattern and a new comparison
+gate before becoming the paper's method claim.
 
 ## Falsification conditions
 
-The core claim should be rejected or reframed if any of the following holds after the preregistered pilot:
-
-- post-compensation diagnostics fail to improve prediction of realized two-task changes over raw gradients;
-- CompPareto does not improve worst-task normalized gain over the best budget-matched scalarization;
-- improvements disappear after equalizing optimizer steps, tokens, samples, and baseline search budgets;
-- the method helps only one model or only one hand-picked capability slice;
-- compute overhead makes the method infeasible relative to the measured benefit.
+The ownership claim should be rejected or reframed if group effects are
+unstable across disjoint calibration splits, fail to predict held-out pruning
+or training effects better than the frozen controls, or lose any joint benefit
+after matching parameter count, task exposure, and compute. A zero-gate
+dependency that does not predict learning plasticity remains a useful
+mechanistic result, but it does not support an ownership-guided training
+method. The conditional optimizer programme keeps its own earlier
+falsification criteria in its task contracts.

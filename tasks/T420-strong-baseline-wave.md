@@ -3,7 +3,7 @@ id: T420
 title: Strong baseline training wave
 parent: T400
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T420-strong-baseline-wave
@@ -12,7 +12,7 @@ blocks: [T440]
 allowed_paths: ["src/comppareto/", "tests/", "configs/e1/", "experiments/", "runs/e1-baseline-*/", "reports/T420/", "tasks/T420-strong-baseline-wave.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T420: Strong baseline wave

@@ -2,8 +2,8 @@
 id: T710
 title: CoRL assets, implementation audit, and GPU optimizer smoke
 parent: T700
-status: revision_needed
-priority: P0
+status: stopped
+priority: P2
 owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T710-corl-admission-gpu-smoke
@@ -12,10 +12,17 @@ blocks: [T730, T740]
 allowed_paths: ["tasks/T710-corl-admission-and-gpu-smoke.md", "configs/corl/admission/", "runs/corl-admission-v1/", "reports/T710/", "src/comppareto/adapters/corl/", "tests/adapters/corl/", "vendor/corl/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-16
-updated_at: 2026-09-17T01:00Z
+updated_at: 2026-10-09
 ---
 
 # T710: CoRL assets, implementation audit, and GPU optimizer smoke
+
+## Route decision (2026-10-09)
+
+This bounded smoke remains historical engineering evidence. Its unresolved
+semantic defects are now owned by T711. T710 is stopped as a separate execution
+task; this decision does not accept its failed admission gate or promote its
+smoke metrics to a training baseline.
 
 ## Research claim
 

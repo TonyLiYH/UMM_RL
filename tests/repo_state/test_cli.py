@@ -8,6 +8,7 @@ import shutil
 
 def test_cli_validates_repository() -> None:
     expected_manifest_count = len(list(Path("runs").rglob("*manifest.json")))
+    expected_task_count = len(list(Path("tasks").glob("T[0-9][0-9][0-9]-*.md")))
     completed = subprocess.run(
         [sys.executable, "-m", "comppareto.repo_state.cli", "--root", "."],
         capture_output=True,
@@ -16,13 +17,14 @@ def test_cli_validates_repository() -> None:
     )
 
     assert completed.returncode == 0, completed.stdout + completed.stderr
-    assert "task_tree=pass tasks=46" in completed.stdout
+    assert f"task_tree=pass tasks={expected_task_count}" in completed.stdout
     assert f"run_manifests=pass manifests={expected_manifest_count}" in completed.stdout
     assert "research_state=pass" in completed.stdout
 
 
 def test_cli_reports_run_schema_error_as_run_failure(tmp_path: Path) -> None:
     shutil.copytree("tasks", tmp_path / "tasks")
+    expected_task_count = len(list((tmp_path / "tasks").glob("T[0-9][0-9][0-9]-*.md")))
     shutil.copytree("schemas", tmp_path / "schemas")
     run_dir = tmp_path / "runs" / "invalid"
     run_dir.mkdir(parents=True)
@@ -58,6 +60,6 @@ def test_cli_reports_run_schema_error_as_run_failure(tmp_path: Path) -> None:
     )
 
     assert completed.returncode == 1
-    assert "task_tree=pass tasks=46" in completed.stdout
+    assert f"task_tree=pass tasks={expected_task_count}" in completed.stdout
     assert "run_manifests=fail manifests=1" in completed.stdout
     assert "'task_id' is a required property" in completed.stdout

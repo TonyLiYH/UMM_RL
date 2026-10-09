@@ -3,7 +3,7 @@ id: T500
 title: E2 cross-architecture validation
 parent: T000
 status: planned
-priority: P1
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T500-e2-architecture-transfer
@@ -12,7 +12,7 @@ blocks: []
 allowed_paths: ["src/comppareto/", "tests/", "configs/e2/", "runs/e2-*/", "reports/T500/"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T500: E2 architecture transfer

@@ -3,7 +3,7 @@ id: T340
 title: Held-out calibration and common-descent certificate audit
 parent: T300
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T340-calibration-audit
@@ -12,7 +12,7 @@ blocks: [T400]
 allowed_paths: ["src/comppareto/", "tests/", "configs/d0/", "runs/d0-calibration-*/", "reports/T340/", "tasks/T340-calibration-audit.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T340: Calibration and certificate audit

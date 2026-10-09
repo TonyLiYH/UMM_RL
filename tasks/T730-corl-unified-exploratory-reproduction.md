@@ -3,7 +3,7 @@ id: T730
 title: Unified GRPO joint and private-enabled headroom pilots
 parent: T700
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T730-corl-unified-exploratory-reproduction
@@ -12,7 +12,7 @@ blocks: [T756, T760]
 allowed_paths: ["tasks/T730-corl-unified-exploratory-reproduction.md", "configs/corl/unified-v1/", "runs/corl-unified-v1/", "reports/T730/", "src/comppareto/adapters/corl/", "tests/adapters/corl/"]
 source_revision: "818d1d83ecf6b7b6fca924e8b1b8f7a214b0a7e5"
 created_at: 2026-09-16
-updated_at: 2026-09-16
+updated_at: 2026-10-09
 ---
 
 # T730: Unified GRPO joint and private-enabled headroom pilots

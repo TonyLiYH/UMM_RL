@@ -3,7 +3,7 @@ id: T300
 title: D0 compensation-aware conflict diagnostics
 parent: T000
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T300-d0-conflict-diagnostics
@@ -12,7 +12,7 @@ blocks: [T400]
 allowed_paths: ["src/comppareto/", "tests/", "configs/d0/", "runs/d0-*/", "reports/T300/", "tasks/T3*.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T300: D0 conflict diagnostics

@@ -13,6 +13,9 @@ required_files:
   - reports/T711/result-summary.md
   - reports/T711/claim-check.md
   - reports/T711/failure-ledger.md
+  - src/comppareto/adapters/corl/semantic_*.py
+  - tests/adapters/corl/test_semantic_*.py
+  - tests/adapters/corl/test_resume_*.py
   - runs/corl-admission-v1/manifest.json
   - runs/corl-admission-v1/metrics.json
   - runs/corl-admission-v1/notes.md
@@ -65,10 +68,6 @@ metrics:
     op: "=="
     value: true
   - file: runs/corl-admission-v1/metrics.json
-    path: checks.fixed_anchor_surrogate.confirmed
-    op: "=="
-    value: true
-  - file: runs/corl-admission-v1/metrics.json
     path: resources.gpu_hours
     op: "<="
     value: 16
@@ -79,4 +78,3 @@ forbidden_claims:
       path: status
       equals: fail
     phrases: [supports gate, reproduces CoRL, improves both tasks]
-

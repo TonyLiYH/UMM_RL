@@ -1,6 +1,6 @@
 ---
 id: T711
-title: CoRL semantic correctness and fixed-anchor admission
+title: CoRL baseline semantic and training admission
 parent: T700
 status: revision_needed
 priority: P0
@@ -8,21 +8,21 @@ owner: remote-gpu-agent
 reviewer: local-research-agent
 branch: agent/T711-corl-semantic-correctness-admission
 depends_on: []
-blocks: [T730, T740, T755]
+blocks: [T712, T730, T740, T755]
 allowed_paths: ["tasks/T710-corl-admission-and-gpu-smoke.md", "tasks/T711-corl-semantic-correctness-admission.md", "configs/corl/admission/", "runs/corl-admission-v1/", "reports/T710/", "reports/T711/", "src/comppareto/adapters/corl/", "tests/adapters/corl/", "vendor/corl/"]
 source_revision: "e001548976ede8c8dd9805e5602fc2ab9ac6274b"
 created_at: 2026-09-28
-updated_at: 2026-09-28
+updated_at: 2026-10-09
 ---
 
-# T711: CoRL semantic correctness and fixed-anchor admission
+# T711: CoRL baseline semantic and training admission
 
 ## Research claim
 
-A Unified-GRPO baseline is suitable for optimization research only after its
-image policy scoring, behavior-policy relation, reward dispatch, reduction,
-parameter ownership, and counterfactual anchors have semantic—not merely
-finite—validation.
+A Unified-GRPO baseline is suitable for the parameter-ownership study only
+after its image policy scoring, behavior-policy relation, reward dispatch,
+reduction, trainable parameter mask, and resume behavior have semantic—not
+merely finite—validation.
 
 ## Objective
 
@@ -86,17 +86,20 @@ Using two real prompts of unequal length and retained image-token trajectories:
 - save/resume equality of U/G log probabilities, optimizer moments, scheduler,
   RNG, and resolved configurations.
 
-### F. Fixed-anchor finite-response surrogate
+### Deferred: fixed-anchor finite-response surrogate
 
-For one diagnostic window, freeze trajectories, behavior log probabilities,
-masks, reward/evaluator snapshots, advantages, private optimizer state, RNG,
-and a disjoint audit batch. Candidate perturbations must evaluate the same
-anchored surrogate. This task does not conduct full response experiments; it
-only establishes a valid counterfactual object.
+Fixed-anchor counterfactual windows are needed only if the later optimizer
+response route opens. T756 owns that validation. A fixed-anchor result is not
+part of this baseline admission gate. Reversible zero-gate parameter
+interventions use frozen evaluation items and sampling seeds under T781; they
+do not require a finite-response training surrogate.
 
 ## Pass/fail gate
 
-Pass requires all semantic tests above to pass at preregistered tolerance.
+Pass requires tests A–E above to pass at preregistered tolerance with committed
+implementation, executable tests, exact protocol/configuration, and run
+evidence. A report field marked `confirmed` is not sufficient evidence by
+itself.
 Any unresolved causal scoring, behavior/scoring mismatch, reward dispatch, or
 state-restoration defect blocks T730/T740/T755. A finding that the upstream
 path differs from the corrected research protocol is expected and must remain
@@ -131,3 +134,7 @@ bash scripts/validate_task_submission.sh T711
   The metadata above now records the actual fork point
   `e001548976ede8c8dd9805e5602fc2ab9ac6274b`. See
   `reports/T711/review.md` for findings and repair requirements.
+- 2026-10-09 — The user prioritized intervention-defined parameter ownership.
+  Local planning narrowed this admission gate to the CoRL baseline checks A–E;
+  fixed-anchor response semantics moved to conditional T756. The failed
+  admission remains `revision_needed` until the revised contract is met.

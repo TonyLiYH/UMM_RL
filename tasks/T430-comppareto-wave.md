@@ -3,7 +3,7 @@ id: T430
 title: CompPareto estimator and negotiation wave
 parent: T400
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T430-comppareto-wave
@@ -12,7 +12,7 @@ blocks: [T440]
 allowed_paths: ["src/comppareto/", "tests/", "configs/e1/", "experiments/", "runs/e1-comppareto-*/", "reports/T430/", "tasks/T430-comppareto-wave.md"]
 source_revision: "dab902f90dedf500751ae852ceaeda5e1012f6ff"
 created_at: 2026-08-26
-updated_at: 2026-08-26
+updated_at: 2026-10-09
 ---
 
 # T430: CompPareto wave

@@ -3,7 +3,7 @@ id: T270
 title: Selected-checkpoint post-training interface smoke
 parent: T200
 status: planned
-priority: P0
+priority: P2
 owner: unassigned
 reviewer: local-research-agent
 branch: agent/T270-selected-model-training-interface-smoke
@@ -12,7 +12,7 @@ blocks: [T300, T400]
 allowed_paths: ["tasks/T270-selected-model-training-interface-smoke.md", "configs/training-smoke/selected-model/", "runs/training-smoke-selected-model-v1/", "reports/T270/", "src/comppareto/adapters/selected_model/", "tests/adapters/selected_model/"]
 source_revision: "45c54ba403a2b5c95985a49206243449436717c8"
 created_at: 2026-09-15
-updated_at: 2026-09-15
+updated_at: 2026-10-09
 ---
 
 # T270: Selected-checkpoint post-training interface smoke
