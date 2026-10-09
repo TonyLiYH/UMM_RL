@@ -53,7 +53,7 @@ T000  CompPareto / UMM_RL research [root]  running
 ├── T600  E3 heterogeneous preference/RL validation  planned
 └── T700  Unified understanding-generation GRPO programme  running
     ├── T710  CoRL assets, implementation audit, and GPU optimizer smoke  revision_needed
-    ├── T711  CoRL semantic correctness and fixed-anchor admission  ready
+    ├── T711  CoRL semantic correctness and fixed-anchor admission  revision_needed
     ├── T712  First complete corrected CoRL training run  planned
     ├── T720  Janus-Pro-R1 reusable SFT and GRPO stack smoke  accepted
     ├── T725  CoRL Unified-only reference reproduction  planned
@@ -75,11 +75,11 @@ T000  CompPareto / UMM_RL research [root]  running
 | [T130](T130-indefinite-trust-region.md) | P0 | `agent/T130-indefinite-trust-region` | CPU failure and acceptance tests |
 | [T215](T215-showo2-finite-response-feasibility.md) | P0 | `agent/T215-showo2-finite-response-feasibility` | Reversible Show-o2 finite-response diagnostics |
 | [T216](T216-showo2-alternating-protocol-diagnostic.md) | P0 | `agent/T216-showo2-alternating-protocol-diagnostic` | Compute-matched SP vs PS/commit reversible diagnostics |
-| [T711](T711-corl-semantic-correctness-admission.md) | P0 | `agent/T711-corl-semantic-correctness-admission` | Validate causal GRPO semantics and freeze corrected research protocol |
+| [T711](T711-corl-semantic-correctness-admission.md) | P0 | `agent/T711-corl-semantic-correctness-admission` | Repair missing semantic implementation, tests, and evidence before admission |
 | [T720](T720-janus-pro-r1-stack-smoke.md) | P1 | `agent/T720-janus-pro-r1-stack-smoke` | Download Janus-Pro-R1 assets and run SFT+GRPO stack smokes |
 
 The bounded optimizer smokes in T710 and T720 are complete or under review;
-T711 is ready for semantic admission. T712 and T725 remain planned.
+T711 needs revision after hard semantic review. T712 and T725 remain planned.
 T730/T740/T760/T770 remain closed. T215/T216 remain legacy reversible
 diagnostics and are no longer the first-paper critical path.
 
@@ -108,7 +108,7 @@ diagnostics and are no longer the first-paper critical path.
 | T170 | T100 | planned | P0 | unassigned | local-research-agent |
 | T700 | T000 | running | P0 | local-research-agent | user |
 | T710 | T700 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
-| T711 | T700 | ready | P0 | remote-gpu-agent | local-research-agent |
+| T711 | T700 | revision_needed | P0 | remote-gpu-agent | local-research-agent |
 | T712 | T700 | planned | P0 | unassigned | local-research-agent |
 | T720 | T700 | accepted | P1 | remote-gpu-agent | local-research-agent |
 | T725 | T700 | planned | P0 | unassigned | local-research-agent |

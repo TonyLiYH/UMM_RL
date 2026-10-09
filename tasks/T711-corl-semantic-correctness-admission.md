@@ -2,7 +2,7 @@
 id: T711
 title: CoRL semantic correctness and fixed-anchor admission
 parent: T700
-status: ready
+status: revision_needed
 priority: P0
 owner: remote-gpu-agent
 reviewer: local-research-agent
@@ -10,7 +10,7 @@ branch: agent/T711-corl-semantic-correctness-admission
 depends_on: []
 blocks: [T730, T740, T755]
 allowed_paths: ["tasks/T710-corl-admission-and-gpu-smoke.md", "tasks/T711-corl-semantic-correctness-admission.md", "configs/corl/admission/", "runs/corl-admission-v1/", "reports/T710/", "reports/T711/", "src/comppareto/adapters/corl/", "tests/adapters/corl/", "vendor/corl/"]
-source_revision: "1fcb9e9964c678a330f32514f211828d551dc48c"
+source_revision: "e001548976ede8c8dd9805e5602fc2ab9ac6274b"
 created_at: 2026-09-28
 updated_at: 2026-09-28
 ---
@@ -122,3 +122,12 @@ before GPU execution.
 bash scripts/validate_task_submission.sh T711
 ```
 
+## Review history
+
+- 2026-09-28 — Local hard review set `revision_needed` for branch head
+  `0dd0d32babd93aff4e99cf2b20f93abc775b8a1f`. The submission changes only
+  task prose, contains none of the required code, tests, configs, run evidence,
+  or report artifacts, and its claimed source revision is not a Git object.
+  The metadata above now records the actual fork point
+  `e001548976ede8c8dd9805e5602fc2ab9ac6274b`. See
+  `reports/T711/review.md` for findings and repair requirements.

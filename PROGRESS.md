@@ -26,7 +26,9 @@ Current authorized remote entries:
 - T260 joint post-training dataset admission — accepted 2026-09-16;
 - T270 selected-model training-interface smoke — planned pending T250/T260.
 - T710 CoRL assets/code admission — revision needed after hard semantic review;
-- T711 CoRL semantic correctness and fixed-anchor admission — ready;
+- T711 CoRL semantic correctness and fixed-anchor admission — revision needed:
+  submitted branch contains task prose only, with no implementation, tests,
+  configs, run evidence, or report artifacts;
 - T712 first complete corrected CoRL training run — planned after T711;
 - T720 Janus-Pro-R1 reusable SFT/GRPO stack smoke — accepted as engineering evidence;
 - T725 CoRL Unified-only reference reproduction — planned after T712;
